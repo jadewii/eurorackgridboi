@@ -469,17 +469,38 @@
         <!-- Filter Tabs -->
         <div class="filter-tabs">
             <div class="filter-tab active" onclick="filterCases('all')">ALL CASES</div>
-            <div class="filter-tab" onclick="filterCases('techno')">TECHNO</div>
-            <div class="filter-tab" onclick="filterCases('ambient')">AMBIENT</div>
-            <div class="filter-tab" onclick="filterCases('experimental')">EXPERIMENTAL</div>
-            <div class="filter-tab" onclick="filterCases('classic')">CLASSIC</div>
+            
+            <!-- Case Size Filters -->
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="font-weight: bold; text-transform: uppercase;">Size:</span>
+                <div class="filter-tab" onclick="filterBySize('3U')">3U</div>
+                <div class="filter-tab" onclick="filterBySize('6U')">6U</div>
+                <div class="filter-tab" onclick="filterBySize('9U')">9U</div>
+                <div class="filter-tab" onclick="filterBySize('12U')">12U</div>
+            </div>
+            
+            <!-- Case Length Filters -->
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="font-weight: bold; text-transform: uppercase;">Length:</span>
+                <div class="filter-tab" onclick="filterByLength('60HP')">60HP</div>
+                <div class="filter-tab" onclick="filterByLength('84HP')">84HP</div>
+                <div class="filter-tab" onclick="filterByLength('104HP')">104HP</div>
+                <div class="filter-tab" onclick="filterByLength('168HP')">168HP</div>
+            </div>
+            
+            <!-- Style Filters -->
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="font-weight: bold; text-transform: uppercase;">Style:</span>
+                <div class="filter-tab" onclick="filterByStyle('wood')">WOOD</div>
+                <div class="filter-tab" onclick="filterByStyle('metal')">METAL</div>
+            </div>
         </div>
         
         <!-- Cases Grid -->
         <div class="cases-grid">
             
             <!-- LVL. 0 (1x2) -->
-            <div class="case-card" data-genre="techno">
+            <div class="case-card" data-genre="techno" data-modules="2" data-style="metal">
                 <div class="badge">STARTER</div>
                 <div class="rack-with-accessories">
                     <div class="rack-display" style="grid-template-rows: 1fr; grid-template-columns: repeat(2, 1fr); padding: 15px 0; width: 400px; height: 230px; box-sizing: border-box;">
@@ -488,15 +509,15 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">LVL. 0</div>
+                    <div class="case-name">60HP 3U</div>
                     <div class="case-genre techno">STARTER</div>
                     <div class="case-description">
-                        The absolute basics. Start here and grow your system.
+                        Compact single row starter case.
                     </div>
                     <div class="case-stats">
                         <div class="stat-item">📦 0 Powered Modules</div>
                         <div class="stat-item">⚡ 2 Static Modules</div>
-                        <div class="stat-item">🎛️ 8 HP</div>
+                        <div class="stat-item">🎛️ 60HP 3U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('lvl-0', 15)">
                         15 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -505,10 +526,10 @@
             </div>
             
             <!-- LVL. 0 Full (2x2 with padding) -->
-            <div class="case-card" data-genre="techno">
+            <div class="case-card" data-genre="techno" data-modules="4" data-style="metal">
                 <div class="badge">STARTER</div>
                 <div class="rack-with-accessories">
-                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); padding: 15px 0; width: 400px; height: 430px; box-sizing: border-box;">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); padding: 10px 0; width: 350px; height: 370px; box-sizing: border-box;">
                         <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
                         <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
                         <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
@@ -516,15 +537,15 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">LVL. 0.5</div>
+                    <div class="case-name">60HP 6U</div>
                     <div class="case-genre techno">STARTER</div>
                     <div class="case-description">
-                        Compact starter with padding design.
+                        Two-row starter with horizontal rails.
                     </div>
                     <div class="case-stats">
                         <div class="stat-item">📦 0 Powered Modules</div>
                         <div class="stat-item">⚡ 4 Static Modules</div>
-                        <div class="stat-item">🎛️ 16 HP</div>
+                        <div class="stat-item">🎛️ 60HP 6U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('lvl-0-5', 20)">
                         20 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -532,8 +553,64 @@
                 </div>
             </div>
             
+            <!-- 60HP 6U Wood (Exact duplicate of second item with wood) -->
+            <div class="case-card" data-genre="techno" data-modules="4" data-style="wood">
+                <div class="badge">WOOD</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); padding: 0 15px; width: 400px; height: 370px; box-sizing: border-box; background: linear-gradient(to right, #8B6F47 0, #8B6F47 30px, #333 30px, #333 calc(100% - 30px), #8B6F47 calc(100% - 30px), #8B6F47 100%); border: 0; outline: none; box-shadow: none;">
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name">60HP 6U Wood</div>
+                    <div class="case-genre techno">BOUTIQUE</div>
+                    <div class="case-description">
+                        Two-row starter with wood rails.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 0 Powered Modules</div>
+                        <div class="stat-item">⚡ 4 Static Modules</div>
+                        <div class="stat-item">🎛️ 60HP 6U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('60hp-6u-wood', 25)">
+                        25 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 60HP 6U Thin Border -->
+            <div class="case-card" data-genre="techno" data-modules="4" data-style="metal">
+                <div class="badge">SLIM</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); width: 400px; height: 400px; box-shadow: inset 0 0 0 8px #333; background: #333;">
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name">60HP 6U Slim</div>
+                    <div class="case-genre techno">MODERN</div>
+                    <div class="case-description">
+                        Ultra-thin modern design.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 0 Powered Modules</div>
+                        <div class="stat-item">⚡ 4 Static Modules</div>
+                        <div class="stat-item">🎛️ 60HP 6U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('60hp-6u-slim', 22)">
+                        22 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
             <!-- LVL. 1 (2x2) -->
-            <div class="case-card" data-genre="techno">
+            <div class="case-card" data-genre="techno" data-modules="4" data-style="metal">
                 <div class="badge">STARTER</div>
                 <div class="rack-with-accessories">
                     <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); width: 400px; height: 400px;">
@@ -544,15 +621,15 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">LVL. 1</div>
+                    <div class="case-name">60HP 6U Classic</div>
                     <div class="case-genre techno">STARTER</div>
                     <div class="case-description">
-                        Learn the basics with a compact 2x2 setup.
+                        Classic two-row starter case.
                     </div>
                     <div class="case-stats">
                         <div class="stat-item">📦 0 Powered Modules</div>
                         <div class="stat-item">⚡ 4 Static Modules</div>
-                        <div class="stat-item">🎛️ 16 HP</div>
+                        <div class="stat-item">🎛️ 60HP 6U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('lvl-1', 25)">
                         25 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -561,7 +638,7 @@
             </div>
             
             <!-- LVL. 2 (2x3) -->
-            <div class="case-card" data-genre="techno">
+            <div class="case-card" data-genre="techno" data-modules="6" data-style="metal">
                 <div class="badge limited">LIMITED</div>
                 <div class="rack-with-accessories">
                     <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(3, 1fr); aspect-ratio: 1.5;">
@@ -596,15 +673,15 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">LVL. 2</div>
+                    <div class="case-name">84HP 6U</div>
                     <div class="case-genre techno">STARTER</div>
                     <div class="case-description">
-                        Expand your skills with 6 modules in a compact 2x3 layout.
+                        Standard two-row case with more space.
                     </div>
                     <div class="case-stats">
                         <div class="stat-item">📦 3 Powered Modules</div>
                         <div class="stat-item">⚡ 3 Static Modules</div>
-                        <div class="stat-item">🎛️ 24 HP</div>
+                        <div class="stat-item">🎛️ 84HP 6U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('lvl-2', 45)">
                         45 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -613,7 +690,7 @@
             </div>
             
             <!-- Minimal Kit Card -->
-            <div class="case-card" data-genre="techno">
+            <div class="case-card" data-genre="techno" data-modules="8" data-style="metal">
                 <div class="badge">HOT</div>
                 <div class="rack-with-accessories">
                     <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(4, 1fr); aspect-ratio: 2;">
@@ -643,7 +720,7 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">Minimal Kit</div>
+                    <div class="case-name">104HP 6U</div>
                     <div class="case-genre techno">MINIMAL</div>
                     <div class="case-description">
                         Start your journey with the essentials. Perfect for learning the basics of modular synthesis.
@@ -651,7 +728,7 @@
                     <div class="case-stats">
                         <div class="stat-item">📦 2 Powered Modules</div>
                         <div class="stat-item">⚡ 6 Static Modules</div>
-                        <div class="stat-item">🎛️ 42 HP</div>
+                        <div class="stat-item">🎛️ 104HP 6U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('minimal-kit', 65)">
                         65 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -660,7 +737,7 @@
             </div>
             
             <!-- Extended Kit -->
-            <div class="case-card" data-genre="techno">
+            <div class="case-card" data-genre="techno" data-modules="12" data-style="metal">
                 <div class="badge new">NEW</div>
                 <div class="rack-with-accessories">
                     <div class="rack-display extended-kit">
@@ -694,7 +771,7 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">Extended Kit</div>
+                    <div class="case-name">104HP 9U</div>
                     <div class="case-genre techno">EXPANDED</div>
                     <div class="case-description">
                         More space for experimentation. Build on the basics with extra room to grow.
@@ -702,7 +779,7 @@
                     <div class="case-stats">
                         <div class="stat-item">📦 2 Powered Modules</div>
                         <div class="stat-item">⚡ 10 Static Modules</div>
-                        <div class="stat-item">🎛️ 63 HP</div>
+                        <div class="stat-item">🎛️ 104HP 9U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('extended-kit', 85)">
                         85 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -711,7 +788,7 @@
             </div>
             
             <!-- Acid Box Card -->
-            <div class="case-card" data-genre="techno">
+            <div class="case-card" data-genre="techno" data-modules="9" data-style="metal">
                 <div class="badge limited">LIMITED</div>
                 <div class="rack-with-accessories">
                     <div class="rack-display" style="grid-template-rows: repeat(3, 1fr); grid-template-columns: repeat(3, 1fr); aspect-ratio: 1;">
@@ -750,7 +827,7 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">Acid Box</div>
+                    <div class="case-name">84HP 9U</div>
                     <div class="case-genre techno">ACID</div>
                     <div class="case-description">
                         Classic 303-style acid basslines and squelchy filters. Limited edition colorway!
@@ -758,7 +835,7 @@
                     <div class="case-stats">
                         <div class="stat-item">📦 3 Powered Modules</div>
                         <div class="stat-item">⚡ 4 Static Modules</div>
-                        <div class="stat-item">🎛️ 36 HP</div>
+                        <div class="stat-item">🎛️ 84HP 9U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('acid-box', 55)">
                         55 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -809,7 +886,7 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">Acid Box Wide</div>
+                    <div class="case-name">104HP 9U</div>
                     <div class="case-genre techno">ACID</div>
                     <div class="case-description">
                         Classic 303-style acid basslines and squelchy filters. Limited edition colorway!
@@ -817,7 +894,7 @@
                     <div class="case-stats">
                         <div class="stat-item">📦 3 Powered Modules</div>
                         <div class="stat-item">⚡ 7 Static Modules</div>
-                        <div class="stat-item">🎛️ 48 HP</div>
+                        <div class="stat-item">🎛️ 104HP 9U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('acid-box-wide', 65)">
                         65 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -891,7 +968,7 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">Acid Box Large</div>
+                    <div class="case-name">168HP 12U</div>
                     <div class="case-genre techno">ACID</div>
                     <div class="case-description">
                         Classic 303-style acid basslines and squelchy filters. Limited edition colorway!
@@ -899,7 +976,7 @@
                     <div class="case-stats">
                         <div class="stat-item">📦 5 Powered Modules</div>
                         <div class="stat-item">⚡ 12 Static Modules</div>
-                        <div class="stat-item">🎛️ 80 HP</div>
+                        <div class="stat-item">🎛️ 168HP 12U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('acid-box-large', 95)">
                         95 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -945,7 +1022,7 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">Acid Box Wide Compact</div>
+                    <div class="case-name">104HP 6U</div>
                     <div class="case-genre techno">ACID</div>
                     <div class="case-description">
                         Classic 303-style acid basslines and squelchy filters. Limited edition colorway!
@@ -953,7 +1030,7 @@
                     <div class="case-stats">
                         <div class="stat-item">📦 3 Powered Modules</div>
                         <div class="stat-item">⚡ 5 Static Modules</div>
-                        <div class="stat-item">🎛️ 32 HP</div>
+                        <div class="stat-item">🎛️ 104HP 6U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('acid-box-wide-compact', 50)">
                         50 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -1031,7 +1108,7 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">Techno Beast</div>
+                    <div class="case-name">84HP 12U</div>
                     <div class="case-genre techno">TECHNO</div>
                     <div class="case-description">
                         Unleash warehouse-shaking kicks and hypnotic sequences. This setup is built for serious techno production with punchy drums and aggressive filters.
@@ -1039,7 +1116,7 @@
                     <div class="case-stats">
                         <div class="stat-item">📦 12 Specific Modules</div>
                         <div class="stat-item">⚡ 5 Powered</div>
-                        <div class="stat-item">🎛️ 84 HP</div>
+                        <div class="stat-item">🎛️ 84HP 12U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('techno-beast', 120)">
                         120 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -1117,7 +1194,7 @@
                     </div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">Ambient Dreams</div>
+                    <div class="case-name">84HP 9U Ambient</div>
                     <div class="case-genre ambient">AMBIENT</div>
                     <div class="case-description">
                         Create lush soundscapes and evolving textures. Perfect for meditation music, film scoring, and atmospheric production.
@@ -1125,7 +1202,7 @@
                     <div class="case-stats">
                         <div class="stat-item">📦 8 Specific Modules</div>
                         <div class="stat-item">⚡ 3 Powered</div>
-                        <div class="stat-item">🎛️ 84 HP</div>
+                        <div class="stat-item">🎛️ 84HP 9U</div>
                     </div>
                     <button class="buy-button powered" onclick="buyPrebuilt('ambient-dreams', 95)">
                         95 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
@@ -1242,7 +1319,7 @@
                         <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
                 </div>
                 <div class="case-info">
-                    <div class="case-name">Studio Kit</div>
+                    <div class="case-name">168HP 12U Studio</div>
                     <div class="case-genre experimental">STUDIO</div>
                     <div class="case-description">
                         Ultimate studio setup! 12 powered modules in an extended rack with plenty of room for expansion.
@@ -1283,6 +1360,74 @@
                 } else {
                     const caseGenre = caseCard.dataset.genre;
                     caseCard.style.display = caseGenre === genre ? 'block' : 'none';
+                }
+            });
+        }
+        
+        function filterBySize(size) {
+            const cases = document.querySelectorAll('.case-card');
+            const tabs = document.querySelectorAll('.filter-tab');
+            
+            // Update active tab
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('onclick') && tab.getAttribute('onclick').includes("'" + size + "'")) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Show/hide cases based on U size
+            cases.forEach(caseCard => {
+                const caseName = caseCard.querySelector('.case-name').textContent;
+                if (caseName.includes(size)) {
+                    caseCard.style.display = 'block';
+                } else {
+                    caseCard.style.display = 'none';
+                }
+            });
+        }
+        
+        function filterByLength(length) {
+            const cases = document.querySelectorAll('.case-card');
+            const tabs = document.querySelectorAll('.filter-tab');
+            
+            // Update active tab
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('onclick') && tab.getAttribute('onclick').includes("'" + length + "'")) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Show/hide cases based on HP length
+            cases.forEach(caseCard => {
+                const caseName = caseCard.querySelector('.case-name').textContent;
+                if (caseName.includes(length)) {
+                    caseCard.style.display = 'block';
+                } else {
+                    caseCard.style.display = 'none';
+                }
+            });
+        }
+        
+        function filterByStyle(style) {
+            const cases = document.querySelectorAll('.case-card');
+            const tabs = document.querySelectorAll('.filter-tab');
+            
+            // Update active tab
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase() === style.toLowerCase()) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Show/hide cases
+            cases.forEach(caseCard => {
+                if (caseCard.dataset.style === style) {
+                    caseCard.style.display = 'block';
+                } else {
+                    caseCard.style.display = 'none';
                 }
             });
         }
