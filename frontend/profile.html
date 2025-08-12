@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .profile-header {
+            background: white;
+            border: 3px solid #000;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            position: relative;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+        }
+        
+        .avatar::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            border: 6px solid;
+            border-color: var(--jacknut-color, #FFD700);
+            z-index: -1;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .username {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .content-grid {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .left-column {
+            flex: 0.6;
+        }
+        
+        .right-column {
+            flex: 2;
+        }
+        
+        .main-rack-section {
+            background: transparent;
+            border: none;
+            padding: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        
+        .main-rack-container {
+            position: relative;
+            background: transparent;
+            padding: 15px;
+            width: 100%;
+        }
+        
+        .decorations-layer {
+            position: absolute;
+            top: -60px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .decoration {
+            position: absolute;
+            cursor: move;
+            pointer-events: all;
+            transition: transform 0.2s;
+            z-index: 15;
+        }
+        
+        .decoration:hover {
+            transform: scale(1.1);
+        }
+        
+        .decoration.dragging {
+            opacity: 0.7;
+            z-index: 100;
+        }
+        
+        .decoration img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .plants-area {
+            background: white;
+            border: 3px solid #000;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .plants-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 15px 0;
+            max-width: 100%;
+        }
+        
+        .plant-item {
+            cursor: grab;
+            transition: transform 0.2s;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            user-select: none;
+            -webkit-user-drag: element;
+        }
+        
+        .plant-item:active {
+            cursor: grabbing;
+        }
+        
+        .plant-item:hover {
+            transform: scale(1.1);
+        }
+        
+        .plant-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+            pointer-events: none;
+        }
+        
+        .main-rack {
+            background: linear-gradient(180deg, #333 0%, #000 100%);
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 3px;
+            width: 100%;
+            aspect-ratio: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .rack-slot {
+            border: 1px dashed rgba(255,255,255,0.2);
+            aspect-ratio: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .rack-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .friends-section {
+            background: white;
+            border: 3px solid #000;
+            padding: 20px;
+        }
+        
+        .friend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .friend-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .friend-item:hover {
+            background: #fff;
+            border-color: #000;
+        }
+        
+        .friend-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .shop-item {
+            background: white;
+            border: 2px solid #000;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .shop-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .shop-item.owned {
+            background: #e8ffe8;
+            border-color: #0f0;
+        }
+        
+        .plant-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .plant-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .plant-price {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .other-racks {
+            background: white;
+            border: 3px solid #000;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .rack-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .rack-thumb {
+            background: linear-gradient(180deg, #333 0%, #000 100%);
+            padding: 10px;
+            border: 2px solid #000;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 120px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+        }
+        
+        .rack-thumb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .mini-slot {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .trades-section {
+            background: white;
+            border: 3px solid #000;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .trade-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .trade-item {
+            background: white;
+            border: 2px solid #000;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .trade-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .trade-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .trade-btn {
+            background: #0f0;
+            color: #000;
+            border: 2px solid #000;
+            padding: 8px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .trade-btn:hover {
+            background: #00ff88;
+            transform: scale(1.05);
+        }
+        
+        .buy-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: 2px solid #FFD700;
+            padding: 8px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .buy-btn:hover {
+            background: linear-gradient(45deg, #FFA500, #FFD700);
+            transform: scale(1.05);
+        }
+        
+        .edit-profile-btn {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .edit-profile-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .friend-btn, .trade-btn {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 10px;
+        }
+        
+        .friend-btn:hover {
+            background: #0f0;
+            color: #000;
+        }
+        
+        .trade-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Plant blessing modal */
+        .blessing-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .blessing-modal.active {
+            display: flex;
+        }
+        
+        .blessing-content {
+            background: white;
+            border: 3px solid #FFD700;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            position: relative;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,215,0,0.8); }
+        }
+        
+        .blessing-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #000;
+            text-transform: uppercase;
+        }
+        
+        .blessing-message {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .revealed-plant {
+            font-size: 6rem;
+            margin: 20px 0;
+            animation: bounce 1s ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .plant-reveal-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .plant-reveal-desc {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .blessing-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: 2px solid #FFD700;
+            padding: 12px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+        
+        .blessing-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Music Connect Styles */
+        .music-connect {
+            padding: 15px;
+            background: #f5f5f5;
+            border: 2px solid #000;
+            border-radius: 5px;
+        }
+        
+        .connect-platform {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .connect-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: 2px solid #000;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 5px;
+        }
+        
+        .connect-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .connected-badge {
+            background: #0f0;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .add-music-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+        }
+        
+        .add-music-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Music Section Styles */
+        .music-section {
+            background: white;
+            padding: 20px;
+        }
+        
+        .music-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .music-tab {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        
+        .music-tab.active {
+            border-bottom-color: #000;
+            color: #000;
+        }
+        
+        .music-tab:hover {
+            background: #f5f5f5;
+        }
+        
+        .music-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .music-track {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+        
+        .music-track:hover {
+            background: white;
+            border-color: #000;
+        }
+        
+        .music-track iframe {
+            border-radius: 0;
+            background: white;
+        }
+        
+        .track-play-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .track-info {
+            flex: 1;
+        }
+        
+        .track-title {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .track-date {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        .set-featured-btn {
+            padding: 10px 20px;
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .set-featured-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .albums-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .add-album-btn {
+            padding: 8px 16px;
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        
+        .add-album-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        /* Social Links Styles */
+        .social-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .social-link-item {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: 2px solid #000;
+            background: white;
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .social-icon.instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .social-icon.twitter { background: #1DA1F2; }
+        .social-icon.youtube { background: #FF0000; }
+        .social-icon.soundcloud { background: #ff5500; }
+        .social-icon.spotify { background: #1DB954; }
+        .social-icon.bandcamp { background: #629aa9; }
+        .social-icon.tiktok { background: #000; }
+        .social-icon.website { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); }
+        
+        .remove-link-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .social-link-item:hover .remove-link-btn {
+            display: block;
+        }
+        
+        /* Module collection styles */
+        .module-item {
+            width: 60px;
+            height: 60px;
+            cursor: grab;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        
+        .module-item:hover {
+            transform: scale(1.05);
+            border-color: #FFD700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .module-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .module-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .featured-album {
+            background: transparent;
+            padding: 20px;
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .featured-album iframe {
+            max-width: 100%;
+        }
+        
+        .no-album {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+        
+        .releases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .album-thumb {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .album-thumb:hover {
+            border-color: #000;
+            transform: scale(1.02);
+        }
+        
+        .album-thumb img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        
+        .album-title {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .album-year {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        /* Trade Shop Styles */
+        .trade-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .trade-tab {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        
+        .trade-tab.active {
+            border-bottom-color: #000;
+            color: #000;
+        }
+        
+        .trade-tab:hover {
+            background: #f5f5f5;
+        }
+        
+        .trade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            min-height: 100px;
+        }
+        
+        .trade-item {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .trade-item:hover {
+            border-color: #000;
+            transform: scale(1.05);
+        }
+        
+        .trade-item img {
+            width: 100%;
+            height: 80px;
+            object-fit: contain;
+        }
+        
+        .trade-item-name {
+            font-size: 0.85rem;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        .trade-tag {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #FFD700;
+            color: #000;
+            padding: 2px 5px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .add-trade-btn {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #000;
+            border: 2px dashed #999;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+        
+        .add-trade-btn:hover {
+            border-color: #000;
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
+        <div style="position: absolute; left: 200px; color: #000; font-weight: bold; font-size: 0.9rem;">
+            FREE SHIPPING OVER $60 | EUROGRID BINDER
+        </div>
+        <div class="cart-area">
+            <button class="cart-counter" onclick="showPackStore()" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; border: 2px solid #FFD700;">
+                <span id="credits-amount">100</span> HP
+            </button>
+            <button class="cart-counter" onclick="window.location.href='collection.html'">
+                MODULES
+            </button>
+            <button class="cart-counter" onclick="window.location.href='my-racks.html'">
+                MY RACKS
+            </button>
+            <button class="cart-counter" onclick="window.location.href='community.html'">
+                COMMUNITY
+            </button>
+            <button class="cart-counter" onclick="window.location.href='profile.html'" style="background: #000; color: white;">
+                PROFILE
+            </button>
+            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
+                BUY HP
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <!-- Test User Switcher -->
+        <div style="background: #fffacd; border: 2px solid #ffd700; padding: 10px; margin-bottom: 20px; text-align: center; border-radius: 5px;">
+            <span style="color: #666; font-weight: bold;">🧪 TEST MODE:</span>
+            <button onclick="window.location.href='profile.html'" style="margin: 0 5px; padding: 5px 15px; background: white; border: 2px solid #000; cursor: pointer; font-weight: bold;">YOUR PROFILE</button>
+            <button onclick="window.location.href='profile.html?user=synthmaster'" style="margin: 0 5px; padding: 5px 15px; background: white; border: 2px solid #000; cursor: pointer; font-weight: bold;">VIEW AS: synthmaster</button>
+            <button onclick="window.location.href='profile.html?user=modular_joe'" style="margin: 0 5px; padding: 5px 15px; background: white; border: 2px solid #000; cursor: pointer; font-weight: bold;">VIEW AS: modular_joe</button>
+        </div>
+        
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="avatar" id="user-avatar">J</div>
+            <div class="profile-info">
+                <div class="username" id="username-display">jadewii</div>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <!-- Friend avatars -->
+                    <div class="friend-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer; border: 2px solid #000;" onclick="viewProfile('synthmaster')" title="synthmaster">S</div>
+                    <div class="friend-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #00ff88 0%, #00cc70 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer; border: 2px solid #000;" onclick="viewProfile('modular_joe')" title="modular_joe">M</div>
+                    <div class="friend-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer; border: 2px solid #000;" onclick="viewProfile('basshead')" title="basshead">B</div>
+                </div>
+                <div class="stats">
+                    <div class="social-links" id="social-links">
+                        <!-- Social media icons will be added here -->
+                    </div>
+                    <button class="add-link-btn" id="add-link-btn" onclick="addSocialLink()" style="display: none; margin-top: 15px; padding: 8px 16px; background: white; color: #000; border: 2px solid #000; font-weight: bold; cursor: pointer; font-size: 0.9rem;">
+                        + ADD LINK
+                    </button>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button class="edit-profile-btn" id="edit-profile-btn" style="display: none;">EDIT PROFILE</button>
+                <button class="friend-btn" id="friend-btn" style="display: none;">+ ADD FRIEND</button>
+                <button class="trade-btn" id="trade-btn" style="display: none;">TRADE</button>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <!-- Left Column - Smaller Content -->
+            <div class="left-column">
+                <!-- Plant Shop Button -->
+                <button class="edit-profile-btn" style="width: 100%; margin-bottom: 20px; padding: 20px; font-size: 1.2rem;" onclick="window.location.href='plant-shop.html'">
+                    🌿 VISIT PLANT SHOP
+                </button>
+                
+                <!-- Other Racks -->
+                <div class="other-racks">
+                    <h2 class="section-title">OTHER RACKS</h2>
+                    <div class="rack-thumbnails" id="rack-thumbnails" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <!-- Only 2 rack thumbnails will be shown -->
+                    </div>
+                    <button class="new-rack-btn" id="new-rack-btn" onclick="window.location.href='racks.html?new=true'" style="display: none; margin-top: 15px; width: 100%; padding: 10px; background: white; border: 2px solid #000; font-weight: bold; cursor: pointer;">+ NEW RACK</button>
+                </div>
+                
+                <!-- My Modules Section -->
+                <div class="my-modules-section" style="margin-top: 30px;">
+                    <h2 class="section-title" style="cursor: pointer;" onclick="toggleModuleView()">MY MODULES <span id="module-toggle-arrow" style="font-size: 0.8rem; color: #666;">→</span></h2>
+                    <div class="modules-grid" id="modules-collection" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; background: white; border: 2px solid #000; min-height: 200px; max-height: 300px; overflow-y: auto;">
+                        <!-- User's module collection will be shown here -->
+                    </div>
+                </div>
+                
+                <!-- Plants Area -->
+                <div class="plants-area">
+                    <h3 style="margin-bottom: 10px; font-weight: bold;">MY PLANTS</h3>
+                    <div class="plants-container" id="plants-container">
+                        <!-- Plant items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Main Rack (Larger) -->
+            <div class="right-column">
+                <div class="main-rack-section">
+                    <h2 class="section-title">MAIN RACK</h2>
+                    <div class="main-rack-container">
+                        <!-- Decorations layer (plants on top) -->
+                        <div class="decorations-layer" id="decorations-layer">
+                            <!-- Decorations will be added here -->
+                        </div>
+                        
+                        <!-- The rack itself -->
+                        <div class="main-rack" id="main-rack">
+                            <!-- Rack slots will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Section - Friends and Trades -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <!-- Friends Section -->
+            <div class="friends-section">
+                <h2 class="section-title">FRIENDS</h2>
+                <div class="friend-list">
+                    <div class="friend-item">
+                        <div class="friend-avatar">S</div>
+                        <div>
+                            <div style="font-weight: bold;">synthmaster</div>
+                            <div style="color: #666; font-size: 0.9rem;">12 modules • 3 racks</div>
+                        </div>
+                    </div>
+                    <div class="friend-item">
+                        <div class="friend-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">M</div>
+                        <div>
+                            <div style="font-weight: bold;">modular_joe</div>
+                            <div style="color: #666; font-size: 0.9rem;">8 modules • 2 racks</div>
+                        </div>
+                    </div>
+                    <div class="friend-item">
+                        <div class="friend-avatar" style="background: linear-gradient(135deg, #00ff88 0%, #00cc70 100%);">L</div>
+                        <div>
+                            <div style="font-weight: bold;">lessismore</div>
+                            <div style="color: #666; font-size: 0.9rem;">5 modules • 1 rack</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="edit-profile-btn" style="width: 100%; margin-top: 20px;" onclick="window.location.href='community.html'">FIND FRIENDS</button>
+            </div>
+            
+            <!-- User's Trade Shop -->
+            <div class="trades-section">
+                <h2 class="section-title">TRADE SHOP</h2>
+                
+                <div class="trade-tabs">
+                    <button class="trade-tab active" onclick="switchTradeTab('modules')">MODULES FOR TRADE</button>
+                    <button class="trade-tab" onclick="switchTradeTab('plants')">PLANTS FOR TRADE</button>
+                </div>
+                
+                <div class="trade-items" id="trade-modules">
+                    <div class="trade-grid" id="modules-for-trade">
+                        <!-- Modules available for trade -->
+                    </div>
+                    <button class="add-trade-btn" id="add-module-trade" style="display: none;" onclick="addTradeItem('module')">
+                        + ADD MODULE TO SHOP
+                    </button>
+                </div>
+                
+                <div class="trade-items" id="trade-plants" style="display: none;">
+                    <div class="trade-grid" id="plants-for-trade">
+                        <!-- Plants available for trade -->
+                    </div>
+                    <button class="add-trade-btn" id="add-plant-trade" style="display: none;" onclick="addTradeItem('plant')">
+                        + ADD PLANT TO SHOP
+                    </button>
+                </div>
+                
+                <div class="trade-note" id="trade-note">
+                    <p style="color: #666; font-style: italic; margin-top: 15px;">
+                        <span id="trade-message">This user is looking to trade these items!</span>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Music Section -->
+            <div class="trades-section music-section" style="margin-top: 30px;">
+                <h2 class="section-title">MUSIC</h2>
+                <div class="featured-album" id="featured-album">
+                    <!-- Featured album embed will go here -->
+                </div>
+                <div class="albums-container" id="albums-container">
+                    <!-- All albums will be shown here -->
+                </div>
+                <button class="add-album-btn" id="add-album-btn" style="display: none;" onclick="addAlbum()">
+                    + ADD ALBUM
+                </button>
+                
+                <div class="other-releases" id="other-releases" style="margin-top: 30px; display: none;">
+                    <h3 style="margin-bottom: 15px; font-weight: bold;">OTHER RELEASES</h3>
+                    <div class="releases-grid" id="releases-grid">
+                        <!-- Other albums will be shown here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        let ownedDecorations = [];
+        let placedDecorations = [];
+        
+        // Check if viewing own profile or someone else's
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewingUser = urlParams.get('user');
+        const isOwnProfile = !viewingUser || viewingUser === 'jadewii'; // Default to own profile
+        
+        // Music player state
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        let userTracks = [];
+        
+        // Plant collection using Supabase PNGs (50% larger)
+        const plantStyles = {
+            plant01: { url: '/storage/v1/object/public/plants/plant01.png', size: 150 },
+            plant02: { url: '/storage/v1/object/public/plants/plant02.png', size: 135 },
+            plant03: { url: '/storage/v1/object/public/plants/plant03.png', size: 142 },
+            plant04: { url: '/storage/v1/object/public/plants/plant04.png', size: 127 },
+            plant05: { url: '/storage/v1/object/public/plants/plant05.png', size: 150 },
+            plant06: { url: '/storage/v1/object/public/plants/plant06.png', size: 120 },
+            plant07: { url: '/storage/v1/object/public/plants/plant07.png', size: 135 },
+            plant08: { url: '/storage/v1/object/public/plants/plant08.png', size: 142 },
+            plant09: { url: '/storage/v1/object/public/plants/plant09.png', size: 127 },
+            plant10: { url: '/storage/v1/object/public/plants/plant10.png', size: 150 }
+        };
+        
+        // Load main rack
+        function loadMainRack() {
+            const mainRack = document.getElementById('main-rack');
+            const savedRacks = JSON.parse(localStorage.getItem('saved-racks') || '[]');
+            
+            // Use first rack or create demo rack
+            const rack = savedRacks[0] || {
+                modules: Array(16).fill(null).map((_, i) => ({
+                    slotId: i,
+                    moduleId: Math.floor(Math.random() * 17) + 1
+                }))
+            };
+            
+            // Create 16 slots (4x4)
+            mainRack.innerHTML = '';
+            for (let i = 0; i < 16; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'rack-slot';
+                
+                const module = rack.modules.find(m => parseInt(m.slotId) === i);
+                if (module) {
+                    const img = document.createElement('img');
+                    img.src = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${module.moduleId.toString().padStart(2, '0')}.gif`;
+                    slot.appendChild(img);
+                }
+                
+                mainRack.appendChild(slot);
+            }
+        }
+        
+        // Load other racks
+        function loadOtherRacks() {
+            const container = document.getElementById('rack-thumbnails');
+            const savedRacks = JSON.parse(localStorage.getItem('saved-racks') || '[]');
+            
+            container.innerHTML = '';
+            savedRacks.slice(1, 5).forEach(rack => {
+                const thumb = document.createElement('div');
+                thumb.className = 'rack-thumb';
+                
+                // Add mini slots
+                for (let i = 0; i < 16; i++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'mini-slot';
+                    thumb.appendChild(slot);
+                }
+                
+                thumb.onclick = () => {
+                    alert(`Viewing rack: ${rack.name || 'Untitled'}`);
+                };
+                
+                container.appendChild(thumb);
+            });
+            
+            // Add demo racks if needed
+            if (savedRacks.length < 2) {
+                for (let i = 0; i < 3; i++) {
+                    const thumb = document.createElement('div');
+                    thumb.className = 'rack-thumb';
+                    
+                    for (let j = 0; j < 16; j++) {
+                        const slot = document.createElement('div');
+                        slot.className = 'mini-slot';
+                        thumb.appendChild(slot);
+                    }
+                    
+                    container.appendChild(thumb);
+                }
+            }
+        }
+        
+        
+        // Load owned plants in the plants area
+        function loadPlantsArea() {
+            const container = document.getElementById('plants-container');
+            container.innerHTML = '';
+            
+            // Get placed plants to exclude them from available
+            const placedPlants = JSON.parse(localStorage.getItem('placed-decorations') || '[]');
+            const placedTypes = placedPlants.map(p => p.type);
+            
+            // For demo, show all plants as owned initially
+            if (!localStorage.getItem('owned-decorations')) {
+                ownedDecorations = Object.keys(plantStyles);
+                localStorage.setItem('owned-decorations', JSON.stringify(ownedDecorations));
+            } else {
+                ownedDecorations = JSON.parse(localStorage.getItem('owned-decorations'));
+            }
+            
+            // Only show plants that haven't been placed
+            const availablePlants = ownedDecorations.filter(p => !placedTypes.includes(p));
+            
+            availablePlants.forEach(plantKey => {
+                const plant = plantStyles[plantKey];
+                const plantDiv = document.createElement('div');
+                plantDiv.className = 'plant-item';
+                plantDiv.dataset.type = plantKey;
+                plantDiv.id = `plant-${plantKey}`;
+                plantDiv.draggable = true;
+                
+                const img = document.createElement('img');
+                img.src = SUPABASE_URL + plant.url;
+                img.alt = plantKey;
+                
+                plantDiv.appendChild(img);
+                
+                // Drag start
+                plantDiv.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('plant-type', plantKey);
+                    e.dataTransfer.setData('from-inventory', 'true');
+                    // Store the element being dragged
+                    window.draggedPlant = plantDiv;
+                });
+                
+                container.appendChild(plantDiv);
+            });
+        }
+        
+        // Add decoration to rack
+        function addDecoration(type, x = null, y = null, fromInventory = false) {
+            const layer = document.getElementById('decorations-layer');
+            const plant = plantStyles[type];
+            
+            // Check if this plant is already placed
+            const existingPlant = document.querySelector(`.decoration[data-type="${type}"]`);
+            if (existingPlant) {
+                alert('This plant is already placed! Remove it first to reposition.');
+                return;
+            }
+            
+            const decoration = document.createElement('div');
+            decoration.className = 'decoration';
+            decoration.dataset.type = type;
+            
+            // Use fixed pixel positioning to prevent shrinking
+            const leftPos = x !== null ? x : 100;
+            const topPos = y !== null ? y : 100;
+            
+            decoration.style.cssText = `
+                width: ${plant.size}px;
+                height: ${plant.size}px;
+                left: ${leftPos}px;
+                top: ${topPos}px;
+                cursor: move;
+                user-select: none;
+                position: absolute;
+            `;
+            
+            const img = document.createElement('img');
+            img.src = SUPABASE_URL + plant.url;
+            img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; pointer-events: none;';
+            decoration.appendChild(img);
+            
+            // Make draggable
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+            
+            decoration.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                decoration.classList.add('dragging');
+                startX = e.clientX;
+                startY = e.clientY;
+                initialLeft = decoration.offsetLeft;
+                initialTop = decoration.offsetTop;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    decoration.style.left = (initialLeft + deltaX) + 'px';
+                    decoration.style.top = (initialTop + deltaY) + 'px';
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    decoration.classList.remove('dragging');
+                    saveDecorationPositions();
+                }
+            });
+            
+            // Right-click to remove
+            decoration.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                if (confirm('Remove this plant?')) {
+                    decoration.remove();
+                    saveDecorationPositions();
+                    loadPlantsArea(); // Refresh available plants
+                }
+            });
+            
+            layer.appendChild(decoration);
+            saveDecorationPositions();
+        }
+        
+        // Save decoration positions
+        function saveDecorationPositions() {
+            const decorations = [];
+            document.querySelectorAll('.decoration').forEach(dec => {
+                decorations.push({
+                    type: dec.dataset.type,
+                    left: dec.style.left,
+                    top: dec.style.top
+                });
+            });
+            localStorage.setItem('placed-decorations', JSON.stringify(decorations));
+        }
+        
+        // Load saved decorations
+        function loadSavedDecorations() {
+            const saved = JSON.parse(localStorage.getItem('placed-decorations') || '[]');
+            const layer = document.getElementById('decorations-layer');
+            
+            saved.forEach(dec => {
+                const plant = plantStyles[dec.type];
+                const decoration = document.createElement('div');
+                decoration.className = 'decoration';
+                decoration.dataset.type = dec.type;
+                decoration.style.cssText = `
+                    width: ${plant.size}px;
+                    height: ${plant.size}px;
+                    left: ${dec.left};
+                    top: ${dec.top};
+                    cursor: move;
+                    user-select: none;
+                    position: absolute;
+                `;
+                const img = document.createElement('img');
+                img.src = SUPABASE_URL + plant.url;
+                img.style.pointerEvents = 'none';
+                decoration.appendChild(img);
+                
+                // Add drag functionality (same as above)
+                let isDragging = false;
+                let startX, startY, initialLeft, initialTop;
+                
+                decoration.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    decoration.classList.add('dragging');
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    initialLeft = decoration.offsetLeft;
+                    initialTop = decoration.offsetTop;
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        const deltaX = e.clientX - startX;
+                        const deltaY = e.clientY - startY;
+                        decoration.style.left = (initialLeft + deltaX) + 'px';
+                        decoration.style.top = (initialTop + deltaY) + 'px';
+                    }
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        decoration.classList.remove('dragging');
+                        saveDecorationPositions();
+                    }
+                });
+                
+                decoration.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    if (confirm('Remove this plant?')) {
+                        decoration.remove();
+                        saveDecorationPositions();
+                        loadPlantsArea(); // Refresh available plants
+                    }
+                });
+                
+                layer.appendChild(decoration);
+            });
+        }
+        
+        
+        // Update HP display
+        function updateCredits() {
+            const credits = localStorage.getItem('rack-credits') || '100';
+            const creditsEl = document.getElementById('credits-amount');
+            if (creditsEl) {
+                creditsEl.textContent = credits;
+            }
+        }
+        
+        
+        // Enable rack as drop zone
+        function setupRackDropZone() {
+            const rackSection = document.querySelector('.main-rack-section');
+            const decorLayer = document.getElementById('decorations-layer');
+            
+            rackSection.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+            });
+            
+            rackSection.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const plantType = e.dataTransfer.getData('plant-type');
+                const fromInventory = e.dataTransfer.getData('from-inventory') === 'true';
+                
+                if (plantType) {
+                    const plant = plantStyles[plantType];
+                    // Calculate position relative to the main rack container
+                    const container = document.querySelector('.main-rack-container');
+                    const rect = container.getBoundingClientRect();
+                    
+                    // Position relative to container, centering on cursor
+                    const x = e.clientX - rect.left - (plant.size / 2);
+                    const y = e.clientY - rect.top - (plant.size / 2);
+                    
+                    // Add the decoration at the exact drop position
+                    addDecoration(plantType, x, y, fromInventory);
+                    
+                    // Refresh the plants area to remove placed plant
+                    if (fromInventory) {
+                        loadPlantsArea();
+                    }
+                }
+            });
+        }
+        
+        // Music Player Functions
+        function loadUserMusic() {
+            // Load user's music from localStorage
+            const savedMusic = localStorage.getItem(`user-music-${viewingUser || 'jadewii'}`);
+            if (savedMusic) {
+                userTracks = JSON.parse(savedMusic);
+            } else {
+                // Demo tracks
+                userTracks = [
+                    { name: 'Ambient Patch #1', url: 'track1.mp3' },
+                    { name: 'Techno Jam', url: 'track2.mp3' },
+                    { name: 'Generative Experiment', url: 'track3.mp3' }
+                ];
+            }
+            
+            if (userTracks.length > 0) {
+                document.getElementById('track-name').textContent = userTracks[0].name;
+            }
+        }
+        
+        function togglePlay() {
+            const playBtn = document.querySelector('.play-btn');
+            isPlaying = !isPlaying;
+            
+            if (isPlaying) {
+                playBtn.textContent = '⏸';
+                playBtn.classList.add('playing');
+                // In production, would actually play audio
+                console.log('Playing:', userTracks[currentTrackIndex]?.name);
+            } else {
+                playBtn.textContent = '▶';
+                playBtn.classList.remove('playing');
+                console.log('Paused');
+            }
+        }
+        
+        function nextTrack() {
+            if (userTracks.length === 0) return;
+            currentTrackIndex = (currentTrackIndex + 1) % userTracks.length;
+            document.getElementById('track-name').textContent = userTracks[currentTrackIndex].name;
+            if (isPlaying) {
+                // Restart playback with new track
+                console.log('Now playing:', userTracks[currentTrackIndex].name);
+            }
+        }
+        
+        function previousTrack() {
+            if (userTracks.length === 0) return;
+            currentTrackIndex = currentTrackIndex === 0 ? userTracks.length - 1 : currentTrackIndex - 1;
+            document.getElementById('track-name').textContent = userTracks[currentTrackIndex].name;
+            if (isPlaying) {
+                // Restart playback with new track
+                console.log('Now playing:', userTracks[currentTrackIndex].name);
+            }
+        }
+        
+        // Connect Bandcamp function
+        
+        // Setup profile mode
+        function setupProfileMode() {
+            const editBtn = document.getElementById('edit-profile-btn');
+            const friendBtn = document.getElementById('friend-btn');
+            const tradeBtn = document.getElementById('trade-btn');
+            const connectBtn = document.getElementById('connect-bandcamp-btn');
+            const setFeaturedBtn = document.getElementById('set-featured-btn');
+            const currentUser = viewingUser || 'jadewii';
+            
+            // Update username and avatar
+            document.getElementById('username-display').textContent = currentUser;
+            document.getElementById('user-avatar').textContent = currentUser.charAt(0).toUpperCase();
+            
+            // Different avatar colors for different users
+            const avatarColors = {
+                'jadewii': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'synthmaster': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                'modular_joe': 'linear-gradient(135deg, #00ff88 0%, #00cc70 100%)'
+            };
+            document.getElementById('user-avatar').style.background = avatarColors[currentUser] || avatarColors['jadewii'];
+            
+            // Check if Bandcamp is connected for this user
+            const savedBandcamp = localStorage.getItem(`bandcamp-${currentUser}`);
+            if (savedBandcamp) {
+                const status = document.getElementById('bandcamp-status');
+                const artistName = savedBandcamp.split('.bandcamp.com')[0].split('//')[1];
+                status.innerHTML = `<a href="${savedBandcamp}" target="_blank" style="color: #667eea; text-decoration: none;">@${artistName}</a> <span class="connected-badge">✓ Connected</span>`;
+            } else {
+                document.getElementById('bandcamp-status').textContent = 'No Bandcamp connected';
+            }
+            
+            if (isOwnProfile) {
+                // Own profile - show edit button and connect option
+                if (editBtn) editBtn.style.display = 'block';
+                if (friendBtn) friendBtn.style.display = 'none';
+                if (tradeBtn) tradeBtn.style.display = 'none';
+                
+                // Show connect button if not connected
+                if (!savedBandcamp && connectBtn) {
+                    connectBtn.style.display = 'inline-block';
+                }
+                
+                // Show set featured album button
+                if (setFeaturedBtn) setFeaturedBtn.style.display = 'block';
+                
+                // Show add link button
+                const addLinkBtn = document.getElementById('add-link-btn');
+                if (addLinkBtn) addLinkBtn.style.display = 'block';
+                
+                // Show add album button
+                const addAlbumBtn = document.getElementById('add-album-btn');
+                if (addAlbumBtn) addAlbumBtn.style.display = 'block';
+            } else {
+                // Viewing someone else's profile
+                if (editBtn) editBtn.style.display = 'none';
+                if (connectBtn) connectBtn.style.display = 'none';
+                if (setFeaturedBtn) setFeaturedBtn.style.display = 'none';
+                
+                // Hide add buttons
+                const addLinkBtn = document.getElementById('add-link-btn');
+                if (addLinkBtn) addLinkBtn.style.display = 'none';
+                
+                const addAlbumBtn = document.getElementById('add-album-btn');
+                if (addAlbumBtn) addAlbumBtn.style.display = 'none';
+                
+                // Show friend and trade buttons
+                friendBtn.style.display = 'block';
+                tradeBtn.style.display = 'block';
+                
+                friendBtn.onclick = () => {
+                    alert(`Friend request sent to ${currentUser}!`);
+                };
+                
+                tradeBtn.onclick = () => {
+                    alert(`Opening trade window with ${currentUser}...\n\nYou can trade modules and plants!`);
+                };
+                
+                // Disable ALL plant interactions
+                setTimeout(() => {
+                    // Disable dragging from inventory
+                    document.querySelectorAll('.plant-item').forEach(plant => {
+                        plant.draggable = false;
+                        plant.style.cursor = 'not-allowed';
+                        plant.style.opacity = '0.5';
+                    });
+                    
+                    // Disable moving placed plants
+                    document.querySelectorAll('.decoration').forEach(decoration => {
+                        decoration.style.cursor = 'default';
+                        decoration.style.pointerEvents = 'none';
+                    });
+                }, 100);
+            }
+        }
+        
+        // Album Section Functions
+        function loadAlbums() {
+            const albumsContainer = document.getElementById('albums-container');
+            const currentUser = viewingUser || 'jadewii';
+            
+            // Get saved albums for this user
+            const savedAlbums = JSON.parse(localStorage.getItem(`user-albums-${currentUser}`) || '[]');
+            
+            if (savedAlbums.length > 0) {
+                albumsContainer.innerHTML = savedAlbums.map((album, index) => `
+                    <div class="album-item" style="position: relative; margin-bottom: 20px;">
+                        <iframe style="border: 0; width: 350px; height: 470px;" 
+                            src="https://bandcamp.com/EmbeddedPlayer/album=${album.albumId}/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/" 
+                            seamless>
+                            <a href="${album.url}">${album.title || 'Album'}</a>
+                        </iframe>
+                        ${isOwnProfile ? `<button onclick="removeAlbum(${index})" style="position: absolute; top: 10px; right: 10px; background: white; border: 2px solid #ff0000; color: #ff0000; padding: 5px 10px; cursor: pointer; font-weight: bold;">X</button>` : ''}
+                    </div>
+                `).join('');
+            } else if (currentUser === 'jadewii' && !isOwnProfile) {
+                // Demo album for jadewii's public profile
+                albumsContainer.innerHTML = `
+                    <div class="album-item">
+                        <iframe style="border: 0; width: 350px; height: 470px;" 
+                            src="https://bandcamp.com/EmbeddedPlayer/album=3931410976/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/" 
+                            seamless>
+                            <a href="https://cookinsoul.bandcamp.com/album/remix-anthology-vol-3">REMIX ANTHOLOGY VOL. 3 by Cookin Soul</a>
+                        </iframe>
+                    </div>
+                `;
+            } else {
+                // Show placeholder for empty state
+                albumsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: #999;">
+                        <p style="font-size: 3rem; margin-bottom: 20px;">🎵</p>
+                        <p>${isOwnProfile ? 'No albums yet. Click below to add your music!' : 'No music uploaded yet'}</p>
+                    </div>
+                `;
+            }
+            
+            // Show/hide the add album button based on profile ownership
+            if (isOwnProfile) {
+                document.getElementById('add-album-btn').style.display = 'block';
+            }
+        }
+        
+        function addAlbum() {
+            // Simple and clean prompt
+            const albumUrl = prompt('Paste your Bandcamp album URL or embed code:');
+            
+            if (albumUrl && (albumUrl.includes('bandcamp.com') || albumUrl.includes('album='))) {
+                const currentUser = viewingUser || 'jadewii';
+                const savedAlbums = JSON.parse(localStorage.getItem(`user-albums-${currentUser}`) || '[]');
+                
+                // Extract album ID from URL or embed code
+                let albumId = '3931410976'; // Default ID
+                if (albumUrl.includes('album=')) {
+                    const match = albumUrl.match(/album=(\d+)/);
+                    if (match) {
+                        albumId = match[1];
+                    }
+                }
+                
+                const album = {
+                    albumId: albumId,
+                    url: albumUrl,
+                    title: `Album ${savedAlbums.length + 1}`
+                };
+                
+                // Add to albums array
+                savedAlbums.push(album);
+                localStorage.setItem(`user-albums-${currentUser}`, JSON.stringify(savedAlbums));
+                
+                // Reload the albums display
+                loadAlbums();
+            }
+        }
+        
+        function removeAlbum(index) {
+            if (confirm('Remove this album?')) {
+                const currentUser = viewingUser || 'jadewii';
+                const savedAlbums = JSON.parse(localStorage.getItem(`user-albums-${currentUser}`) || '[]');
+                savedAlbums.splice(index, 1);
+                localStorage.setItem(`user-albums-${currentUser}`, JSON.stringify(savedAlbums));
+                loadAlbums();
+            }
+        }
+        
+        function viewProfile(username) {
+            window.location.href = `profile.html?user=${username}`;
+        }
+        
+        // Toggle between rack view and module gallery view
+        let showingModuleGallery = false;
+        
+        function toggleModuleView() {
+            const mainRackContainer = document.querySelector('.main-rack-container');
+            const mainRackTitle = document.querySelector('.main-rack-section h2');
+            const moduleToggleArrow = document.getElementById('module-toggle-arrow');
+            const currentUser = viewingUser || 'jadewii';
+            
+            showingModuleGallery = !showingModuleGallery;
+            
+            if (showingModuleGallery) {
+                // Show module gallery in the main rack area
+                mainRackTitle.textContent = `${currentUser.toUpperCase()}'S MODULE COLLECTION`;
+                moduleToggleArrow.textContent = '↓';
+                
+                // Get user's owned modules
+                let ownedModules = JSON.parse(localStorage.getItem('owned-modules') || '[]');
+                
+                // If no modules owned, give some starter modules
+                if (ownedModules.length === 0 && currentUser === 'jadewii' && isOwnProfile) {
+                    ownedModules = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36];
+                    localStorage.setItem('owned-modules', JSON.stringify(ownedModules));
+                } else if (!isOwnProfile) {
+                    // Show demo modules for other users
+                    ownedModules = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36];
+                }
+                
+                // Create module gallery grid
+                mainRackContainer.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px; padding: 20px; background: white; border: 3px solid #000; min-height: 400px; max-height: 600px; overflow-y: auto;">
+                        ${ownedModules.map(moduleId => `
+                            <div class="module-gallery-item" style="cursor: pointer; transition: all 0.2s;" onclick="${isOwnProfile ? `selectModuleForRack(${moduleId})` : ''}">
+                                <img src="${SUPABASE_URL}/storage/v1/object/public/eurorackart/${moduleId}.png" 
+                                     style="width: 100%; height: auto; border: 2px solid #333; border-radius: 4px;"
+                                     onmouseover="this.style.borderColor='#FFD700'; this.style.transform='scale(1.05)'"
+                                     onmouseout="this.style.borderColor='#333'; this.style.transform='scale(1)'"
+                                     alt="Module ${moduleId}">
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${isOwnProfile ? '<p style="text-align: center; color: #666; margin-top: 10px;">Click a module to add it to your rack</p>' : ''}
+                `;
+            } else {
+                // Show rack view
+                mainRackTitle.textContent = 'MAIN RACK';
+                moduleToggleArrow.textContent = '→';
+                loadMainRack();
+            }
+        }
+        
+        function selectModuleForRack(moduleId) {
+            alert(`Module ${moduleId} selected! In a full implementation, this would add it to your rack.`);
+            // Here you would implement adding the module to the rack
+        }
+        
+        function loadMainRack() {
+            const mainRackContainer = document.querySelector('.main-rack-container');
+            const currentUser = viewingUser || 'jadewii';
+            
+            // Get saved rack data
+            const savedRack = localStorage.getItem(`rack-${currentUser}`) || {};
+            
+            // Recreate the rack HTML
+            mainRackContainer.innerHTML = `
+                <!-- Decorations layer (plants on top) -->
+                <div class="decorations-layer" id="decorations-layer"></div>
+                
+                <!-- Main Rack -->
+                <div class="main-rack ${savedRack.color || 'black'}" id="main-rack">
+                    ${Array(16).fill('').map((_, i) => {
+                        const savedModules = JSON.parse(localStorage.getItem(`rack-modules-${currentUser}`) || '[]');
+                        const module = savedModules.find(m => m.slotId === i);
+                        
+                        if (module) {
+                            return `<div class="rack-slot occupied" data-slot="${i}">
+                                <img src="${SUPABASE_URL}/storage/v1/object/public/eurorackart/${module.moduleId}.png" alt="Module">
+                            </div>`;
+                        } else {
+                            return `<div class="rack-slot" data-slot="${i}"></div>`;
+                        }
+                    }).join('')}
+                </div>
+            `;
+            
+            // Reload plants if any
+            loadPlants();
+        }
+        
+        // Load profile data including racks and modules
+        function loadProfileData() {
+            const currentUser = viewingUser || 'jadewii';
+            
+            // Load racks (limit to 2)
+            const savedRacks = JSON.parse(localStorage.getItem('saved-racks') || '[]');
+            const racksContainer = document.getElementById('rack-thumbnails');
+            
+            if (savedRacks.length > 0) {
+                // Show only first 2 racks
+                const displayRacks = savedRacks.slice(0, 2);
+                racksContainer.innerHTML = displayRacks.map((rack, index) => {
+                    return `
+                        <div class="rack-thumbnail ${rack.color || 'black'}" onclick="window.location.href='racks.html?edit=${rack.id}'" style="cursor: pointer;">
+                            ${Array(8).fill('').map((_, i) => {
+                                const module = rack.modules && rack.modules.find(m => parseInt(m.slotId) === i);
+                                if (module) {
+                                    return `<div class="mini-slot" style="background-image: url('${SUPABASE_URL}/storage/v1/object/public/eurorackart/${module.moduleId}.png'); background-size: cover;"></div>`;
+                                } else {
+                                    return `<div class="mini-slot empty"></div>`;
+                                }
+                            }).join('')}
+                        </div>
+                    `;
+                }).join('');
+                
+                // Show NEW RACK button if own profile
+                if (isOwnProfile) {
+                    const newRackBtn = document.getElementById('new-rack-btn');
+                    if (newRackBtn) newRackBtn.style.display = 'block';
+                }
+            } else {
+                racksContainer.innerHTML = '<p style="color: #666; text-align: center;">No racks created yet</p>';
+                if (isOwnProfile) {
+                    const newRackBtn = document.getElementById('new-rack-btn');
+                    if (newRackBtn) newRackBtn.style.display = 'block';
+                }
+            }
+            
+            // Load module collection
+            loadModuleCollection();
+        }
+        
+        // Load user's module collection
+        function loadModuleCollection() {
+            const currentUser = viewingUser || 'jadewii';
+            const modulesContainer = document.getElementById('modules-collection');
+            
+            // Get user's owned modules from localStorage
+            let ownedModules = JSON.parse(localStorage.getItem('owned-modules') || '[]');
+            
+            // If no modules owned, give some starter modules
+            if (ownedModules.length === 0) {
+                // Give starter pack of modules for any user viewing their own profile
+                if (isOwnProfile) {
+                    ownedModules = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36];
+                    localStorage.setItem('owned-modules', JSON.stringify(ownedModules));
+                } else {
+                    // Demo modules for other users
+                    ownedModules = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36];
+                }
+            }
+            
+            // Show first 8 modules in the preview
+            const displayModules = ownedModules.slice(0, 8);
+            
+            if (displayModules.length > 0) {
+                modulesContainer.innerHTML = displayModules.map(moduleId => {
+                    return `
+                        <div class="module-item" style="cursor: pointer;">
+                            <img src="${SUPABASE_URL}/storage/v1/object/public/eurorackart/${moduleId}.png" 
+                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" 
+                                 alt="Module ${moduleId}">
+                        </div>
+                    `;
+                }).join('');
+                
+                // Add "view all" indicator if more than 8 modules
+                if (ownedModules.length > 8) {
+                    modulesContainer.innerHTML += `
+                        <div style="grid-column: span 4; text-align: center; color: #666; font-size: 0.9rem; padding: 10px;">
+                            +${ownedModules.length - 8} more modules...
+                        </div>
+                    `;
+                }
+            } else {
+                modulesContainer.innerHTML = '<p style="color: #999; text-align: center; grid-column: 1/-1;">No modules in collection yet</p>';
+            }
+        }
+        
+        // Setup drag handlers for modules
+        function setupModuleDragHandlers() {
+            const modules = document.querySelectorAll('.module-item[draggable="true"]');
+            
+            modules.forEach(module => {
+                module.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.effectAllowed = 'copy';
+                    e.dataTransfer.setData('module-id', module.dataset.moduleId);
+                    e.dataTransfer.setData('from-collection', 'true');
+                    module.classList.add('dragging');
+                });
+                
+                module.addEventListener('dragend', (e) => {
+                    module.classList.remove('dragging');
+                });
+            });
+        }
+        
+        // Social Links Functions
+        function loadSocialLinks() {
+            const linksContainer = document.getElementById('social-links');
+            const currentUser = viewingUser || 'jadewii';
+            
+            // Get saved links for this user
+            const savedLinks = JSON.parse(localStorage.getItem(`social-links-${currentUser}`) || '[]');
+            
+            if (savedLinks.length > 0) {
+                linksContainer.innerHTML = savedLinks.map((link, index) => `
+                    <div class="social-link-item">
+                        <a href="${link.url}" target="_blank" class="social-icon ${link.platform}" title="${link.platform}">
+                            ${getSocialIcon(link.platform)}
+                        </a>
+                        ${isOwnProfile ? `<button class="remove-link-btn" onclick="removeSocialLink(${index})">×</button>` : ''}
+                    </div>
+                `).join('');
+            } else if (currentUser === 'jadewii' && !isOwnProfile) {
+                // Demo links for jadewii's public profile
+                linksContainer.innerHTML = `
+                    <div class="social-link-item">
+                        <a href="https://instagram.com/jadewii" target="_blank" class="social-icon instagram" title="Instagram">
+                            📷
+                        </a>
+                    </div>
+                    <div class="social-link-item">
+                        <a href="https://soundcloud.com/jadewii" target="_blank" class="social-icon soundcloud" title="SoundCloud">
+                            ☁️
+                        </a>
+                    </div>
+                    <div class="social-link-item">
+                        <a href="https://jadewii.bandcamp.com" target="_blank" class="social-icon bandcamp" title="Bandcamp">
+                            🎵
+                        </a>
+                    </div>
+                `;
+            } else {
+                linksContainer.innerHTML = '<p style="color: #999; font-size: 0.9rem;">No links added yet</p>';
+            }
+            
+            // Show/hide add link button
+            if (isOwnProfile) {
+                document.getElementById('add-link-btn').style.display = 'block';
+            }
+        }
+        
+        function getSocialIcon(platform) {
+            const icons = {
+                instagram: '📷',
+                twitter: '🐦',
+                youtube: '📺',
+                soundcloud: '☁️',
+                spotify: '🎧',
+                bandcamp: '🎵',
+                tiktok: '🎬',
+                website: '🌐',
+                other: '🔗'
+            };
+            return icons[platform] || icons.other;
+        }
+        
+        function addSocialLink() {
+            const platforms = ['Instagram', 'Twitter', 'YouTube', 'SoundCloud', 'Spotify', 'Bandcamp', 'TikTok', 'Website', 'Other'];
+            const platformChoice = prompt('Select platform:\n' + platforms.map((p, i) => `${i+1}. ${p}`).join('\n') + '\n\nEnter number (1-9):');
+            
+            if (platformChoice && platformChoice >= 1 && platformChoice <= 9) {
+                const platform = platforms[platformChoice - 1].toLowerCase();
+                const url = prompt(`Enter your ${platforms[platformChoice - 1]} URL:`);
+                
+                if (url) {
+                    const currentUser = viewingUser || 'jadewii';
+                    const savedLinks = JSON.parse(localStorage.getItem(`social-links-${currentUser}`) || '[]');
+                    
+                    savedLinks.push({
+                        platform: platform,
+                        url: url.startsWith('http') ? url : `https://${url}`
+                    });
+                    
+                    localStorage.setItem(`social-links-${currentUser}`, JSON.stringify(savedLinks));
+                    loadSocialLinks();
+                }
+            }
+        }
+        
+        function removeSocialLink(index) {
+            if (confirm('Remove this link?')) {
+                const currentUser = viewingUser || 'jadewii';
+                const savedLinks = JSON.parse(localStorage.getItem(`social-links-${currentUser}`) || '[]');
+                savedLinks.splice(index, 1);
+                localStorage.setItem(`social-links-${currentUser}`, JSON.stringify(savedLinks));
+                loadSocialLinks();
+            }
+        }
+        
+        // Load other albums (optional - for users with multiple releases)
+        function loadOtherReleases() {
+            const currentUser = viewingUser || 'jadewii';
+            const savedReleases = localStorage.getItem(`other-releases-${currentUser}`);
+            
+            if (savedReleases) {
+                const releases = JSON.parse(savedReleases);
+                const grid = document.getElementById('releases-grid');
+                
+                if (releases.length > 0) {
+                    document.getElementById('other-releases').style.display = 'block';
+                    grid.innerHTML = releases.map(release => `
+                        <div class="album-thumb" onclick="window.open('${release.url}', '_blank')">
+                            <img src="${release.image || 'https://via.placeholder.com/200'}" alt="${release.title}">
+                            <div class="album-title">${release.title}</div>
+                            <div class="album-year">${release.year}</div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+        
+        function loadMusicSection() {
+            const musicList = document.getElementById('music-list');
+            const tracks = userMusicTracks[currentMusicTab] || [];
+            
+            musicList.innerHTML = '';
+            
+            if (tracks.length === 0) {
+                musicList.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No tracks yet in this category</p>';
+            } else {
+                tracks.forEach((track, index) => {
+                    const platformIcons = {
+                        soundcloud: '☁️',
+                        youtube: '▶️',
+                        bandcamp: '🎵',
+                        spotify: '🎧'
+                    };
+                    
+                    const trackDiv = document.createElement('div');
+                    trackDiv.className = 'music-track';
+                    
+                    // For Bandcamp, create embedded player
+                    if (track.platform === 'bandcamp' && track.embedId) {
+                        trackDiv.innerHTML = `
+                            <iframe style="border: 0; width: 100%; height: 42px;" 
+                                src="https://bandcamp.com/EmbeddedPlayer/track=${track.embedId}/size=small/bgcol=ffffff/linkcol=0687f5/transparent=true/" 
+                                seamless>
+                            </iframe>
+                        `;
+                    } 
+                    // For SoundCloud with embed
+                    else if (track.platform === 'soundcloud' && track.embedUrl) {
+                        trackDiv.innerHTML = `
+                            <iframe width="100%" height="80" scrolling="no" frameborder="no" allow="autoplay"
+                                src="${track.embedUrl}">
+                            </iframe>
+                        `;
+                    }
+                    // Default link style for others
+                    else {
+                        trackDiv.innerHTML = `
+                            <span style="font-size: 1.5rem;">${platformIcons[track.platform] || '🎵'}</span>
+                            <div class="track-info">
+                                <div class="track-title">${track.title}</div>
+                                <div class="track-date">${track.date} • ${track.platform}</div>
+                            </div>
+                            <button class="track-play-btn" onclick="window.open('${track.url}', '_blank')" title="Open in ${track.platform}">↗</button>
+                        `;
+                    }
+                    
+                    musicList.appendChild(trackDiv);
+                });
+            }
+            
+            // Show/hide add button for own profile
+            const addBtn = document.getElementById('add-track-btn');
+            if (isOwnProfile) {
+                addBtn.style.display = 'block';
+            }
+        }
+        
+        function switchMusicTab(tab) {
+            currentMusicTab = tab;
+            
+            // Update tab styles
+            document.querySelectorAll('.music-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load tracks for this tab
+            loadMusicSection();
+        }
+        
+        function playTrack(category, index) {
+            const track = userMusicTracks[category][index];
+            console.log('Playing track:', track.title);
+            
+            // Update main player
+            document.getElementById('track-name').textContent = track.title;
+            
+            // Update play button
+            const playBtn = event.target;
+            if (playBtn.textContent === '▶') {
+                // Stop all other tracks
+                document.querySelectorAll('.track-play-btn').forEach(btn => {
+                    btn.textContent = '▶';
+                });
+                playBtn.textContent = '⏸';
+            } else {
+                playBtn.textContent = '▶';
+            }
+        }
+        
+        function addNewTrack() {
+            const category = currentMusicTab;
+            alert('🎵 BANDCAMP INTEGRATION\n\nFor the smoothest experience, we recommend Bandcamp!\n\n1. Upload your track to Bandcamp\n2. Get the embed code\n3. Paste it here\n\nBandcamp lets artists sell music & keep 85% of revenue!');
+            
+            const platform = prompt('Enter platform (bandcamp recommended, or soundcloud):')?.toLowerCase();
+            
+            if (!platform) return;
+            
+            let url, title, embedId, embedUrl;
+            
+            switch(platform) {
+                case 'bandcamp':
+                    const bcEmbed = prompt('Paste your Bandcamp EMBED CODE or track URL:\n\nTo get embed code:\n1. Go to your track on Bandcamp\n2. Click "Share / Embed"\n3. Copy the embed code\n\nOr just paste the track URL:');
+                    
+                    if (!bcEmbed) return;
+                    
+                    // Extract track ID from embed code or URL
+                    const trackMatch = bcEmbed.match(/track=(\d+)/);
+                    if (trackMatch) {
+                        embedId = trackMatch[1];
+                    } else if (bcEmbed.includes('bandcamp.com/track/')) {
+                        // For now, use the URL - in production you'd fetch the track ID
+                        url = bcEmbed;
+                        embedId = prompt('Enter the Bandcamp track ID (found in embed code):');
+                    }
+                    
+                    title = prompt('Enter track title:');
+                    break;
+                    
+                case 'soundcloud':
+                    url = prompt('Paste your SoundCloud track URL:');
+                    // SoundCloud embed format
+                    if (url) {
+                        embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=true`;
+                    }
+                    title = prompt('Enter track title:');
+                    break;
+                    
+                default:
+                    alert('We recommend Bandcamp for the best integration!');
+                    return;
+            }
+            
+            if ((embedId || embedUrl || url) && title) {
+                const newTrack = {
+                    title: title,
+                    date: new Date().toISOString().split('T')[0],
+                    url: url,
+                    platform: platform,
+                    embedId: embedId,
+                    embedUrl: embedUrl
+                };
+                
+                userMusicTracks[category].push(newTrack);
+                loadMusicSection();
+                
+                // Save to localStorage
+                localStorage.setItem(`user-music-tracks-${viewingUser || 'jadewii'}`, JSON.stringify(userMusicTracks));
+                
+                alert(`✅ Track added! It will play directly on your profile.\n\n${platform === 'bandcamp' ? 'Fans can also buy it on Bandcamp!' : ''}`);
+            }
+        }
+        
+        // Trade Shop Functions
+        let currentTradeTab = 'modules';
+        
+        function loadTradeShop() {
+            const currentUser = viewingUser || 'jadewii';
+            
+            // Load modules for trade
+            const savedModuleTrades = localStorage.getItem(`trade-modules-${currentUser}`) || '[]';
+            const modulesForTrade = JSON.parse(savedModuleTrades);
+            
+            const modulesGrid = document.getElementById('modules-for-trade');
+            if (modulesForTrade.length > 0) {
+                modulesGrid.innerHTML = modulesForTrade.map(module => `
+                    <div class="trade-item">
+                        <img src="${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${module.id.toString().padStart(2, '0')}.gif" alt="${module.name}">
+                        <div class="trade-item-name">${module.name || 'Module #' + module.id}</div>
+                        <div class="trade-tag">TRADE</div>
+                    </div>
+                `).join('');
+            } else {
+                modulesGrid.innerHTML = '<p style="color: #666; text-align: center; grid-column: 1/-1;">No modules for trade</p>';
+            }
+            
+            // Load plants for trade
+            const savedPlantTrades = localStorage.getItem(`trade-plants-${currentUser}`) || '[]';
+            const plantsForTrade = JSON.parse(savedPlantTrades);
+            
+            const plantsGrid = document.getElementById('plants-for-trade');
+            if (plantsForTrade.length > 0) {
+                plantsGrid.innerHTML = plantsForTrade.map(plant => `
+                    <div class="trade-item">
+                        <img src="${SUPABASE_URL}${plantStyles[plant.id]?.url}" alt="${plant.name}">
+                        <div class="trade-item-name">${plant.name}</div>
+                        <div class="trade-tag">TRADE</div>
+                    </div>
+                `).join('');
+            } else {
+                plantsGrid.innerHTML = '<p style="color: #666; text-align: center; grid-column: 1/-1;">No plants for trade</p>';
+            }
+            
+            // Show add buttons for own profile
+            if (isOwnProfile) {
+                document.getElementById('add-module-trade').style.display = 'block';
+                document.getElementById('add-plant-trade').style.display = 'block';
+                document.getElementById('trade-message').textContent = 'Items you want to trade - other users can make offers!';
+            }
+        }
+        
+        function switchTradeTab(tab) {
+            currentTradeTab = tab;
+            
+            // Update tab styles
+            document.querySelectorAll('.trade-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide content
+            document.getElementById('trade-modules').style.display = tab === 'modules' ? 'block' : 'none';
+            document.getElementById('trade-plants').style.display = tab === 'plants' ? 'block' : 'none';
+        }
+        
+        function addTradeItem(type) {
+            if (type === 'module') {
+                const moduleId = prompt('Enter module number to add to trade shop (1-17):');
+                if (moduleId && moduleId >= 1 && moduleId <= 17) {
+                    const currentUser = 'jadewii';
+                    const saved = localStorage.getItem(`trade-modules-${currentUser}`) || '[]';
+                    const modules = JSON.parse(saved);
+                    
+                    if (!modules.find(m => m.id == moduleId)) {
+                        modules.push({ id: moduleId, name: `Module #${moduleId}` });
+                        localStorage.setItem(`trade-modules-${currentUser}`, JSON.stringify(modules));
+                        loadTradeShop();
+                        alert('Module added to your trade shop!');
+                    } else {
+                        alert('This module is already in your trade shop!');
+                    }
+                }
+            } else if (type === 'plant') {
+                const plantList = Object.keys(plantStyles).map((p, i) => `${i+1}. ${p}`).join('\n');
+                const plantChoice = prompt(`Choose a plant to trade:\n\n${plantList}`);
+                
+                if (plantChoice) {
+                    const plantKey = Object.keys(plantStyles)[parseInt(plantChoice) - 1];
+                    if (plantKey) {
+                        const currentUser = 'jadewii';
+                        const saved = localStorage.getItem(`trade-plants-${currentUser}`) || '[]';
+                        const plants = JSON.parse(saved);
+                        
+                        if (!plants.find(p => p.id === plantKey)) {
+                            plants.push({ id: plantKey, name: plantKey });
+                            localStorage.setItem(`trade-plants-${currentUser}`, JSON.stringify(plants));
+                            loadTradeShop();
+                            alert('Plant added to your trade shop!');
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Initialize
+        loadMainRack();
+        loadOtherRacks();
+        loadPlantsArea();
+        loadSavedDecorations();
+        
+        // Only setup drag/drop for own profile
+        if (isOwnProfile) {
+            setupRackDropZone();
+        }
+        
+        updateCredits();
+        setupProfileMode();
+        loadSocialLinks();
+        loadAlbums();
+        loadOtherReleases();
+        loadTradeShop();
+        
+        // Load user's jacknut color
+        const userJacknutColor = localStorage.getItem('user-jacknut-color') || '#FFD700';
+        const avatar = document.querySelector('.avatar');
+        if (avatar) {
+            avatar.style.setProperty('--jacknut-color', userJacknutColor);
+        }
+    </script>
+</body>
+</html>

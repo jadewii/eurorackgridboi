@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Project</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        pre { background: #f0f0f0; padding: 15px; border: 2px solid #000; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        input { width: 500px; padding: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Verify Supabase Project</h1>
+    
+    <p>Current project URL: <code>https://jqxshcyqxhbmvqrrthxy.supabase.co</code></p>
+    
+    <p>Paste a signed URL from your Supabase dashboard here (right-click any GIF → Copy Image Address):</p>
+    <input type="text" id="signedUrl" placeholder="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/sign/..." />
+    <br>
+    <button onclick="analyzeUrl()">Analyze URL</button>
+    <button onclick="testExtractedUrl()">Test with Extracted Info</button>
+    
+    <h2>Output:</h2>
+    <pre id="output">Paste a signed URL from Supabase dashboard...</pre>
+    
+    <script>
+        const output = document.getElementById('output');
+        let extractedInfo = null;
+        
+        function log(msg, data = null) {
+            output.textContent += msg + '\n';
+            if (data) {
+                output.textContent += JSON.stringify(data, null, 2) + '\n';
+            }
+            output.textContent += '------------------------\n';
+        }
+        
+        function analyzeUrl() {
+            output.textContent = 'Analyzing URL...\n\n';
+            
+            const url = document.getElementById('signedUrl').value;
+            if (!url) {
+                log('Please paste a URL first');
+                return;
+            }
+            
+            try {
+                const urlObj = new URL(url);
+                const parts = urlObj.pathname.split('/');
+                
+                extractedInfo = {
+                    host: urlObj.hostname,
+                    projectId: urlObj.hostname.split('.')[0],
+                    bucket: parts[5], // /storage/v1/object/sign/[BUCKET]/...
+                    file: parts[6],
+                    fullUrl: urlObj.origin
+                };
+                
+                log('Extracted information:', extractedInfo);
+                
+                if (extractedInfo.projectId !== 'jqxshcyqxhbmvqrrthxy') {
+                    log('⚠️ PROJECT ID MISMATCH!');
+                    log(`We're using: jqxshcyqxhbmvqrrthxy`);
+                    log(`Your URL has: ${extractedInfo.projectId}`);
+                    log('This is the problem! We need to update the project URL.');
+                }
+                
+                log('\nClick "Test with Extracted Info" to try the correct URL');
+                
+            } catch (error) {
+                log('Error parsing URL:', error.message);
+            }
+        }
+        
+        async function testExtractedUrl() {
+            if (!extractedInfo) {
+                log('Please analyze a URL first');
+                return;
+            }
+            
+            output.textContent = 'Testing with extracted info...\n\n';
+            
+            const testUrl = extractedInfo.fullUrl;
+            const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+            
+            log(`Testing: ${testUrl}/storage/v1/bucket`);
+            
+            try {
+                const response = await fetch(`${testUrl}/storage/v1/bucket`, {
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                
+                log(`Response status: ${response.status}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ SUCCESS! Buckets found:', data);
+                } else {
+                    const error = await response.json();
+                    log('❌ Error:', error);
+                    
+                    // The key might not match the project
+                    log('\n⚠️ The API key might not match this project.');
+                    log('The key in the URL might be for a different project.');
+                }
+                
+            } catch (error) {
+                log('Network error:', error.message);
+            }
+        }
+    </script>
+</body>
+</html>

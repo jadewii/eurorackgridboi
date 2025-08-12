@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Rack Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid #000;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .jacknut-ring {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1001;
+            border: 2px solid #000;
+            top: 100%;
+            margin-top: 2px;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+        }
+        
+        .dropdown-content a {
+            color: #000;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-weight: bold;
+            transition: all 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-content a:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .racks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .rack-card {
+            background: white;
+            border: 3px solid #000;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .rack-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .rack-preview {
+            padding: 20px;
+            display: grid;
+            gap: 3px;
+            min-height: 200px;
+        }
+        
+        /* Grid layouts for different rack sizes */
+        .rack-8 {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+        }
+        
+        .rack-16 {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+        }
+        
+        .rack-24 {
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+        }
+        
+        .rack-32 {
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+        }
+        
+        /* Rack colors */
+        .rack-black { background: linear-gradient(180deg, #333 0%, #000 100%); }
+        .rack-silver { background: linear-gradient(180deg, #c0c0c0 0%, #808080 100%); }
+        .rack-wood { background: linear-gradient(180deg, #8B4513 0%, #654321 100%); }
+        .rack-white { background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%); }
+        .rack-blue { background: linear-gradient(180deg, #4169E1 0%, #1E90FF 100%); }
+        .rack-red { background: linear-gradient(180deg, #DC143C 0%, #8B0000 100%); }
+        
+        .rack-slot {
+            border: 1px dashed rgba(255,255,255,0.3);
+            aspect-ratio: 1;
+        }
+        
+        .rack-info {
+            padding: 20px;
+            background: white;
+        }
+        
+        .rack-name {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .rack-details {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        
+        .rack-price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .color-selector {
+            margin: 10px 0;
+        }
+        
+        .color-selector label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .color-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #000;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-option.selected {
+            box-shadow: 0 0 0 3px #FFD700;
+        }
+        
+        .color-black { background: linear-gradient(180deg, #333 0%, #000 100%); }
+        .color-silver { background: linear-gradient(180deg, #c0c0c0 0%, #808080 100%); }
+        .color-wood { background: linear-gradient(180deg, #8B4513 0%, #654321 100%); }
+        .color-white { background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%); }
+        .color-blue { background: linear-gradient(180deg, #4169E1 0%, #1E90FF 100%); }
+        .color-red { background: linear-gradient(180deg, #DC143C 0%, #8B0000 100%); }
+        
+        .rack-options {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .option-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option-box:hover {
+            background: #f0f0f0;
+            border-color: #999;
+        }
+        
+        .option-box input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #000;
+            background: white;
+            cursor: pointer;
+            margin: 0;
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .option-box input[type="checkbox"]:checked {
+            background: #000;
+        }
+        
+        .option-box input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .option-box input[type="checkbox"]:hover {
+            border-color: #666;
+        }
+        
+        .option-box label {
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin: 0;
+            flex-grow: 1;
+        }
+        
+        .option-note {
+            display: block;
+            font-size: 0.75rem;
+            color: #666;
+            margin-left: 26px;
+            margin-top: 2px;
+            font-style: italic;
+        }
+        
+        .buy-button {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .buy-button:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .jacknut-icon {
+            width: 35px;
+            height: 35px;
+            vertical-align: middle;
+        }
+        
+        .free-badge {
+            background: #0f0;
+            color: #000;
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            border: 2px solid #000;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
+        <div class="cart-area">
+            <div class="profile-avatar-wrapper" onclick="window.location.href='profile.html'">
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-ring" alt="ring">
+                <div class="profile-avatar">J</div>
+            </div>
+            <button class="cart-counter" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px;">
+                <span id="credits">100</span>
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 35px; height: 35px;" alt="HP">
+            </button>
+            <button class="cart-counter" onclick="window.location.href='collection.html'">MODULES</button>
+            <button class="cart-counter" onclick="window.location.href='my-racks.html'">MY RACKS</button>
+            <button class="cart-counter" onclick="window.location.href='community.html'">COMMUNITY</button>
+            <div class="dropdown">
+                <button class="cart-counter" onclick="toggleDropdown()">SHOP ▼</button>
+                <div class="dropdown-content" id="shop-dropdown">
+                    <a href="collection.html">MODULES</a>
+                    <a href="rack-shop.html">RACKS</a>
+                    <a href="plant-shop.html">PLANTS</a>
+                    <a href="sticker-shop.html">STICKERS</a>
+                    <a href="marketplace.html">MARKETPLACE</a>
+                </div>
+            </div>
+            <button class="cart-counter" style="background: #0f0; color: #000; border: 2px solid #000;">
+                BUY <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 18px; height: 18px; vertical-align: middle;" alt="HP">
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1 class="page-title">RACK SHOP</h1>
+        
+        <div class="racks-grid" id="racks-grid">
+            <!-- 42HP Rack -->
+            <div class="rack-card">
+                <div class="rack-preview rack-8 rack-black" id="preview-42hp">
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                </div>
+                <div class="rack-info">
+                    <div class="free-badge">✨ FREE STARTER RACK ✨</div>
+                    <div class="rack-name">42HP</div>
+                    <div class="rack-details" id="details-42hp">Empty rack</div>
+                    <div class="rack-options">
+                        <div class="option-box">
+                            <input type="checkbox" id="power-42hp" onchange="updateRackOptions('42hp')">
+                            <label for="power-42hp">Add Power +2</label>
+                            <span class="option-note">[powered racks can display live modules]</span>
+                        </div>
+                        <div class="option-box">
+                            <input type="checkbox" id="modules-42hp" onchange="updateRackOptions('42hp')">
+                            <label for="modules-42hp" id="modules-label-42hp">Add 2 Modules FREE</label>
+                        </div>
+                    </div>
+                    <div class="rack-price" id="price-42hp">
+                        <span style="color: #0f0; font-weight: bold;">FREE!</span>
+                    </div>
+                    <div class="color-selector">
+                        <label>Case Color:</label>
+                        <div class="color-options">
+                            <div class="color-option color-black selected" onclick="selectColor('42hp', 'black')"></div>
+                            <div class="color-option color-silver" onclick="selectColor('42hp', 'silver')"></div>
+                            <div class="color-option color-wood" onclick="selectColor('42hp', 'wood')"></div>
+                            <div class="color-option color-white" onclick="selectColor('42hp', 'white')"></div>
+                            <div class="color-option color-blue" onclick="selectColor('42hp', 'blue')"></div>
+                            <div class="color-option color-red" onclick="selectColor('42hp', 'red')"></div>
+                        </div>
+                    </div>
+                    <button class="buy-button" onclick="buyRack('42hp')">GET FREE RACK!</button>
+                </div>
+            </div>
+            
+            <!-- 84HP Rack -->
+            <div class="rack-card">
+                <div class="rack-preview rack-16 rack-black" id="preview-84hp">
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                </div>
+                <div class="rack-info">
+                    <div class="rack-name">84HP</div>
+                    <div class="rack-details" id="details-84hp">Empty rack</div>
+                    <div class="rack-options">
+                        <div class="option-box">
+                            <input type="checkbox" id="power-84hp" onchange="updateRackOptions('84hp')">
+                            <label for="power-84hp">Add Power +2</label>
+                            <span class="option-note">[powered racks can display live modules]</span>
+                        </div>
+                        <div class="option-box">
+                            <input type="checkbox" id="modules-84hp" onchange="updateRackOptions('84hp')">
+                            <label for="modules-84hp" id="modules-label-84hp">Add 4 Modules +5</label>
+                        </div>
+                    </div>
+                    <div class="rack-price" id="price-84hp">
+                        25 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </div>
+                    <div class="color-selector">
+                        <label>Case Color:</label>
+                        <div class="color-options">
+                            <div class="color-option color-black selected" onclick="selectColor('84hp', 'black')"></div>
+                            <div class="color-option color-silver" onclick="selectColor('84hp', 'silver')"></div>
+                            <div class="color-option color-wood" onclick="selectColor('84hp', 'wood')"></div>
+                            <div class="color-option color-white" onclick="selectColor('84hp', 'white')"></div>
+                            <div class="color-option color-blue" onclick="selectColor('84hp', 'blue')"></div>
+                            <div class="color-option color-red" onclick="selectColor('84hp', 'red')"></div>
+                        </div>
+                    </div>
+                    <button class="buy-button" onclick="buyRack('84hp')">BUY</button>
+                </div>
+            </div>
+            
+            <!-- 104HP Rack -->
+            <div class="rack-card">
+                <div class="rack-preview rack-24 rack-black" id="preview-104hp">
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                </div>
+                <div class="rack-info">
+                    <div class="rack-name">104HP</div>
+                    <div class="rack-details" id="details-104hp">Empty rack</div>
+                    <div class="rack-options">
+                        <div class="option-box">
+                            <input type="checkbox" id="power-104hp" onchange="updateRackOptions('104hp')">
+                            <label for="power-104hp">Add Power +2</label>
+                            <span class="option-note">[powered racks can display live modules]</span>
+                        </div>
+                        <div class="option-box">
+                            <input type="checkbox" id="modules-104hp" onchange="updateRackOptions('104hp')">
+                            <label for="modules-104hp" id="modules-label-104hp">Add 6 Modules +8</label>
+                        </div>
+                    </div>
+                    <div class="rack-price" id="price-104hp">
+                        45 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </div>
+                    <div class="color-selector">
+                        <label>Case Color:</label>
+                        <div class="color-options">
+                            <div class="color-option color-black selected" onclick="selectColor('104hp', 'black')"></div>
+                            <div class="color-option color-silver" onclick="selectColor('104hp', 'silver')"></div>
+                            <div class="color-option color-wood" onclick="selectColor('104hp', 'wood')"></div>
+                            <div class="color-option color-white" onclick="selectColor('104hp', 'white')"></div>
+                            <div class="color-option color-blue" onclick="selectColor('104hp', 'blue')"></div>
+                            <div class="color-option color-red" onclick="selectColor('104hp', 'red')"></div>
+                        </div>
+                    </div>
+                    <button class="buy-button" onclick="buyRack('104hp')">BUY</button>
+                </div>
+            </div>
+            
+            <!-- 168HP Rack -->
+            <div class="rack-card">
+                <div class="rack-preview rack-32 rack-black" id="preview-168hp">
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                    <div class="rack-slot"></div>
+                </div>
+                <div class="rack-info">
+                    <div class="rack-name">168HP</div>
+                    <div class="rack-details" id="details-168hp">Empty rack</div>
+                    <div class="rack-options">
+                        <div class="option-box">
+                            <input type="checkbox" id="power-168hp" onchange="updateRackOptions('168hp')">
+                            <label for="power-168hp">Add Power +2</label>
+                            <span class="option-note">[powered racks can display live modules]</span>
+                        </div>
+                        <div class="option-box">
+                            <input type="checkbox" id="modules-168hp" onchange="updateRackOptions('168hp')">
+                            <label for="modules-168hp" id="modules-label-168hp">Add 8 Modules +10</label>
+                        </div>
+                    </div>
+                    <div class="rack-price" id="price-168hp">
+                        70 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </div>
+                    <div class="color-selector">
+                        <label>Case Color:</label>
+                        <div class="color-options">
+                            <div class="color-option color-black selected" onclick="selectColor('168hp', 'black')"></div>
+                            <div class="color-option color-silver" onclick="selectColor('168hp', 'silver')"></div>
+                            <div class="color-option color-wood" onclick="selectColor('168hp', 'wood')"></div>
+                            <div class="color-option color-white" onclick="selectColor('168hp', 'white')"></div>
+                            <div class="color-option color-blue" onclick="selectColor('168hp', 'blue')"></div>
+                            <div class="color-option color-red" onclick="selectColor('168hp', 'red')"></div>
+                        </div>
+                    </div>
+                    <button class="buy-button" onclick="buyRack('168hp')">BUY</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Rack options state and pricing
+        const rackOptions = {
+            '42hp': { 
+                basePrice: 0, 
+                power: false, 
+                modules: false, 
+                powerCost: 2,
+                modulesCost: 0,
+                moduleCount: 2,
+                color: 'black'
+            },
+            '84hp': { 
+                basePrice: 25, 
+                power: false, 
+                modules: false,
+                powerCost: 2,
+                modulesCost: 5,
+                moduleCount: 4,
+                liveCount: 1,
+                color: 'black'
+            },
+            '104hp': { 
+                basePrice: 45, 
+                power: false, 
+                modules: false,
+                powerCost: 2,
+                modulesCost: 8,
+                moduleCount: 6,
+                liveCount: 1,
+                color: 'black'
+            },
+            '168hp': { 
+                basePrice: 70, 
+                power: false, 
+                modules: false,
+                powerCost: 2,
+                modulesCost: 10,
+                moduleCount: 8,
+                liveCount: 2,
+                color: 'black'
+            }
+        };
+        
+        // Update rack options and pricing
+        function updateRackOptions(rackId) {
+            const options = rackOptions[rackId];
+            const powerCheckbox = document.getElementById(`power-${rackId}`);
+            const modulesCheckbox = document.getElementById(`modules-${rackId}`);
+            const modulesLabel = document.getElementById(`modules-label-${rackId}`);
+            const detailsEl = document.getElementById(`details-${rackId}`);
+            const priceEl = document.getElementById(`price-${rackId}`);
+            
+            // Update state
+            options.power = powerCheckbox ? powerCheckbox.checked : false;
+            options.modules = modulesCheckbox ? modulesCheckbox.checked : false;
+            
+            // Update modules label based on power state
+            if (modulesLabel) {
+                const moduleCount = options.moduleCount;
+                const moduleCost = options.modulesCost || 0;
+                const liveCount = options.power ? (options.liveCount || 1) : 0;
+                
+                if (rackId === '42hp') {
+                    if (options.power) {
+                        modulesLabel.textContent = `Add 2 Modules + 1 Live FREE`;
+                    } else {
+                        modulesLabel.textContent = `Add 2 Modules FREE`;
+                    }
+                } else {
+                    if (options.power) {
+                        const liveText = liveCount > 1 ? `${liveCount} Live` : '1 Live';
+                        modulesLabel.textContent = `Add ${moduleCount} Modules + ${liveText}`;
+                    } else {
+                        modulesLabel.textContent = `Add ${moduleCount} Modules +${moduleCost}`;
+                    }
+                }
+            }
+            
+            // Update description
+            let description = 'Empty rack';
+            if (options.power && !options.modules) {
+                const liveCount = options.liveCount || 1;
+                description = `Powered rack with ${liveCount} live module${liveCount > 1 ? 's' : ''}`;
+            } else if (options.modules && options.power) {
+                const liveCount = options.liveCount || 1;
+                description = `${options.moduleCount} modules + ${liveCount} live`;
+            } else if (options.modules) {
+                description = `${options.moduleCount} modules`;
+            } else if (options.power) {
+                const liveCount = options.liveCount || 1;
+                description = `${liveCount} live module${liveCount > 1 ? 's' : ''}`;
+            }
+            detailsEl.textContent = description;
+            
+            // Calculate total price
+            let totalPrice = options.basePrice;
+            if (options.power) totalPrice += options.powerCost;
+            if (options.modules) totalPrice += options.modulesCost || 0;
+            // Note: Live modules are now included with powered + modules, no extra cost
+            
+            // Update price display
+            if (rackId === '42hp' && totalPrice === 0) {
+                priceEl.innerHTML = '<span style="color: #0f0; font-weight: bold;">FREE!</span>';
+            } else if (rackId === '42hp' && totalPrice > 0) {
+                priceEl.innerHTML = `${totalPrice} <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">`;
+            } else {
+                priceEl.innerHTML = `${totalPrice} <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">`;
+            }
+        }
+        
+        // Select color
+        function selectColor(rackId, color) {
+            rackOptions[rackId].color = color;
+            
+            // Update preview
+            const preview = document.getElementById(`preview-${rackId}`);
+            preview.classList.remove('rack-black', 'rack-silver', 'rack-wood', 'rack-white', 'rack-blue', 'rack-red');
+            preview.classList.add(`rack-${color}`);
+            
+            // Update color selector buttons
+            const card = preview.closest('.rack-card');
+            card.querySelectorAll('.color-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            card.querySelector(`.color-${color}`).classList.add('selected');
+        }
+        
+        // Buy rack
+        function buyRack(rackId) {
+            const options = rackOptions[rackId];
+            
+            // Calculate total price
+            let totalPrice = options.basePrice;
+            if (options.power) totalPrice += options.powerCost;
+            if (options.modules) totalPrice += options.modulesCost || 0;
+            if (options.live) totalPrice += options.liveCost || 0;
+            
+            const credits = parseInt(document.getElementById('credits').textContent);
+            
+            // Build description for confirmation
+            let description = 'Empty rack';
+            if (options.power && options.modules) {
+                const liveCount = options.liveCount || 1;
+                description = `${options.moduleCount} modules + ${liveCount} live module${liveCount > 1 ? 's' : ''}`;
+            } else if (options.power) {
+                const liveCount = options.liveCount || 1;
+                description = `${liveCount} live module${liveCount > 1 ? 's' : ''} only`;
+            } else if (options.modules) {
+                description = `${options.moduleCount} modules`;
+            }
+            
+            if (totalPrice === 0) {
+                // Free rack
+                if (confirm(`Get your FREE ${rackId.toUpperCase()} starter rack?\nColor: ${options.color}\nConfiguration: ${description}`)) {
+                    alert('🎉 Free rack claimed! Check MY RACKS to start building!');
+                }
+            } else if (credits >= totalPrice) {
+                if (confirm(`Purchase ${rackId.toUpperCase()} rack?\nColor: ${options.color}\nConfiguration: ${description}\nTotal: ${totalPrice} jacknuts`)) {
+                    document.getElementById('credits').textContent = credits - totalPrice;
+                    localStorage.setItem('rack-credits', credits - totalPrice);
+                    alert('Rack purchased! Check MY RACKS to use it.');
+                }
+            } else {
+                alert(`Insufficient jacknuts! You need ${totalPrice} but only have ${credits}.`);
+            }
+        }
+        
+        // Toggle dropdown
+        function toggleDropdown() {
+            document.getElementById('shop-dropdown').classList.toggle('show');
+        }
+        
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.cart-counter')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+        
+        // Load credits
+        const savedCredits = localStorage.getItem('rack-credits') || '100';
+        document.getElementById('credits').textContent = savedCredits;
+        
+        // Load user's jacknut color
+        const userJacknutColor = localStorage.getItem('user-jacknut-color') || '#FFD700';
+        const avatar = document.querySelector('.profile-avatar');
+        if (avatar) {
+            avatar.style.setProperty('--jacknut-color', userJacknutColor);
+        }
+    </script>
+</body>
+</html>

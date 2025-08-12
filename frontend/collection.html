@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.STORE - Digital Module Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid #000;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .jacknut-ring {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 130px;
+            padding: 40px 0 0 0;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 2px solid #000;
+            color: #000;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: #000;
+            color: white;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            padding: 0 15px;
+            width: 100vw;
+            max-width: 100vw;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        @media (max-width: 1200px) {
+            .module-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .module-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .module-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .module-item {
+            border: 3px solid #000;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .module-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .module-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo">EURORACK.STORE</div>
+        <div class="cart-area">
+            <div class="profile-avatar-wrapper" onclick="window.location.href='profile.html'">
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-ring" alt="ring">
+                <div class="profile-avatar">J</div>
+            </div>
+            <button class="cart-counter" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px;">
+                <span id="credits">1270</span>
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 35px; height: 35px;" alt="HP">
+            </button>
+            <button class="cart-counter" onclick="window.location.href='collection.html'" style="background: #000; color: white;">MODULES</button>
+            <button class="cart-counter" onclick="window.location.href='rack-shop.html'">RACKS</button>
+            <button class="cart-counter" onclick="window.location.href='module-packs.html'">PACKS</button>
+            <button class="cart-counter" onclick="window.location.href='starter-kits.html'">STARTER KITS</button>
+            <button class="cart-counter" onclick="window.location.href='prebuilt-cases.html'">PRE-BUILT</button>
+            <button class="cart-counter" onclick="window.location.href='vibe-shop.html'">VIBE SHOP</button>
+            <button class="cart-counter" onclick="window.location.href='my-racks.html'">MY RACKS</button>
+            <button class="cart-counter" onclick="window.location.href='community.html'">COMMUNITY</button>
+        </div>
+    </div>
+    
+    <div style="position: fixed; top: 77px; left: 0; right: 0; background: white; padding: 10px 20px; border-bottom: 1px solid #ddd; z-index: 999;">
+        <div style="text-align: left;">
+            <label for="grid-slider" style="font-weight: bold; margin-right: 15px;">Modules per row: <span id="grid-value">7</span></label>
+            <input type="range" id="grid-slider" min="4" max="10" value="7" 
+                   style="width: 300px; vertical-align: middle;"
+                   oninput="updateGridColumns(this.value)">
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1 class="page-title">MODULES</h1>
+        
+        <div class="filter-tabs">
+            <button class="filter-btn" onclick="window.location.href='module-packs.html'" style="background: white; color: #000; border: 2px solid #000;">BUY</button>
+            <button class="filter-btn active" onclick="showModules('all')">ALL</button>
+            <button class="filter-btn" onclick="showModules('owned')">OWNED</button>
+            <button class="filter-btn" onclick="showModules('live')">LIVE</button>
+        </div>
+        
+        <div class="module-grid" id="module-grid">
+            <!-- Modules will load here -->
+        </div>
+    </div>
+    
+    <style>
+        .module-item.locked img {
+            filter: grayscale(100%) brightness(0.3);
+            opacity: 0.6;
+        }
+        
+        /* Slider styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #ddd;
+            outline: none;
+            border: 2px solid #000;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #000;
+            cursor: pointer;
+            border: 2px solid #000;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #000;
+            cursor: pointer;
+            border: 2px solid #000;
+        }
+    </style>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        
+        // Get owned modules from localStorage (for testing, we'll say user owns modules 1-20)
+        function getOwnedModules() {
+            let owned = JSON.parse(localStorage.getItem('owned-modules') || '[]');
+            
+            // FOR TESTING: If no owned modules, give them modules 1-20
+            if (owned.length === 0) {
+                owned = Array.from({length: 20}, (_, i) => (i + 1).toString().padStart(2, '0'));
+                localStorage.setItem('owned-modules', JSON.stringify(owned));
+            }
+            
+            return owned;
+        }
+        
+        // Module catalog - just like plant catalog!
+        const commonModules = [];
+        for (let i = 1; i <= 36; i++) {
+            const paddedId = i.toString().padStart(2, '0');
+            commonModules.push({
+                id: paddedId,
+                url: `/storage/v1/object/public/eurorackart/${paddedId}.png`,
+                name: `Module ${paddedId}`
+            });
+        }
+        
+        const liveModules = [];
+        for (let i = 1; i <= 17; i++) {
+            const paddedId = i.toString().padStart(2, '0');
+            liveModules.push({
+                id: paddedId,
+                url: `/storage/v1/object/public/eurorackgif/${paddedId}.gif`,
+                name: `Live Module ${paddedId}`
+            });
+        }
+        
+        // Load modules function with ownership check
+        function loadModules(type) {
+            const grid = document.getElementById('module-grid');
+            grid.innerHTML = '';
+            
+            const ownedModules = getOwnedModules();
+            let modules = [];
+            
+            if (type === 'live') {
+                modules = liveModules;
+            } else if (type === 'owned') {
+                // Show only owned common modules
+                modules = commonModules.filter(m => ownedModules.includes(m.id));
+            } else {
+                // Show all common modules
+                modules = commonModules;
+            }
+            
+            modules.forEach(module => {
+                const item = document.createElement('div');
+                const isOwned = ownedModules.includes(module.id) || type === 'live'; // Live modules are always "owned"
+                
+                // Add locked class if not owned (only for common modules)
+                item.className = type === 'all' && !isOwned ? 'module-item locked' : 'module-item';
+                
+                // Use innerHTML just like plant shop!
+                item.innerHTML = `
+                    <img src="${SUPABASE_URL}${module.url}" alt="${module.name}">
+                `;
+                
+                // Add click to unlock for testing
+                if (!isOwned && type === 'all') {
+                    item.onclick = () => {
+                        if (confirm(`Unlock Module ${module.id}?`)) {
+                            const owned = getOwnedModules();
+                            owned.push(module.id);
+                            localStorage.setItem('owned-modules', JSON.stringify(owned));
+                            loadModules(type); // Reload
+                        }
+                    };
+                }
+                
+                grid.appendChild(item);
+            });
+            
+            // Show message if no owned modules
+            if (type === 'owned' && modules.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; font-size: 1.2rem;">No owned modules yet! Click on locked modules in ALL view to unlock them.</div>';
+            }
+        }
+        
+        // Show modules function
+        function showModules(type) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadModules(type);
+        }
+        
+        // Update grid columns based on slider
+        function updateGridColumns(value) {
+            const grid = document.getElementById('module-grid');
+            const valueDisplay = document.getElementById('grid-value');
+            
+            // Update display value
+            valueDisplay.textContent = value;
+            
+            // Update CSS grid columns
+            grid.style.gridTemplateColumns = `repeat(${value}, 1fr)`;
+            
+            // Save preference
+            localStorage.setItem('grid-columns', value);
+        }
+        
+        // Initialize - show all modules with 7 columns default
+        document.getElementById('grid-slider').value = 7;
+        updateGridColumns(7);
+        loadModules('all');
+    </script>
+</body>
+</html>

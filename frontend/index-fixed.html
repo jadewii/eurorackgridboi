@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eurorack.store</title>
+    <link rel="stylesheet" href="styles-minimal.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="logo">eurorack.store</h1>
+                <div class="cart-icon" onclick="alert('Cart: ' + cart.length + ' items')">
+                    + cart <span id="cart-count" class="cart-count">0</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1 class="main-title">EURORACK</h1>
+        </section>
+
+        <section class="category-filter">
+            <div class="container">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="showProducts('all', this)">All Products</button>
+                    <button class="filter-btn" onclick="showProducts('shirts', this)">T-Shirts</button>
+                    <button class="filter-btn" onclick="showProducts('hoodies', this)">Hoodies</button>
+                    <button class="filter-btn" onclick="showProducts('accessories', this)">Accessories</button>
+                    <button class="filter-btn" onclick="showProducts('prints', this)">Art Prints</button>
+                    <button class="filter-btn" onclick="showProducts('stickers', this)">Stickers</button>
+                    <button class="filter-btn" onclick="showProducts('home', this)">Home & Living</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="products">
+            <div class="container">
+                <h2 id="category-title">All Products</h2>
+                <div id="product-count" class="product-count">Loading...</div>
+                <div id="product-grid" class="product-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="printify-products.js"></script>
+    <script>
+        let cart = [];
+        let allProducts = [];
+        
+        // Load products immediately
+        if (typeof printifyProducts !== 'undefined') {
+            allProducts = printifyProducts;
+            console.log('Products loaded:', allProducts.length);
+            showProducts('all');
+        } else {
+            document.getElementById('product-grid').innerHTML = '<p>ERROR: Products not loaded!</p>';
+        }
+        
+        function showProducts(category, button) {
+            const grid = document.getElementById('product-grid');
+            const count = document.getElementById('product-count');
+            const title = document.getElementById('category-title');
+            
+            // Filter
+            let filtered = category === 'all' ? allProducts : allProducts.filter(p => p.category === category);
+            
+            // Update UI
+            const titles = {
+                'all': 'All Products',
+                'shirts': 'T-Shirts',
+                'hoodies': 'Hoodies',
+                'accessories': 'Accessories',
+                'prints': 'Art Prints',
+                'stickers': 'Stickers',
+                'home': 'Home & Living'
+            };
+            title.textContent = titles[category];
+            count.textContent = 'Showing ' + Math.min(50, filtered.length) + ' of ' + filtered.length + ' products';
+            
+            // Clear grid
+            grid.innerHTML = '';
+            
+            // Show first 50 products
+            filtered.slice(0, 50).forEach(product => {
+                const div = document.createElement('div');
+                div.className = 'product-card';
+                div.innerHTML = `
+                    <div class="product-image-container">
+                        <img src="${product.image}" alt="${product.title}" class="product-image">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product.title}</h3>
+                        <p class="product-price">$${product.price.toFixed(2)}</p>
+                        <button class="add-to-cart" onclick="addCart('${product.id}')">+ cart</button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+            
+            // Update active button
+            if (button) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+            }
+        }
+        
+        function addCart(id) {
+            cart.push(id);
+            document.getElementById('cart-count').textContent = cart.length;
+            alert('Added to cart!');
+        }
+    </script>
+</body>
+</html>

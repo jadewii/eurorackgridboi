@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Edge Functions</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        button { 
+            padding: 10px 20px; 
+            margin: 10px; 
+            font-size: 16px; 
+            background: #0f0;
+            color: #000;
+            border: 2px solid #0f0;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        button:hover { background: #000; color: #0f0; }
+        pre { 
+            background: #111; 
+            padding: 15px; 
+            border: 2px solid #0f0;
+            overflow: auto;
+            max-height: 400px;
+        }
+        .success { color: #0f0; font-weight: bold; }
+        .error { color: #f00; font-weight: bold; }
+        img { 
+            max-width: 200px; 
+            border: 2px solid #0f0; 
+            margin: 10px;
+            display: inline-block;
+        }
+        #preview { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>EUROGRID - Edge Functions Test</h1>
+    
+    <h2>Step 1: Test Database Connection</h2>
+    <button onclick="testDatabase()">Check Modules Table</button>
+    
+    <h2>Step 2: Test Preview Function (No Auth)</h2>
+    <button onclick="testPreview('01.gif')">Get Preview of 01.gif</button>
+    <button onclick="testAllPreviews()">Get All 17 Previews</button>
+    
+    <h2>Step 3: Test With Mock User</h2>
+    <button onclick="testWithAuth()">Test Purchase Flow (Mock)</button>
+    
+    <h2>Output:</h2>
+    <pre id="output">Click a button to start testing...</pre>
+    
+    <div id="preview"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        const preview = document.getElementById('preview');
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        function log(msg, data = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            output.textContent += `[${timestamp}] ${msg}\n`;
+            if (data) {
+                output.textContent += JSON.stringify(data, null, 2) + '\n';
+            }
+            output.textContent += '------------------------\n';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        async function testDatabase() {
+            output.textContent = '';
+            preview.innerHTML = '';
+            log('Testing database connection...');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/modules?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const modules = await response.json();
+                    log(`✅ SUCCESS! Found ${modules.length} modules in database`);
+                    
+                    if (modules.length > 0) {
+                        log('First 3 modules:', modules.slice(0, 3));
+                    } else {
+                        log('⚠️ No modules found. Run the SQL setup script first.');
+                    }
+                } else {
+                    const error = await response.text();
+                    log('❌ Database error:', error);
+                }
+            } catch (error) {
+                log('❌ Network error:', error.message);
+            }
+        }
+        
+        async function testPreview(fileName) {
+            log(`Testing preview for ${fileName}...`);
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/get-module-preview`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({ file_path: fileName })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ Preview URL generated!');
+                    
+                    // Display the GIF
+                    const img = document.createElement('img');
+                    img.src = data.url;
+                    img.title = fileName;
+                    img.onload = () => log(`✅ ${fileName} loaded successfully!`);
+                    img.onerror = () => log(`❌ Failed to load ${fileName}`);
+                    preview.appendChild(img);
+                } else {
+                    const error = await response.text();
+                    log(`❌ Failed to get preview:`, error);
+                    log('Note: Edge Function might not be deployed yet.');
+                }
+            } catch (error) {
+                log('❌ Error:', error.message);
+                log('Edge Functions might not be deployed. Check deploy-instructions.md');
+            }
+        }
+        
+        async function testAllPreviews() {
+            output.textContent = '';
+            preview.innerHTML = '';
+            log('Loading all 17 module previews...');
+            
+            for (let i = 1; i <= 17; i++) {
+                const fileName = `${i.toString().padStart(2, '0')}.gif`;
+                await testPreview(fileName);
+                // Small delay to not overwhelm
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        }
+        
+        async function testWithAuth() {
+            log('Testing auth flow (would require real user login)...');
+            log('In production, this would:');
+            log('1. User logs in with Supabase Auth');
+            log('2. User purchases HP (payment integration)');
+            log('3. User buys modules with HP');
+            log('4. Modules appear in their collection');
+            log('');
+            log('For now, the Edge Functions are ready but need:');
+            log('- Supabase Auth setup (free)');
+            log('- Payment integration (Stripe/PayPal)');
+        }
+        
+        // Test if Edge Functions endpoint is accessible
+        window.onload = async () => {
+            log('Checking Edge Functions availability...');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.status === 404) {
+                    log('⚠️ Edge Functions endpoint exists');
+                    log('Deploy functions using instructions in deploy-instructions.md');
+                } else {
+                    log('✅ Edge Functions endpoint is accessible');
+                }
+            } catch (error) {
+                log('Edge Functions status unknown');
+            }
+        };
+    </script>
+</body>
+</html>

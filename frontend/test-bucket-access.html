@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bucket Access Debugger</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        pre { background: #f0f0f0; padding: 15px; border: 2px solid #000; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Debug Bucket Access</h1>
+    
+    <button onclick="testAuth()">1. Test Authentication</button>
+    <button onclick="testStorage()">2. Test Storage API</button>
+    <button onclick="tryListFiles()">3. Try List Files (Different Methods)</button>
+    
+    <h2>Output:</h2>
+    <pre id="output">Click a button to start...</pre>
+    
+    <script>
+        const output = document.getElementById('output');
+        const url = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        function log(msg, data = null) {
+            output.textContent += msg + '\n';
+            if (data) {
+                output.textContent += JSON.stringify(data, null, 2) + '\n';
+            }
+            output.textContent += '------------------------\n';
+        }
+        
+        async function testAuth() {
+            output.textContent = 'Testing authentication...\n\n';
+            
+            try {
+                // Test if we can reach the API at all
+                const response = await fetch(`${url}/rest/v1/`, {
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                
+                log(`API Response status: ${response.status}`);
+                if (response.ok) {
+                    log('✅ Authentication is working!');
+                } else {
+                    log('❌ Authentication might have issues');
+                }
+            } catch (error) {
+                log('❌ Network error:', error.message);
+            }
+        }
+        
+        async function testStorage() {
+            output.textContent = 'Testing Storage API endpoint...\n\n';
+            
+            try {
+                // Test the storage API root
+                const response = await fetch(`${url}/storage/v1/`, {
+                    headers: {
+                        'apikey': key
+                    }
+                });
+                
+                log(`Storage API status: ${response.status}`);
+                const text = await response.text();
+                log('Response:', text.substring(0, 200));
+            } catch (error) {
+                log('❌ Error:', error.message);
+            }
+        }
+        
+        async function tryListFiles() {
+            output.textContent = 'Trying different file listing methods...\n\n';
+            
+            // Method 1: List with different auth
+            log('Method 1: List with minimal auth');
+            try {
+                const response = await fetch(`${url}/storage/v1/object/list/eurorackgif`, {
+                    headers: {
+                        'apikey': key
+                    }
+                });
+                
+                log(`Response status: ${response.status}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ SUCCESS! Files:', data);
+                } else {
+                    const error = await response.text();
+                    log('Response:', error.substring(0, 200));
+                }
+            } catch (error) {
+                log('Error:', error.message);
+            }
+            
+            // Method 2: Try with path prefix
+            log('\nMethod 2: List with path prefix');
+            try {
+                const response = await fetch(`${url}/storage/v1/object/list/eurorackgif?prefix=`, {
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                
+                log(`Response status: ${response.status}`);
+                const data = await response.json();
+                log('Response:', data);
+            } catch (error) {
+                log('Error:', error.message);
+            }
+            
+            // Method 3: Try info endpoint
+            log('\nMethod 3: Get bucket info');
+            try {
+                const response = await fetch(`${url}/storage/v1/bucket/eurorackgif`, {
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                
+                log(`Response status: ${response.status}`);
+                const data = await response.json();
+                log('Bucket info:', data);
+            } catch (error) {
+                log('Error:', error.message);
+            }
+        }
+    </script>
+</body>
+</html>

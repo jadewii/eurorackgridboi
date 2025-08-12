@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SEE YOUR GIFS NOW</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        button { 
+            padding: 20px 40px; 
+            margin: 10px; 
+            font-size: 24px; 
+            background: #0f0;
+            color: #000;
+            border: 3px solid #0f0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .gif-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        img {
+            width: 100%;
+            border: 2px solid #0f0;
+        }
+        .error { color: #f00; font-size: 20px; }
+        .success { color: #0f0; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🚀 FINALLY SEE YOUR GIFS!</h1>
+    
+    <button onclick="showGifs()">SHOW ME THE GIFS!</button>
+    
+    <div id="status"></div>
+    <div id="gifs" class="gif-grid"></div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        async function showGifs() {
+            const status = document.getElementById('status');
+            const gifsDiv = document.getElementById('gifs');
+            
+            status.innerHTML = '<span class="success">Loading your 17 GIFs...</span>';
+            gifsDiv.innerHTML = '';
+            
+            // Try to list files from the bucket
+            try {
+                const response = await fetch(`${SUPABASE_URL}/storage/v1/object/list/eurorackgif`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const files = await response.json();
+                    
+                    if (files.length > 0) {
+                        status.innerHTML = `<span class="success">✅ FOUND ${files.length} GIFS! LOADING...</span>`;
+                        
+                        // Display each GIF
+                        for (const file of files) {
+                            const img = document.createElement('img');
+                            // Use public URL since bucket should now be public
+                            img.src = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${file.name}`;
+                            img.alt = file.name;
+                            img.title = file.name;
+                            gifsDiv.appendChild(img);
+                        }
+                    } else {
+                        status.innerHTML = '<span class="error">❌ Bucket is accessible but no files found!</span>';
+                    }
+                } else {
+                    // If still getting error, bucket is still private
+                    status.innerHTML = '<span class="error">❌ Bucket is still PRIVATE! Go make it PUBLIC in Supabase dashboard!</span>';
+                    
+                    // Try direct access anyway
+                    status.innerHTML += '<br><span class="success">Trying direct access to your 17 GIFs...</span>';
+                    
+                    for (let i = 1; i <= 17; i++) {
+                        const fileName = `${i.toString().padStart(2, '0')}.gif`;
+                        const img = document.createElement('img');
+                        img.src = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${fileName}`;
+                        img.alt = fileName;
+                        img.title = fileName;
+                        img.onerror = () => {
+                            img.style.display = 'none';
+                        };
+                        gifsDiv.appendChild(img);
+                    }
+                }
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>

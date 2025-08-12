@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RACK MARKETPLACE - Trade & Sell</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #0a0a0a;
+            color: white;
+        }
+        
+        .header {
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            border-bottom: 2px solid #FFD700;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .balance {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .balance-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .balance-label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .balance-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            color: #888;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #FFD700;
+            color: #000;
+            border-color: #FFD700;
+        }
+        
+        .main {
+            padding: 20px;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter {
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter:hover {
+            border-color: #FFD700;
+        }
+        
+        .filter.active {
+            background: #FFD700;
+            color: #000;
+            border-color: #FFD700;
+        }
+        
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .listing {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .listing:hover {
+            transform: translateY(-5px);
+            border-color: #FFD700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.2);
+        }
+        
+        .listing img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .listing-info {
+            padding: 15px;
+        }
+        
+        .listing-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .listing-seller {
+            color: #888;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .listing-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .buy-btn {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .buy-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .rarity-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.7rem;
+        }
+        
+        .rarity-common { background: #888; }
+        .rarity-rare { background: #4169E1; }
+        .rarity-epic { background: #9370DB; }
+        .rarity-legendary { background: linear-gradient(45deg, #FFD700, #FFA500); }
+        
+        /* Live ticker */
+        .ticker {
+            background: rgba(255,215,0,0.1);
+            padding: 10px;
+            overflow: hidden;
+            border-top: 1px solid #FFD700;
+            border-bottom: 1px solid #FFD700;
+            margin-bottom: 20px;
+        }
+        
+        .ticker-content {
+            display: flex;
+            animation: scroll 30s linear infinite;
+        }
+        
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .ticker-item {
+            white-space: nowrap;
+            margin-right: 50px;
+            color: #FFD700;
+        }
+        
+        /* Sell modal */
+        .sell-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sell-modal.active {
+            display: flex;
+        }
+        
+        .sell-form {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #FFD700;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .sell-form h2 {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #888;
+        }
+        
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            color: white;
+            border-radius: 5px;
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .list-btn {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .cancel-btn {
+            background: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">RACK MARKETPLACE</div>
+            <div class="balance">
+                <div class="balance-item">
+                    <span class="balance-label">Credits:</span>
+                    <span class="balance-value" id="credits">1,250</span>
+                </div>
+                <div class="balance-item">
+                    <span class="balance-label">Earnings:</span>
+                    <span class="balance-value" style="color: #00ff88;" id="earnings">320</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="ticker">
+        <div class="ticker-content">
+            <span class="ticker-item">🔥 Mod-24 LEGENDARY sold for 2,500 credits!</span>
+            <span class="ticker-item">📈 Mod-07 price up 150% today</span>
+            <span class="ticker-item">💎 Only 3 Mod-01 legendaries exist!</span>
+            <span class="ticker-item">🎯 New user bonus: +500 credits on first trade</span>
+        </div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('buy')">BUY</button>
+        <button class="tab" onclick="showTab('sell')">SELL</button>
+        <button class="tab" onclick="showTab('trades')">MY TRADES</button>
+        <button class="tab" onclick="showTab('history')">PRICE HISTORY</button>
+    </div>
+    
+    <main class="main">
+        <div class="filter-bar">
+            <div class="filter active">ALL</div>
+            <div class="filter">COMMON</div>
+            <div class="filter">RARE</div>
+            <div class="filter">EPIC</div>
+            <div class="filter">LEGENDARY</div>
+            <div class="filter">UNDER 100</div>
+            <div class="filter">NEW LISTINGS</div>
+        </div>
+        
+        <div class="listings-grid" id="listings">
+            <!-- Listings will be dynamically added -->
+        </div>
+    </main>
+    
+    <!-- Sell Modal -->
+    <div class="sell-modal" id="sell-modal">
+        <div class="sell-form">
+            <h2>LIST FOR SALE</h2>
+            <div class="form-group">
+                <label>Select Sticker</label>
+                <select id="sticker-select">
+                    <option>Mod-07 (Rare) - 3 owned</option>
+                    <option>Mod-15 (Common) - 5 owned</option>
+                    <option>Mod-24 (Epic) - 1 owned</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Set Price (Credits)</label>
+                <input type="number" id="price-input" placeholder="Suggested: 150" min="10">
+            </div>
+            <div class="form-group">
+                <label>Duration</label>
+                <select>
+                    <option>24 Hours</option>
+                    <option>3 Days</option>
+                    <option>7 Days</option>
+                    <option>Until Sold</option>
+                </select>
+            </div>
+            <div class="form-buttons">
+                <button class="list-btn" onclick="listItem()">LIST ITEM</button>
+                <button class="cancel-btn" onclick="closeSellModal()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Marketplace data
+        const listings = [
+            { id: 1, title: 'Mod-24', rarity: 'legendary', price: 2500, seller: 'user123' },
+            { id: 2, title: 'Mod-07', rarity: 'rare', price: 150, seller: 'collector99' },
+            { id: 3, title: 'Mod-15', rarity: 'common', price: 25, seller: 'newbie' },
+            { id: 4, title: 'Mod-01', rarity: 'epic', price: 500, seller: 'protrader' },
+            { id: 5, title: 'Mod-10', rarity: 'rare', price: 175, seller: 'rackfan' },
+            { id: 6, title: 'Mod-22', rarity: 'common', price: 30, seller: 'dealer42' },
+            { id: 7, title: 'Mod-03', rarity: 'epic', price: 450, seller: 'whale' },
+            { id: 8, title: 'Mod-18', rarity: 'rare', price: 200, seller: 'synth_lord' }
+        ];
+        
+        function loadListings() {
+            const grid = document.getElementById('listings');
+            const stickers = printifyProducts.filter(p => p.category === 'stickers');
+            
+            grid.innerHTML = listings.map(listing => {
+                const sticker = stickers.find(s => s.title.includes(listing.title)) || stickers[0];
+                
+                return `
+                    <div class="listing" onclick="buyItem(${listing.id})">
+                        <span class="rarity-badge rarity-${listing.rarity}">${listing.rarity.toUpperCase()}</span>
+                        <img src="${sticker.image}?width=400" alt="${listing.title}">
+                        <div class="listing-info">
+                            <div class="listing-title">${listing.title}</div>
+                            <div class="listing-seller">@${listing.seller}</div>
+                            <div class="listing-price">
+                                <span class="price">${listing.price}</span>
+                                <button class="buy-btn" onclick="event.stopPropagation(); quickBuy(${listing.id})">BUY</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'sell') {
+                document.getElementById('sell-modal').classList.add('active');
+            }
+        }
+        
+        function closeSellModal() {
+            document.getElementById('sell-modal').classList.remove('active');
+        }
+        
+        function listItem() {
+            alert('Item listed successfully! You'll be notified when it sells.');
+            closeSellModal();
+        }
+        
+        function quickBuy(listingId) {
+            const listing = listings.find(l => l.id === listingId);
+            const commission = Math.floor(listing.price * 0.1); // 10% marketplace fee
+            const totalPrice = listing.price + commission;
+            
+            if (confirm(`Buy ${listing.title} for ${listing.price} credits?\n\nMarketplace fee (10%): ${commission} credits\nTotal: ${totalPrice} credits`)) {
+                alert(`Purchased ${listing.title}! Added to your collection.\n\nSeller receives: ${listing.price} credits\nMarketplace fee: ${commission} credits`);
+                // Update credits
+                const creditsEl = document.getElementById('credits');
+                const currentCredits = parseInt(creditsEl.textContent);
+                creditsEl.textContent = currentCredits - totalPrice;
+            }
+        }
+        
+        // Initialize
+        loadListings();
+    </script>
+</body>
+</html>

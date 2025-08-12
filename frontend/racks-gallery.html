@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - My Racks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .new-rack-btn {
+            background: #0f0;
+            color: #000;
+            border: 3px solid #000;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .new-rack-btn:hover {
+            background: #00ff88;
+            transform: scale(1.05);
+        }
+        
+        .racks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+            min-height: 100vh;
+        }
+        
+        .rack-card {
+            background: white;
+            border: 3px solid #000;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .rack-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .rack-preview {
+            height: 200px;
+            background: linear-gradient(180deg, #333 0%, #000 100%);
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+        
+        .rack-preview.silver { background: linear-gradient(180deg, #c0c0c0 0%, #808080 100%); }
+        .rack-preview.black { background: linear-gradient(180deg, #333 0%, #000 100%); }
+        .rack-preview.wood { background: linear-gradient(180deg, #8B4513 0%, #654321 100%); }
+        .rack-preview.white { background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%); }
+        .rack-preview.blue { background: linear-gradient(180deg, #4169E1 0%, #1E90FF 100%); }
+        .rack-preview.red { background: linear-gradient(180deg, #DC143C 0%, #8B0000 100%); }
+        
+        .mini-module {
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .empty-slot {
+            border: 1px dashed rgba(255,255,255,0.2);
+        }
+        
+        .rack-info {
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #000;
+        }
+        
+        .rack-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .rack-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .rack-details {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .rack-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 5px 15px;
+            border: 2px solid #000;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .action-btn.delete {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        .action-btn.delete:hover {
+            background: #ff0000;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border: 3px dashed #ccc;
+            margin: 40px 0;
+        }
+        
+        .empty-state h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .empty-state p {
+            color: #999;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
+        <div style="position: absolute; left: 200px; color: #000; font-weight: bold; font-size: 0.9rem;">
+            FREE SHIPPING OVER $60 | EUROGRID BINDER
+        </div>
+        <div class="cart-area">
+            <button class="cart-counter" onclick="showPackStore()" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; border: 2px solid #FFD700;">
+                <span id="credits-amount">100</span> HP
+            </button>
+            <button class="cart-counter" onclick="window.location.href='collection.html'">
+                MODULES
+            </button>
+            <button class="cart-counter" onclick="window.location.href='racks-gallery.html'" style="background: #000; color: white;">
+                RACKS
+            </button>
+            <button class="cart-counter" onclick="window.location.href='sticker-shop.html'">
+                STICKER SHOP
+            </button>
+            <button class="cart-counter" onclick="window.location.href='marketplace.html'">
+                MARKETPLACE
+            </button>
+            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
+                BUY HP
+            </button>
+            <button class="cart-counter" id="physical-cart-button" onclick="togglePhysicalCart()">
+                CART (<span id="physical-cart-count">0</span>)
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">MY RACKS</h1>
+            <button class="new-rack-btn" onclick="createNewRack()">+ NEW RACK</button>
+        </div>
+        
+        <div id="racks-container">
+            <!-- Racks will be loaded here -->
+        </div>
+        
+        <!-- Endless scroll - all racks together -->
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        
+        // Load user's racks
+        function loadMyRacks() {
+            const container = document.getElementById('racks-container');
+            const savedRacks = JSON.parse(localStorage.getItem('saved-racks') || '[]');
+            
+            if (savedRacks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h2>No racks yet!</h2>
+                        <p>Start building your first eurorack setup</p>
+                        <button class="new-rack-btn" onclick="createNewRack()">CREATE YOUR FIRST RACK</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '<div class="racks-grid" id="my-racks"></div>';
+                const grid = document.getElementById('my-racks');
+                
+                // Add user's racks
+                savedRacks.forEach(rack => {
+                    const card = createRackCard(rack, true);
+                    grid.appendChild(card);
+                });
+                
+                // Add community racks for endless scroll
+                loadCommunityRacks(grid);
+            }
+        }
+        
+        // Create rack card element
+        function createRackCard(rack, isOwned = false) {
+            const card = document.createElement('div');
+            card.className = 'rack-card';
+            
+            // Create preview
+            const preview = document.createElement('div');
+            preview.className = `rack-preview ${rack.color || 'black'}`;
+            
+            // Add modules to preview (8 or 16 slots)
+            const slots = rack.size === '16' ? 16 : 8;
+            
+            // Set grid layout based on rack size
+            if (rack.size === '16') {
+                preview.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                preview.style.gridTemplateRows = 'repeat(4, 1fr)';
+            } else {
+                preview.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                preview.style.gridTemplateRows = 'repeat(2, 1fr)';
+            }
+            
+            for (let i = 0; i < slots; i++) {
+                const slot = document.createElement('div');
+                const module = rack.modules && rack.modules.find(m => parseInt(m.slotId) === i);
+                
+                if (module) {
+                    slot.className = 'mini-module';
+                    slot.style.backgroundImage = `url(${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${module.moduleId.toString().padStart(2, '0')}.gif)`;
+                } else {
+                    slot.className = 'empty-slot';
+                }
+                
+                preview.appendChild(slot);
+            }
+            
+            // Create info section
+            const info = document.createElement('div');
+            info.className = 'rack-info';
+            info.innerHTML = `
+                <div class="rack-name">${rack.name || 'Untitled Rack'}</div>
+                <div class="rack-stats">
+                    <div class="rack-details">
+                        ${rack.modules ? rack.modules.length : 0}/${rack.size || 8} modules
+                        ${!isOwned ? `<br>by ${rack.creator || 'Anonymous'}` : ''}
+                    </div>
+                    <div class="rack-actions">
+                        ${isOwned ? `
+                            <button class="action-btn" onclick="editRack(${rack.id})">EDIT</button>
+                            <button class="action-btn delete" onclick="deleteRack(${rack.id})">DELETE</button>
+                        ` : `
+                            <button class="action-btn" onclick="cloneRack(${rack.id})">CLONE</button>
+                            <button class="action-btn" onclick="likeRack(${rack.id})">❤ ${rack.likes || 0}</button>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            card.appendChild(preview);
+            card.appendChild(info);
+            
+            // Click to edit (for owned racks)
+            if (isOwned) {
+                preview.onclick = () => editRack(rack.id);
+            }
+            
+            return card;
+        }
+        
+        // Create new rack
+        function createNewRack() {
+            window.location.href = 'racks.html?new=true';
+        }
+        
+        // Edit existing rack
+        function editRack(rackId) {
+            window.location.href = `racks.html?edit=${rackId}`;
+        }
+        
+        // Delete rack
+        function deleteRack(rackId) {
+            if (confirm('Are you sure you want to delete this rack?')) {
+                let savedRacks = JSON.parse(localStorage.getItem('saved-racks') || '[]');
+                savedRacks = savedRacks.filter(r => r.id !== rackId);
+                localStorage.setItem('saved-racks', JSON.stringify(savedRacks));
+                loadMyRacks();
+            }
+        }
+        
+        // Load community racks
+        function loadCommunityRacks(grid) {
+            if (!grid) {
+                grid = document.getElementById('my-racks');
+            }
+            
+            // Demo community racks
+            const communityRacks = [
+                {
+                    id: 'c1',
+                    name: 'Techno Beast',
+                    color: 'black',
+                    size: '16',
+                    modules: Array(15).fill({moduleId: Math.floor(Math.random() * 17) + 1}),
+                    likes: 142,
+                    creator: 'jadewii'
+                },
+                {
+                    id: 'c2',
+                    name: 'Ambient Dreams',
+                    color: 'blue',
+                    size: '8',
+                    modules: Array(8).fill({moduleId: Math.floor(Math.random() * 17) + 1}),
+                    likes: 89,
+                    creator: 'synthmaster'
+                },
+                {
+                    id: 'c3',
+                    name: 'West Coast Vibes',
+                    color: 'wood',
+                    size: '16',
+                    modules: Array(10).fill({moduleId: Math.floor(Math.random() * 17) + 1}),
+                    likes: 67,
+                    creator: 'modular_joe'
+                },
+                {
+                    id: 'c4',
+                    name: 'Minimal Setup',
+                    color: 'white',
+                    size: '8',
+                    modules: Array(6).fill({moduleId: Math.floor(Math.random() * 17) + 1}),
+                    likes: 45,
+                    creator: 'lessismore'
+                }
+            ];
+            
+            communityRacks.forEach(rack => {
+                const card = createRackCard(rack, false);
+                grid.appendChild(card);
+            });
+        }
+        
+        // Update HP display
+        function updateCredits() {
+            const credits = localStorage.getItem('rack-credits') || '100';
+            const creditsEl = document.getElementById('credits-amount');
+            if (creditsEl) {
+                creditsEl.textContent = credits;
+            }
+        }
+        
+        // Initialize
+        loadMyRacks();
+        updateCredits();
+    </script>
+</body>
+</html>

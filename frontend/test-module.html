@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Module Image</title>
+</head>
+<body>
+    <h1>Test Module - Japanese ADSR</h1>
+    <p>Save the image below as "test-module.png" in your frontend folder:</p>
+    <div style="padding: 20px; background: #f0f0f0;">
+        <p>The test module image should be a PNG file showing the Japanese ADSR module with:</p>
+        <ul>
+            <li>Gradient background (blue to orange/pink)</li>
+            <li>Two envelope sections (エンブス1 and エンルベ22)</li>
+            <li>ADSR sliders for each section</li>
+            <li>Japanese labels for gates and controls</li>
+            <li>CV inputs and outputs</li>
+            <li>LFO section with controls</li>
+        </ul>
+    </div>
+    
+    <script>
+        // Add the test module to collection if not already there
+        let myCollection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+        
+        // Add the test module as owned
+        if (!myCollection['Mod-26 - Japanese ADSR Module']) {
+            myCollection['Mod-26 - Japanese ADSR Module'] = {
+                unlockedDate: new Date().toISOString(),
+                rarity: 'legendary',
+                fromPack: 'test'
+            };
+            localStorage.setItem('digital-collection', JSON.stringify(myCollection));
+            console.log('Added Mod-26 to collection');
+        }
+        
+        // For testing, you can use a placeholder image
+        // In production, save the actual image as test-module.png
+    </script>
+</body>
+</html>

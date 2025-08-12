@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Digital Modular Collection Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 4px solid #000;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            letter-spacing: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            border: 3px solid #000;
+            padding: 30px;
+            text-align: center;
+            background: white;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #000;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .card-desc {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-action {
+            background: #000;
+            color: white;
+            padding: 10px 20px;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        /* Special card styles */
+        .card.primary {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, #fff 0%, #fffacd 100%);
+        }
+        
+        .card.primary .card-action {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            animation: rainbow 3s linear infinite;
+        }
+        
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        .card.new::before {
+            content: "NEW!";
+            position: absolute;
+            top: 10px;
+            right: -30px;
+            background: #ff0000;
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .info-section {
+            background: #f5f5f5;
+            padding: 40px;
+            border: 2px solid #000;
+            margin-bottom: 40px;
+        }
+        
+        .info-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-item {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border: 1px solid #ddd;
+        }
+        
+        .info-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .info-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 2px solid #000;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EUROGRID</h1>
+            <p class="tagline">Collect Digital Modules → Earn Physical Rewards</p>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="credits">1000</div>
+                    <div class="stat-label">CREDITS</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="collection">7/25</div>
+                    <div class="stat-label">COLLECTED</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="rewards">2</div>
+                    <div class="stat-label">REWARDS EARNED</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-grid">
+            <!-- Pack Opening - PRIMARY -->
+            <a href="pack-opening.html" class="card primary new">
+                <div class="card-icon" style="font-size: 3rem;">PACK</div>
+                <div class="card-title">OPEN PACKS</div>
+                <div class="card-desc">
+                    Open mystery packs to collect modules<br>
+                    50-300 credits per pack<br>
+                    <strong>1000 FREE CREDITS for new users!</strong>
+                </div>
+                <div class="card-action">PLAY NOW</div>
+            </a>
+            
+            <!-- Collection View -->
+            <a href="eurogrid.html" class="card">
+                <div class="card-icon" style="font-size: 3rem;">GRID</div>
+                <div class="card-title">MY EUROGRID</div>
+                <div class="card-desc">
+                    View your collection<br>
+                    See locked/unlocked modules<br>
+                    Track your progress
+                </div>
+                <div class="card-action">VIEW COLLECTION</div>
+            </a>
+            
+            <!-- Rewards Center -->
+            <a href="rewards-center.html" class="card new">
+                <div class="card-icon" style="font-size: 3rem;">WIN</div>
+                <div class="card-title">REWARDS CENTER</div>
+                <div class="card-desc">
+                    Earn FREE physical stickers<br>
+                    Every 5 modules = 1 reward<br>
+                    Complete set = 25 stickers FREE
+                </div>
+                <div class="card-action">CLAIM REWARDS</div>
+            </a>
+            
+            <!-- Marketplace -->
+            <a href="marketplace.html" class="card">
+                <div class="card-icon" style="font-size: 3rem;">TRADE</div>
+                <div class="card-title">MARKETPLACE</div>
+                <div class="card-desc">
+                    Trade with other collectors<br>
+                    Buy/sell rare modules<br>
+                    Complete your collection
+                </div>
+                <div class="card-action">TRADE NOW</div>
+            </a>
+            
+            <!-- Old Collection Page -->
+            <a href="collection.html" class="card">
+                <div class="card-icon" style="font-size: 3rem;">VIEW</div>
+                <div class="card-title">COLLECTION BINDER</div>
+                <div class="card-desc">
+                    Classic grid view<br>
+                    Owned/locked filter<br>
+                    Share your collection
+                </div>
+                <div class="card-action">VIEW BINDER</div>
+            </a>
+            
+            <!-- Original Store -->
+            <a href="index.html" class="card">
+                <div class="card-icon" style="font-size: 3rem;">SHOP</div>
+                <div class="card-title">LEGACY STORE</div>
+                <div class="card-desc">
+                    Original store layout<br>
+                    Browse all products<br>
+                    (Being phased out)
+                </div>
+                <div class="card-action">VISIT STORE</div>
+            </a>
+        </div>
+        
+        <div class="info-section">
+            <h2 class="info-title">HOW IT WORKS</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-number">1</div>
+                    <div class="info-label">Get 1000 free credits to start</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">2</div>
+                    <div class="info-label">Open packs to unlock modules</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">3</div>
+                    <div class="info-label">Collect rarities (Common to Legendary)</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">4</div>
+                    <div class="info-label">Every 5 modules = FREE physical sticker</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">5</div>
+                    <div class="info-label">Trade duplicates in marketplace</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">6</div>
+                    <div class="info-label">Complete set = 25 FREE stickers!</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2 class="info-title">PACK PRICES</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-number">50</div>
+                    <div class="info-label">Basic Pack<br>1 random module</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">150</div>
+                    <div class="info-label">Rare Pack<br>50% rare+ chance</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">300</div>
+                    <div class="info-label">Legendary Pack<br>25% legendary chance</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>EUROGRID - Digital Modular Collection Game</p>
+            <p>Collect modules, earn physical rewards!</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Load stats from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const credits = localStorage.getItem('rack-credits') || '1000';
+            const collection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+            const collectionCount = Object.keys(collection).length;
+            const rewardsClaimed = JSON.parse(localStorage.getItem('claimed-reward-tiers') || '[]').length;
+            
+            document.getElementById('credits').textContent = credits;
+            document.getElementById('collection').textContent = `${collectionCount}/25`;
+            document.getElementById('rewards').textContent = rewardsClaimed;
+        });
+    </script>
+</body>
+</html>

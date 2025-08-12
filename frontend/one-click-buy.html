@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>One-Click Digital Stickers - eurorack.store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #000;
+            color: white;
+        }
+        
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .wallet {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .balance {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+        
+        .connect-wallet {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        
+        .main {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #888;
+            margin-bottom: 40px;
+        }
+        
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .sticker-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .sticker-card:hover {
+            transform: translateY(-5px);
+            border-color: #FFD700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+        
+        .sticker-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .sticker-card.owned {
+            border-color: #00ff88;
+        }
+        
+        .sticker-card.owned::after {
+            content: 'OWNED';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #00ff88;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .sticker-info {
+            padding: 15px;
+        }
+        
+        .sticker-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .instant-buy {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        
+        .instant-buy:hover {
+            transform: scale(1.05);
+        }
+        
+        .instant-buy:active {
+            transform: scale(0.95);
+        }
+        
+        .owned-btn {
+            background: #333;
+            color: #888;
+            cursor: default;
+        }
+        
+        .owned-btn:hover {
+            transform: none;
+        }
+        
+        /* Purchase animation */
+        @keyframes purchase-success {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(180deg);
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+            }
+        }
+        
+        .purchasing {
+            animation: purchase-success 1s ease-out;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #00ff88;
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        /* Payment methods */
+        .payment-methods {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .payment-method {
+            background: #222;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .payment-method.active {
+            border-color: #FFD700;
+            background: #333;
+        }
+        
+        .payment-method:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">EURORACK.STORE</div>
+        <div class="wallet">
+            <div class="balance" id="balance">$10.00 CREDIT</div>
+            <button class="connect-wallet" onclick="connectWallet()">
+                <span id="wallet-status">ADD FUNDS</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="main">
+        <h1>INSTANT DIGITAL STICKERS</h1>
+        <p class="subtitle">One-click purchase • No checkout • Instant unlock</p>
+        
+        <div class="sticker-grid" id="sticker-grid">
+            <!-- Stickers load here -->
+        </div>
+    </div>
+    
+    <div class="payment-methods">
+        <div class="payment-method active" onclick="selectPayment('credit')">
+            💳 Credit
+        </div>
+        <div class="payment-method" onclick="selectPayment('apple')">
+            🍎 Apple Pay
+        </div>
+        <div class="payment-method" onclick="selectPayment('crypto')">
+            ₿ Crypto
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script src="printify-products.js"></script>
+    <script>
+        // User state
+        let userBalance = 10.00; // Start with $10 credit for demo
+        let myCollection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+        let paymentMethod = 'credit';
+        
+        // Saved payment info (in production, this would be tokenized)
+        let savedPayment = localStorage.getItem('saved-payment');
+        
+        function loadStickers() {
+            const grid = document.getElementById('sticker-grid');
+            const stickers = printifyProducts.filter(p => p.category === 'stickers');
+            
+            // Sort newest first
+            stickers.sort((a, b) => {
+                const getNumber = (title) => {
+                    const match = title.match(/Mod-(\d+)/);
+                    return match ? parseInt(match[1]) : 0;
+                };
+                return getNumber(b.title) - getNumber(a.title);
+            });
+            
+            grid.innerHTML = stickers.map(sticker => {
+                const owned = myCollection[sticker.title];
+                
+                return `
+                    <div class="sticker-card ${owned ? 'owned' : ''}" id="card-${sticker.id}">
+                        <img src="${sticker.image}?width=400" alt="${sticker.title}">
+                        <div class="sticker-info">
+                            <div class="sticker-title">${sticker.title.replace(' - eurorack sticker', '')}</div>
+                            ${owned ? 
+                                `<button class="instant-buy owned-btn">OWNED</button>` :
+                                `<button class="instant-buy" onclick="instantBuy('${sticker.id}', '${sticker.title}', 2)">
+                                    BUY $2
+                                </button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        async function instantBuy(stickerId, title, price) {
+            const card = document.getElementById(`card-${stickerId}`);
+            const button = card.querySelector('.instant-buy');
+            
+            // Check balance
+            if (userBalance >= price) {
+                // Deduct from balance
+                userBalance -= price;
+                updateBalance();
+                
+                // Instant unlock!
+                myCollection[title] = {
+                    unlockedDate: new Date().toISOString(),
+                    method: 'instant_purchase',
+                    price: price
+                };
+                localStorage.setItem('digital-collection', JSON.stringify(myCollection));
+                
+                // Animate purchase
+                card.classList.add('purchasing');
+                button.textContent = 'UNLOCKING...';
+                
+                setTimeout(() => {
+                    card.classList.remove('purchasing');
+                    card.classList.add('owned');
+                    button.className = 'instant-buy owned-btn';
+                    button.textContent = 'OWNED';
+                    button.onclick = null;
+                    
+                    showToast(`✅ ${title.replace(' - eurorack sticker', '')} unlocked!`);
+                }, 500);
+                
+            } else if (savedPayment) {
+                // Auto-charge saved payment method
+                button.textContent = 'CHARGING...';
+                
+                // Simulate instant payment
+                setTimeout(() => {
+                    // In production, this would charge the saved card
+                    processInstantPayment(stickerId, title, price);
+                }, 300);
+                
+            } else {
+                // Need to add payment method
+                if (confirm('Add $10 credit to continue shopping?')) {
+                    addCredit(10);
+                    instantBuy(stickerId, title, price); // Retry
+                }
+            }
+        }
+        
+        function processInstantPayment(stickerId, title, price) {
+            // Simulate successful payment
+            myCollection[title] = {
+                unlockedDate: new Date().toISOString(),
+                method: 'instant_charge',
+                price: price
+            };
+            localStorage.setItem('digital-collection', JSON.stringify(myCollection));
+            
+            const card = document.getElementById(`card-${stickerId}`);
+            const button = card.querySelector('.instant-buy');
+            
+            card.classList.add('owned');
+            button.className = 'instant-buy owned-btn';
+            button.textContent = 'OWNED';
+            button.onclick = null;
+            
+            showToast(`💳 Charged $${price} • ${title.replace(' - eurorack sticker', '')} unlocked!`);
+        }
+        
+        function addCredit(amount) {
+            // In production, this would process payment
+            userBalance += amount;
+            updateBalance();
+            showToast(`Added $${amount} credit!`);
+            
+            // Save payment method
+            savedPayment = 'card_****1234';
+            localStorage.setItem('saved-payment', savedPayment);
+            document.getElementById('wallet-status').textContent = '•••• 1234';
+        }
+        
+        function updateBalance() {
+            document.getElementById('balance').textContent = `$${userBalance.toFixed(2)} CREDIT`;
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        function connectWallet() {
+            // Simulate connecting payment
+            if (!savedPayment) {
+                if (confirm('Save payment method for instant purchases?')) {
+                    savedPayment = 'card_****1234';
+                    localStorage.setItem('saved-payment', savedPayment);
+                    document.getElementById('wallet-status').textContent = '•••• 1234';
+                    addCredit(10);
+                }
+            } else {
+                addCredit(10);
+            }
+        }
+        
+        function selectPayment(method) {
+            paymentMethod = method;
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            showToast(`Switched to ${method} payment`);
+        }
+        
+        // Auto-unlock physical purchases
+        function checkPhysicalPurchases() {
+            // Check URL for order completion
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderComplete = urlParams.get('order');
+            
+            if (orderComplete) {
+                // Auto-unlock stickers from that order
+                // This would query your backend for order details
+                showToast('🎁 Physical purchase detected - digital stickers unlocked!');
+            }
+        }
+        
+        // Initialize
+        loadStickers();
+        checkPhysicalPurchases();
+        
+        // Show saved payment if exists
+        if (savedPayment) {
+            document.getElementById('wallet-status').textContent = '•••• 1234';
+        }
+    </script>
+</body>
+</html>
