@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug - Supabase Stickers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .controls button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background: white;
+            border: 2px solid #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .controls button:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .status {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+        
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .sticker-item {
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .sticker-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .sticker-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        
+        .sticker-item.locked {
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+        
+        .sticker-item.locked::after {
+            content: '🔒 LOCKED';
+            display: block;
+            margin-top: 5px;
+            color: red;
+            font-weight: bold;
+        }
+        
+        .sticker-info {
+            font-size: 0.9rem;
+        }
+        
+        .rarity {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .rarity.common { color: #666; }
+        .rarity.rare { color: #4169E1; }
+        .rarity.holographic { color: #9370DB; }
+        .rarity.live { color: #FF1493; }
+        
+        .config-section {
+            background: #f5f5f5;
+            border: 2px solid #000;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .config-section h2 {
+            margin-bottom: 10px;
+        }
+        
+        .config-section input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #000;
+            font-family: monospace;
+        }
+        
+        .config-section button {
+            padding: 10px 20px;
+            background: #000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 SUPABASE STICKER DEBUG</h1>
+    
+    <div class="config-section">
+        <h2>Configuration</h2>
+        <input type="text" id="supabase-url" placeholder="Enter your Supabase URL (e.g., https://xxx.supabase.co)">
+        <input type="text" id="supabase-key" placeholder="Enter your Supabase Anon Key">
+        <button onclick="saveConfig()">Save & Connect</button>
+    </div>
+    
+    <div class="status" id="status">
+        Status: Not connected
+    </div>
+    
+    <div class="controls">
+        <button onclick="loadStickers()">Load Stickers</button>
+        <button onclick="toggleAllLocks()">Toggle All Locks</button>
+        <button onclick="clearCache()">Clear Cache</button>
+        <button onclick="testSignedUrls()">Test Signed URLs</button>
+    </div>
+    
+    <div id="sticker-grid" class="sticker-grid">
+        <!-- Stickers will be loaded here -->
+    </div>
+    
+    <script>
+        // Simple Supabase client for testing
+        class TestSupabaseClient {
+            constructor(url, anonKey) {
+                this.url = url;
+                this.anonKey = anonKey;
+                this.headers = {
+                    'apikey': this.anonKey,
+                    'Authorization': `Bearer ${this.anonKey}`
+                };
+            }
+            
+            async listStickerFiles() {
+                // Start with just eurorackgif bucket
+                const buckets = [
+                    { name: 'eurorackgif', rarity: 'live' }
+                    // Will add these later:
+                    // { name: 'common', rarity: 'common' },
+                    // { name: 'rare', rarity: 'rare' },
+                ];
+                
+                let allFiles = [];
+                
+                for (const bucket of buckets) {
+                    try {
+                        console.log(`Trying to load bucket: ${bucket.name}`);
+                        const response = await fetch(`${this.url}/storage/v1/object/list/${bucket.name}`, {
+                            headers: this.headers
+                        });
+                        
+                        if (!response.ok) {
+                            console.warn(`Bucket ${bucket.name} not found or not accessible: ${response.status}`);
+                            continue;
+                        }
+                        
+                        const files = await response.json();
+                        console.log(`Success! Found ${files.length} files in ${bucket.name}`);
+                        
+                        const mappedFiles = files.map(file => ({
+                            name: file.name,
+                            path: file.name,
+                            bucket: bucket.name,
+                            rarity: bucket.rarity,
+                            size: file.metadata?.size || 0,
+                            mimeType: file.metadata?.mimetype || 'image/gif'
+                        }));
+                        
+                        allFiles = allFiles.concat(mappedFiles);
+                    } catch (e) {
+                        console.error(`Error loading bucket ${bucket.name}:`, e);
+                    }
+                }
+                
+                console.log(`Total files found: ${allFiles.length}`);
+                return allFiles;
+            }
+            
+            async createSignedUrl(path, bucket, expiresIn = 60) {
+                const response = await fetch(`${this.url}/storage/v1/object/sign/${bucket}/${path}`, {
+                    method: 'POST',
+                    headers: {
+                        ...this.headers,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ expiresIn })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to create signed URL: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                return `${this.url}/storage/v1${data.signedURL}`;
+            }
+            
+            getPublicUrl(path, bucket) {
+                return `${this.url}/storage/v1/object/public/${bucket}/${path}`;
+            }
+        }
+        
+        let supabaseClient = null;
+        let loadedStickers = [];
+        let allLocked = false;
+        
+        function saveConfig() {
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            
+            if (!url || !key) {
+                alert('Please enter both Supabase URL and Anon Key');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('supabase-url', url);
+            localStorage.setItem('supabase-key', key);
+            
+            // Initialize client
+            supabaseClient = new TestSupabaseClient(url, key);
+            
+            document.getElementById('status').textContent = 'Status: Connected to ' + url;
+            
+            // Auto-load stickers
+            loadStickers();
+        }
+        
+        async function loadStickers() {
+            if (!supabaseClient) {
+                // Try to load from localStorage
+                const url = localStorage.getItem('supabase-url');
+                const key = localStorage.getItem('supabase-key');
+                
+                if (url && key) {
+                    supabaseClient = new TestSupabaseClient(url, key);
+                    document.getElementById('supabase-url').value = url;
+                    document.getElementById('supabase-key').value = key;
+                } else {
+                    alert('Please configure Supabase connection first');
+                    return;
+                }
+            }
+            
+            const status = document.getElementById('status');
+            status.textContent = 'Status: Loading stickers...';
+            
+            try {
+                const files = await supabaseClient.listStickerFiles();
+                loadedStickers = files;
+                
+                const grid = document.getElementById('sticker-grid');
+                grid.innerHTML = '';
+                
+                for (const file of files) {
+                    // Try signed URL first, fall back to public
+                    let imageUrl;
+                    try {
+                        imageUrl = await supabaseClient.createSignedUrl(file.path, file.bucket, 60);
+                        console.log('Using signed URL for', file.name, 'from bucket', file.bucket);
+                    } catch (e) {
+                        imageUrl = supabaseClient.getPublicUrl(file.path, file.bucket);
+                        console.log('Using public URL for', file.name, 'from bucket', file.bucket);
+                    }
+                    
+                    // Use rarity from bucket
+                    let rarity = file.rarity || 'common';
+                    
+                    // Optional override with filename
+                    if (file.name.toLowerCase().includes('holo')) {
+                        rarity = 'holographic';
+                    }
+                    
+                    const item = document.createElement('div');
+                    item.className = 'sticker-item';
+                    item.innerHTML = `
+                        <img src="${imageUrl}" alt="${file.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22150%22%3E%3Crect width=%22200%22 height=%22150%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22monospace%22%3EError Loading%3C/text%3E%3C/svg%3E'">
+                        <div class="sticker-info">
+                            <div>${file.name}</div>
+                            <div class="rarity ${rarity}">${rarity.toUpperCase()}</div>
+                            <div style="font-size: 0.8rem; color: #666;">${(file.size / 1024).toFixed(1)} KB</div>
+                        </div>
+                    `;
+                    
+                    item.onclick = () => toggleLock(item);
+                    grid.appendChild(item);
+                }
+                
+                status.textContent = `Status: Loaded ${files.length} stickers`;
+                
+            } catch (error) {
+                console.error('Error loading stickers:', error);
+                status.textContent = 'Status: Error - ' + error.message;
+            }
+        }
+        
+        function toggleLock(element) {
+            element.classList.toggle('locked');
+        }
+        
+        function toggleAllLocks() {
+            allLocked = !allLocked;
+            document.querySelectorAll('.sticker-item').forEach(item => {
+                if (allLocked) {
+                    item.classList.add('locked');
+                } else {
+                    item.classList.remove('locked');
+                }
+            });
+        }
+        
+        function clearCache() {
+            localStorage.removeItem('supabase-url');
+            localStorage.removeItem('supabase-key');
+            document.getElementById('supabase-url').value = '';
+            document.getElementById('supabase-key').value = '';
+            document.getElementById('status').textContent = 'Status: Cache cleared';
+            document.getElementById('sticker-grid').innerHTML = '';
+            supabaseClient = null;
+        }
+        
+        async function testSignedUrls() {
+            if (!supabaseClient || loadedStickers.length === 0) {
+                alert('Please load stickers first');
+                return;
+            }
+            
+            const status = document.getElementById('status');
+            status.textContent = 'Status: Testing signed URLs...';
+            
+            const testFile = loadedStickers[0];
+            
+            try {
+                const signedUrl = await supabaseClient.createSignedUrl(testFile.path, 60);
+                
+                // Test if URL works
+                const response = await fetch(signedUrl, { method: 'HEAD' });
+                
+                if (response.ok) {
+                    status.textContent = 'Status: Signed URLs working (private bucket mode)';
+                    alert('✅ Private bucket with signed URLs is working!');
+                } else {
+                    status.textContent = 'Status: Signed URLs not working, use public bucket';
+                    alert('⚠️ Signed URLs failed. Your bucket might be public.');
+                }
+            } catch (error) {
+                status.textContent = 'Status: Error testing signed URLs';
+                alert('❌ Error: ' + error.message);
+            }
+        }
+        
+        // Load config on page load
+        window.onload = () => {
+            const url = localStorage.getItem('supabase-url');
+            const key = localStorage.getItem('supabase-key');
+            
+            if (url && key) {
+                document.getElementById('supabase-url').value = url;
+                document.getElementById('supabase-key').value = key;
+                supabaseClient = new TestSupabaseClient(url, key);
+                document.getElementById('status').textContent = 'Status: Connected (from cache)';
+            }
+        };
+    </script>
+</body>
+</html>

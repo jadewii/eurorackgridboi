@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Automatic Database Setup</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        button { 
+            padding: 15px 30px; 
+            margin: 10px; 
+            font-size: 18px; 
+            background: #0f0;
+            color: #000;
+            border: 2px solid #0f0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background: #000; color: #0f0; }
+        pre { 
+            background: #111; 
+            padding: 15px; 
+            border: 2px solid #0f0;
+            max-height: 500px;
+            overflow: auto;
+        }
+        .success { color: #0f0; font-weight: bold; }
+        .error { color: #f00; font-weight: bold; }
+        .warning { color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1>🚀 EUROGRID - Automatic Database Setup</h1>
+    
+    <p>Click the button below to automatically set up your database:</p>
+    
+    <button onclick="setupDatabase()">⚡ SETUP DATABASE NOW</button>
+    <button onclick="checkTables()">📊 Check Tables</button>
+    <button onclick="cleanupDatabase()">🗑️ Reset Database (if needed)</button>
+    
+    <h2>Output:</h2>
+    <pre id="output">Ready to set up your database...</pre>
+    
+    <script>
+        const output = document.getElementById('output');
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        function log(msg, isError = false) {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = isError ? 'error' : '';
+            output.innerHTML += `<span class="${className}">[${timestamp}] ${msg}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        async function setupDatabase() {
+            output.innerHTML = '';
+            log('🚀 Starting database setup...\n');
+            
+            // Unfortunately, Supabase doesn't allow creating tables via REST API
+            // We need to use their SQL endpoint which requires service role key
+            // But we can check if tables exist and provide instructions
+            
+            log('Checking if tables already exist...');
+            
+            try {
+                // Check if modules table exists
+                const modulesResponse = await fetch(`${SUPABASE_URL}/rest/v1/modules?select=*&limit=1`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Prefer': 'count=exact'
+                    }
+                });
+                
+                if (modulesResponse.ok) {
+                    const modules = await modulesResponse.json();
+                    log('✅ Modules table exists!');
+                    
+                    // Check if it has data
+                    const countResponse = await fetch(`${SUPABASE_URL}/rest/v1/modules?select=*`, {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'count=exact'
+                        }
+                    });
+                    
+                    const data = await countResponse.json();
+                    if (data.length > 0) {
+                        log(`✅ Found ${data.length} modules already in database!`);
+                        log('\n✨ DATABASE IS ALREADY SET UP! ✨\n');
+                        log('You can now test the system!');
+                        return;
+                    } else {
+                        log('⚠️ Modules table exists but is empty');
+                        log('Adding the 17 LIVE modules...');
+                        await insertModules();
+                    }
+                } else {
+                    log('❌ Modules table does not exist', true);
+                    log('\n📋 MANUAL SETUP REQUIRED:\n');
+                    log('1. Go to: https://supabase.com/dashboard/project/jqxshcyqxhbmvqrrthxy/sql/new');
+                    log('2. Copy the SQL from database-setup.sql file');
+                    log('3. Paste and click RUN');
+                    log('\nOr I can generate a clickable link for you...');
+                    
+                    // Generate SQL for easy copy
+                    generateSQLInstructions();
+                }
+            } catch (error) {
+                log('❌ Error: ' + error.message, true);
+            }
+        }
+        
+        async function insertModules() {
+            const modules = [];
+            for (let i = 1; i <= 17; i++) {
+                modules.push({
+                    name: `Module ${i.toString().padStart(2, '0')}`,
+                    description: `Animated eurorack module #${i}`,
+                    rarity: 'live',
+                    file_path: `${i.toString().padStart(2, '0')}.gif`,
+                    bucket_name: 'eurorackgif',
+                    hp_cost: 50
+                });
+            }
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/modules`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(modules)
+                });
+                
+                if (response.ok) {
+                    log('✅ Successfully added 17 LIVE modules!');
+                } else {
+                    const error = await response.text();
+                    log('❌ Failed to insert modules: ' + error, true);
+                }
+            } catch (error) {
+                log('❌ Error inserting modules: ' + error.message, true);
+            }
+        }
+        
+        async function checkTables() {
+            output.innerHTML = '';
+            log('📊 Checking database tables...\n');
+            
+            const tables = ['modules', 'user_modules', 'user_balance'];
+            
+            for (const table of tables) {
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&limit=1`, {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const countResp = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+                            headers: {
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`
+                            }
+                        });
+                        const data = await countResp.json();
+                        log(`✅ Table '${table}' exists with ${data.length} rows`);
+                    } else {
+                        log(`❌ Table '${table}' does not exist`, true);
+                    }
+                } catch (error) {
+                    log(`❌ Error checking '${table}': ${error.message}`, true);
+                }
+            }
+        }
+        
+        async function cleanupDatabase() {
+            if (!confirm('This will delete all data in the modules table. Are you sure?')) {
+                return;
+            }
+            
+            output.innerHTML = '';
+            log('🗑️ Cleaning up database...\n');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/modules?select=*`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    log('✅ Cleaned up modules table');
+                    log('Run "Setup Database" to add modules again');
+                } else {
+                    log('❌ Failed to cleanup', true);
+                }
+            } catch (error) {
+                log('❌ Error: ' + error.message, true);
+            }
+        }
+        
+        function generateSQLInstructions() {
+            log('\n📋 QUICK SETUP INSTRUCTIONS:\n');
+            log('Since we need admin access to create tables, please:');
+            log('1. Click this link to open SQL editor:');
+            log('   https://supabase.com/dashboard/project/jqxshcyqxhbmvqrrthxy/sql/new\n');
+            log('2. Copy and paste the SQL from database-setup.sql');
+            log('3. Click RUN button\n');
+            log('Then come back here and click "Check Tables" to verify!');
+        }
+        
+        // Auto-check on load
+        window.onload = () => {
+            log('Welcome to Eurogrid Database Setup!\n');
+            log('Click "SETUP DATABASE NOW" to begin automatic setup.');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>REWARDS CENTER - Claim Physical Modules</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-bottom: 3px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .points-display {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .points-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+        }
+        
+        .points-label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .points-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff00ff;
+        }
+        
+        .main {
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .hero-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-subtitle {
+            color: #aaa;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            background: rgba(255,255,255,0.1);
+            height: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            height: 100%;
+            width: 0%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: width 1s ease;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .reward-tiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .tier-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #333;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .tier-card.unlocked {
+            border-color: #00ff88;
+            background: rgba(0,255,136,0.1);
+        }
+        
+        .tier-card.current {
+            border-color: #ff00ff;
+            background: rgba(255,0,255,0.1);
+            animation: pulse-border 2s infinite;
+        }
+        
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,0,255,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,0,255,0.8); }
+        }
+        
+        .tier-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tier-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .tier-requirement {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        .tier-reward {
+            background: rgba(255,215,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tier-reward-title {
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .claim-btn {
+            background: linear-gradient(45deg, #00ff88, #00cc70);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .claim-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0,255,136,0.5);
+        }
+        
+        .claim-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        .claim-btn.claimed {
+            background: #666;
+            color: #aaa;
+        }
+        
+        /* Booster Pack Modal */
+        .pack-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pack-modal.active {
+            display: flex;
+        }
+        
+        .booster-pack {
+            width: 300px;
+            height: 420px;
+            background-image: url('booster.png');
+            background-size: cover;
+            background-position: center;
+            background-color: #FFD700;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 20px 60px rgba(255,215,0,0.5);
+        }
+        
+        .booster-pack:hover {
+            transform: scale(1.05);
+            box-shadow: 0 25px 70px rgba(255,215,0,0.7);
+        }
+        
+        .booster-pack::after {
+            content: 'TAP TO OPEN';
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            color: white;
+            background: rgba(0,0,0,0.8);
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+        }
+        
+        @keyframes packOpen {
+            0% {
+                transform: scale(1) rotate(0deg);
+                filter: brightness(1);
+            }
+            25% {
+                transform: scale(1.1) rotate(-3deg);
+                filter: brightness(1.2);
+            }
+            50% {
+                transform: scale(1.2) rotate(3deg);
+                filter: brightness(1.5) contrast(1.2);
+            }
+            75% {
+                transform: scale(1.4) rotate(-5deg);
+                opacity: 0.8;
+                filter: brightness(2) contrast(1.5);
+            }
+            100% {
+                transform: scale(1.8) rotate(10deg);
+                opacity: 0;
+                filter: brightness(3) contrast(2);
+            }
+        }
+        
+        .pack-opening {
+            animation: packOpen 1.5s ease-out;
+        }
+        
+        .reward-reveal {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .reward-reveal.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .reward-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .reward-description {
+            font-size: 1.2rem;
+            color: #FFD700;
+            margin-bottom: 30px;
+        }
+        
+        .reward-stickers {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .reward-sticker {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .reward-sticker:nth-child(1) { animation-delay: 0.1s; }
+        .reward-sticker:nth-child(2) { animation-delay: 0.2s; }
+        .reward-sticker:nth-child(3) { animation-delay: 0.3s; }
+        .reward-sticker:nth-child(4) { animation-delay: 0.4s; }
+        .reward-sticker:nth-child(5) { animation-delay: 0.5s; }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .reward-sticker img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .continue-btn {
+            background: linear-gradient(45deg, #00ff88, #00cc70);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .continue-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0,255,136,0.5);
+        }
+        
+        /* Physical Reward Selection */
+        .reward-selection {
+            margin-top: 50px;
+            padding: 40px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            border: 2px solid #ff00ff;
+        }
+        
+        .selection-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .available-rewards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .reward-item {
+            border: 2px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .reward-item:hover {
+            border-color: #ff00ff;
+            transform: scale(1.05);
+        }
+        
+        .reward-item.selected {
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0,255,136,0.5);
+        }
+        
+        .reward-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .reward-item-info {
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .rarity-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .rarity-legendary { background: linear-gradient(45deg, #FFD700, #FFA500); }
+        .rarity-epic { background: #9370DB; }
+        .rarity-rare { background: #4169E1; }
+        
+        .ship-form {
+            background: rgba(0,0,0,0.5);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            color: #aaa;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            color: white;
+            border-radius: 5px;
+        }
+        
+        .ship-btn {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        .ship-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255,0,255,0.5);
+        }
+        
+        /* How it works */
+        .how-it-works {
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            border: 1px solid #333;
+        }
+        
+        .how-it-works h2 {
+            margin-bottom: 20px;
+            color: #ff00ff;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .step {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .step-desc {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">REWARDS CENTER</div>
+        <div class="points-display">
+            <div class="points-item">
+                <span class="points-label">Collection Score:</span>
+                <span class="points-value">1,650</span>
+            </div>
+            <div class="points-item">
+                <span class="points-label">Physical Claimed:</span>
+                <span class="points-value">2/5</span>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main">
+        <div class="hero-section">
+            <h1 class="hero-title">EARN PHYSICAL PACKS</h1>
+            <p class="hero-subtitle">Reach milestones to get FREE physical sticker packs!</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill">
+                    TIER 3 - 65% COMPLETE
+                </div>
+            </div>
+        </div>
+        
+        <div class="reward-tiers">
+            <!-- First Pack - 20 Modules -->
+            <div class="tier-card">
+                <div class="tier-icon">20</div>
+                <div class="tier-name">FIRST PACK</div>
+                <div class="tier-requirement">Collect 20 different modules</div>
+                <div class="tier-reward">
+                    <div class="tier-reward-title">REWARD:</div>
+                    <div>FREE Physical Sticker Pack</div>
+                    <div>5 Random Physical Stickers</div>
+                </div>
+                <button class="claim-btn" disabled>LOCKED</button>
+            </div>
+            
+            <!-- Second Pack - 40 Modules -->
+            <div class="tier-card">
+                <div class="tier-icon">40</div>
+                <div class="tier-name">SECOND PACK</div>
+                <div class="tier-requirement">Collect 40 different modules</div>
+                <div class="tier-reward">
+                    <div class="tier-reward-title">REWARD:</div>
+                    <div>FREE Physical Sticker Pack</div>
+                    <div>5 Random Physical Stickers</div>
+                </div>
+                <button class="claim-btn" disabled>LOCKED</button>
+            </div>
+            
+            <!-- Third Pack - 60 Modules -->
+            <div class="tier-card">
+                <div class="tier-icon">60</div>
+                <div class="tier-name">THIRD PACK</div>
+                <div class="tier-requirement">Collect 60 different modules</div>
+                <div class="tier-reward">
+                    <div class="tier-reward-title">REWARD:</div>
+                    <div>FREE Physical Sticker Pack</div>
+                    <div>5 Random Physical Stickers</div>
+                </div>
+                <button class="claim-btn" disabled>LOCKED</button>
+            </div>
+            
+            <!-- Fourth Pack - 80 Modules -->
+            <div class="tier-card">
+                <div class="tier-icon">80</div>
+                <div class="tier-name">FOURTH PACK</div>
+                <div class="tier-requirement">Collect 80 different modules</div>
+                <div class="tier-reward">
+                    <div class="tier-reward-title">REWARD:</div>
+                    <div>FREE Premium Pack</div>
+                    <div>10 Physical Stickers</div>
+                </div>
+                <button class="claim-btn" disabled>LOCKED</button>
+            </div>
+            
+            <!-- Ultimate - 100 Modules -->
+            <div class="tier-card">
+                <div class="tier-icon">100</div>
+                <div class="tier-name">ULTIMATE</div>
+                <div class="tier-requirement">Collect 100 different modules</div>
+                <div class="tier-reward">
+                    <div class="tier-reward-title">ULTIMATE REWARD:</div>
+                    <div>COMPLETE Physical Set</div>
+                    <div>All 25 Physical Stickers</div>
+                    <div>+ Display Frame</div>
+                </div>
+                <button class="claim-btn" disabled>LOCKED</button>
+            </div>
+        </div>
+        
+        <!-- Physical Reward Selection -->
+        <div class="reward-selection">
+            <h2 class="selection-title">🎁 CHOOSE YOUR PHYSICAL REWARDS</h2>
+            <p style="text-align: center; color: #aaa; margin-bottom: 30px;">
+                You have 2 physical stickers available to claim! Select from your owned digital modules:
+            </p>
+            
+            <div class="available-rewards">
+                <!-- Only modules you own digitally can be claimed physically -->
+                <div class="reward-item" onclick="selectReward(this)">
+                    <span class="rarity-indicator rarity-legendary">LEGENDARY</span>
+                    <img src="https://via.placeholder.com/150" alt="Mod-24">
+                    <div class="reward-item-info">Mod-24</div>
+                </div>
+                <div class="reward-item" onclick="selectReward(this)">
+                    <span class="rarity-indicator rarity-epic">EPIC</span>
+                    <img src="https://via.placeholder.com/150" alt="Mod-07">
+                    <div class="reward-item-info">Mod-07</div>
+                </div>
+                <div class="reward-item" onclick="selectReward(this)">
+                    <span class="rarity-indicator rarity-rare">RARE</span>
+                    <img src="https://via.placeholder.com/150" alt="Mod-15">
+                    <div class="reward-item-info">Mod-15</div>
+                </div>
+                <!-- More owned modules... -->
+            </div>
+            
+            <div class="ship-form">
+                <h3 style="margin-bottom: 20px;">Shipping Information (FREE WORLDWIDE)</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" placeholder="123 Main St">
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" placeholder="Los Angeles">
+                    </div>
+                    <div class="form-group">
+                        <label>State/Province</label>
+                        <input type="text" placeholder="CA">
+                    </div>
+                    <div class="form-group">
+                        <label>ZIP/Postal Code</label>
+                        <input type="text" placeholder="90210">
+                    </div>
+                </div>
+                <button class="ship-btn">CLAIM PHYSICAL REWARDS 🚀</button>
+            </div>
+        </div>
+        
+        <!-- How It Works -->
+        <div class="how-it-works">
+            <h2>HOW THE REWARD SYSTEM WORKS</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">COLLECT DIGITAL</div>
+                    <div class="step-desc">Open packs and trade to build your Eurogrid collection</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">REACH MILESTONES</div>
+                    <div class="step-desc">Hit collection goals to unlock reward tiers</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">CHOOSE REWARDS</div>
+                    <div class="step-desc">Select which of your Eurogrid modules to get physically</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">FREE SHIPPING</div>
+                    <div class="step-desc">We ship your earned stickers worldwide at no cost!</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Pack Opening Modal -->
+    <div class="pack-modal" id="pack-modal">
+        <div class="booster-pack" id="booster-pack" onclick="openPack()">
+            <!-- Booster pack image will be here -->
+        </div>
+        <div class="reward-reveal" id="reward-reveal">
+            <h2 class="reward-title">REWARD UNLOCKED!</h2>
+            <p class="reward-description">You've earned a Physical Sticker Pack!</p>
+            <div class="reward-stickers" id="reward-stickers">
+                <!-- Stickers will be shown here -->
+            </div>
+            <button class="continue-btn" onclick="closePackModal()">CONTINUE</button>
+        </div>
+    </div>
+    
+    <script src="printify-products.js"></script>
+    <script>
+        let selectedCount = 0;
+        let maxSelections = 0;
+        let myCollection = {};
+        let claimedTiers = [];
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCollectionData();
+            updateTierDisplay();
+            loadAvailableRewards();
+        });
+        
+        function loadCollectionData() {
+            // Load digital collection from localStorage
+            myCollection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+            claimedTiers = JSON.parse(localStorage.getItem('claimed-reward-tiers') || '[]');
+            
+            const collectionCount = Object.keys(myCollection).length;
+            
+            // Update collection score display
+            document.querySelector('.points-value').textContent = collectionCount;
+            
+            // Update progress bar and check for milestone rewards
+            updateProgressBar(collectionCount);
+        }
+        
+        function updateProgressBar(count) {
+            const tiers = [20, 40, 60, 80, 100];
+            let currentMilestone = 0;
+            let nextMilestone = 20;
+            
+            // Find current milestone
+            for (let i = tiers.length - 1; i >= 0; i--) {
+                if (count >= tiers[i]) {
+                    currentMilestone = tiers[i];
+                    nextMilestone = i < tiers.length - 1 ? tiers[i + 1] : tiers[i];
+                    break;
+                }
+            }
+            
+            // If no milestone reached yet, working towards first one
+            if (currentMilestone === 0) {
+                nextMilestone = tiers[0];
+            } else {
+                // Find the next milestone
+                const currentIndex = tiers.indexOf(currentMilestone);
+                if (currentIndex < tiers.length - 1) {
+                    nextMilestone = tiers[currentIndex + 1];
+                }
+            }
+            
+            // Calculate progress to next milestone
+            let progress = 0;
+            let progressText = '';
+            
+            if (count >= 100) {
+                // Completed all
+                progress = 100;
+                progressText = 'ALL REWARDS UNLOCKED!';
+            } else {
+                // Calculate progress within current tier
+                const startPoint = currentMilestone;
+                const range = nextMilestone - startPoint;
+                const currentProgress = count - startPoint;
+                progress = (currentProgress / range) * 100;
+                progressText = `${count}/${nextMilestone} MODULES - ${Math.floor(progress)}%`;
+                
+                // Reset to show progress to next milestone
+                if (count === 20 || count === 40 || count === 60 || count === 80) {
+                    // Just hit a milestone - show full bar briefly then reset
+                    progress = 100;
+                    progressText = `REWARD UNLOCKED! ${count} MODULES`;
+                    
+                    // Auto-reset after showing completion
+                    setTimeout(() => {
+                        updateProgressBar(count);
+                        checkMilestoneReward(count);
+                    }, 2000);
+                }
+            }
+            
+            const progressFill = document.querySelector('.progress-fill');
+            progressFill.style.width = `${Math.min(progress, 100)}%`;
+            progressFill.textContent = progressText;
+        }
+        
+        function checkMilestoneReward(count) {
+            const milestones = [20, 40, 60, 80, 100];
+            const unlockedMilestones = JSON.parse(localStorage.getItem('unlocked-milestones') || '[]');
+            
+            if (milestones.includes(count) && !unlockedMilestones.includes(count)) {
+                // Show notification
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: linear-gradient(45deg, #FFD700, #FFA500);
+                    color: #000;
+                    padding: 30px 50px;
+                    border-radius: 20px;
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    z-index: 3000;
+                    box-shadow: 0 20px 60px rgba(255,215,0,0.8);
+                    animation: bounceIn 0.5s ease-out;
+                `;
+                notification.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">🎉</div>
+                        <div>PHYSICAL PACK UNLOCKED!</div>
+                        <div style="font-size: 1rem; margin-top: 10px; opacity: 0.8;">You've collected ${count} modules!</div>
+                        <div style="font-size: 0.9rem; margin-top: 5px;">Claim your FREE physical sticker pack below!</div>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+                
+                // Remove notification after 3 seconds
+                setTimeout(() => {
+                    notification.style.animation = 'fadeOut 0.5s ease-out';
+                    setTimeout(() => notification.remove(), 500);
+                }, 3000);
+                
+                // Save unlocked milestone
+                unlockedMilestones.push(count);
+                localStorage.setItem('unlocked-milestones', JSON.stringify(unlockedMilestones));
+            }
+        }
+        
+        function updateTierDisplay() {
+            const collectionCount = Object.keys(myCollection).length;
+            const tierCards = document.querySelectorAll('.tier-card');
+            const physicalClaimed = claimedTiers.length;
+            
+            // Update physical claimed count
+            document.querySelectorAll('.points-value')[1].textContent = `${physicalClaimed}/5`;
+            
+            // Tier requirements matching the milestone system
+            const tierRequirements = [20, 40, 60, 80, 100];
+            
+            tierCards.forEach((card, index) => {
+                const requirement = tierRequirements[index];
+                const tierName = card.querySelector('.tier-name').textContent;
+                const claimBtn = card.querySelector('.claim-btn');
+                
+                card.classList.remove('unlocked', 'current');
+                
+                if (collectionCount >= requirement) {
+                    // Tier is unlocked
+                    card.classList.add('unlocked');
+                    
+                    if (claimedTiers.includes(tierName)) {
+                        // Already claimed
+                        claimBtn.textContent = 'CLAIMED ✓';
+                        claimBtn.classList.add('claimed');
+                        claimBtn.disabled = true;
+                    } else {
+                        // Can claim
+                        claimBtn.textContent = 'CLAIM REWARD!';
+                        claimBtn.disabled = false;
+                        claimBtn.onclick = () => claimTierReward(index + 1, tierName);
+                    }
+                } else if (collectionCount < requirement && collectionCount >= (index > 0 ? tierRequirements[index - 1] : 0)) {
+                    // Current tier working towards
+                    card.classList.add('current');
+                    const remaining = requirement - collectionCount;
+                    claimBtn.textContent = `${remaining} MORE TO GO!`;
+                    claimBtn.disabled = true;
+                } else {
+                    // Locked tier
+                    claimBtn.textContent = 'LOCKED';
+                    claimBtn.disabled = true;
+                }
+            });
+        }
+        
+        function claimTierReward(tier, tierName) {
+            // Show pack opening modal instead of selection
+            currentTier = tier;
+            currentTierName = tierName;
+            showPackModal(tier);
+        }
+        
+        let currentTier = 0;
+        let currentTierName = '';
+        
+        function showPackModal(tier) {
+            const modal = document.getElementById('pack-modal');
+            const boosterPack = document.getElementById('booster-pack');
+            const rewardReveal = document.getElementById('reward-reveal');
+            
+            // Reset states
+            boosterPack.style.display = 'block';
+            boosterPack.classList.remove('pack-opening');
+            rewardReveal.classList.remove('active');
+            
+            // Show modal
+            modal.classList.add('active');
+            
+            // Set pack appearance based on tier
+            if (tier === 1) {
+                boosterPack.style.background = 'linear-gradient(135deg, #4169E1, #1E90FF)';
+            } else if (tier === 2) {
+                boosterPack.style.background = 'linear-gradient(135deg, #9370DB, #8A2BE2)';
+            } else if (tier === 3) {
+                boosterPack.style.background = 'linear-gradient(135deg, #FFD700, #FFA500)';
+            } else if (tier === 4) {
+                boosterPack.style.background = 'linear-gradient(135deg, #FF1493, #FF69B4)';
+            } else {
+                boosterPack.style.background = 'linear-gradient(135deg, #FFD700, #FF6347, #FF1493)';
+            }
+        }
+        
+        function openPack() {
+            const boosterPack = document.getElementById('booster-pack');
+            const rewardReveal = document.getElementById('reward-reveal');
+            const rewardStickers = document.getElementById('reward-stickers');
+            
+            // Animate pack opening
+            boosterPack.classList.add('pack-opening');
+            
+            // Generate random stickers for the pack
+            const stickers = printifyProducts.filter(p => p.category === 'stickers');
+            const packSize = currentTier === 5 ? 25 : (currentTier === 4 ? 10 : 5);
+            const selectedStickers = [];
+            
+            for (let i = 0; i < Math.min(packSize, 5); i++) {
+                const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
+                selectedStickers.push(randomSticker);
+            }
+            
+            // Build sticker display
+            rewardStickers.innerHTML = selectedStickers.map(sticker => `
+                <div class="reward-sticker">
+                    <img src="${sticker.image}?width=200" alt="${sticker.title}">
+                </div>
+            `).join('');
+            
+            // Update description based on tier
+            const descriptions = [
+                '5 Random Physical Stickers',
+                '5 Random Physical Stickers',
+                '5 Random Physical Stickers',
+                '10 Premium Physical Stickers',
+                'COMPLETE 25 Sticker Collection + Display Frame!'
+            ];
+            document.querySelector('.reward-description').textContent = descriptions[currentTier - 1];
+            
+            // After animation, show rewards
+            setTimeout(() => {
+                boosterPack.style.display = 'none';
+                rewardReveal.classList.add('active');
+                
+                // Save claimed tier
+                if (!claimedTiers.includes(currentTierName)) {
+                    claimedTiers.push(currentTierName);
+                    localStorage.setItem('claimed-reward-tiers', JSON.stringify(claimedTiers));
+                }
+            }, 1500);
+        }
+        
+        function closePackModal() {
+            document.getElementById('pack-modal').classList.remove('active');
+            
+            // Update tier display
+            updateTierDisplay();
+            
+            // Show shipping form
+            document.querySelector('.reward-selection').style.display = 'block';
+            document.querySelector('.reward-selection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function loadAvailableRewards() {
+            const rewardsGrid = document.querySelector('.available-rewards');
+            rewardsGrid.innerHTML = '';
+            
+            const stickers = printifyProducts.filter(p => p.category === 'stickers');
+            
+            // Show only owned digital modules
+            Object.keys(myCollection).forEach(moduleTitle => {
+                const sticker = stickers.find(s => s.title === moduleTitle);
+                if (sticker) {
+                    const moduleData = myCollection[moduleTitle];
+                    const rarity = moduleData.rarity || 'common';
+                    
+                    const rewardItem = document.createElement('div');
+                    rewardItem.className = 'reward-item';
+                    rewardItem.onclick = () => selectReward(rewardItem);
+                    rewardItem.dataset.title = moduleTitle;
+                    
+                    let rarityClass = 'rarity-common';
+                    let rarityText = 'COMMON';
+                    if (rarity === 'legendary') {
+                        rarityClass = 'rarity-legendary';
+                        rarityText = 'LEGENDARY';
+                    } else if (rarity === 'epic') {
+                        rarityClass = 'rarity-epic';
+                        rarityText = 'EPIC';
+                    } else if (rarity === 'rare') {
+                        rarityClass = 'rarity-rare';
+                        rarityText = 'RARE';
+                    }
+                    
+                    rewardItem.innerHTML = `
+                        <span class="rarity-indicator ${rarityClass}">${rarityText}</span>
+                        <img src="${sticker.image}?width=300" alt="${moduleTitle}">
+                        <div class="reward-item-info">${moduleTitle}</div>
+                    `;
+                    
+                    rewardsGrid.appendChild(rewardItem);
+                }
+            });
+            
+            if (rewardsGrid.children.length === 0) {
+                rewardsGrid.innerHTML = '<p style="color: #888; text-align: center; grid-column: 1/-1;">Open packs to collect digital modules first!</p>';
+            }
+        }
+        
+        function selectReward(element) {
+            if (maxSelections === 0) {
+                alert('Please click a CLAIM REWARD button first!');
+                return;
+            }
+            
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                selectedCount--;
+            } else if (selectedCount < maxSelections) {
+                element.classList.add('selected');
+                selectedCount++;
+            } else {
+                alert(`You can only select ${maxSelections} stickers for this tier!`);
+            }
+        }
+        
+        // Handle form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const shipBtn = document.querySelector('.ship-btn');
+            if (shipBtn) {
+                shipBtn.onclick = function() {
+                    if (selectedCount === 0) {
+                        alert('Please select your rewards first!');
+                        return;
+                    }
+                    
+                    // Get selected modules
+                    const selected = [];
+                    document.querySelectorAll('.reward-item.selected').forEach(item => {
+                        selected.push(item.dataset.title);
+                    });
+                    
+                    // Save claim
+                    const currentTier = document.querySelector('.tier-card.unlocked:not(.claimed) .tier-name');
+                    if (currentTier) {
+                        claimedTiers.push(currentTier.textContent);
+                        localStorage.setItem('claimed-reward-tiers', JSON.stringify(claimedTiers));
+                    }
+                    
+                    alert(`Success! Your ${selectedCount} physical stickers will be shipped free! Selected: ${selected.join(', ')}`);
+                    
+                    // Reset and reload
+                    document.querySelector('.reward-selection').style.display = 'none';
+                    updateTierDisplay();
+                };
+            }
+        });
+    </script>
+</body>
+</html>

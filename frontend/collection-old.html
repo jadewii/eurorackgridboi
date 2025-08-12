@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.STORE - Digital Module Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            overflow-x: hidden;
+        }
+        
+        /* Fixed Header Bar */
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #000;
+        }
+        
+        .profile-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1001;
+            border: 2px solid #000;
+            top: 100%;
+            margin-top: 2px;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+        }
+        
+        .dropdown-content a {
+            color: #000;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-weight: bold;
+            transition: all 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-content a:hover {
+            background: #000;
+            color: white;
+        }
+        
+        
+        
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 100px;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .description {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        
+        .progress-bar {
+            background: #f0f0f0;
+            height: 30px;
+            border: 2px solid #000;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #FFB6C1, #C8B6DB, #87CEEB);
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 2px solid #000;
+            color: #000;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: #000;
+            color: white;
+        }
+        
+        /* Sticker Grid - Exact same as stickers.html */
+        .sticker-grid {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            line-height: 0;
+            margin: 0 auto;
+            padding: 0;
+            justify-content: center;
+        }
+        
+        .sticker-item {
+            width: calc(100vw / 6);
+            max-width: 250px;
+            height: calc(100vw / 6);
+            max-height: 250px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            line-height: 0;
+            border: 4px solid transparent;
+            flex-shrink: 0;
+        }
+        
+        .sticker-item img {
+            width: 120%;
+            height: 120%;
+            object-fit: cover;
+            display: block;
+            position: absolute;
+            top: -10%;
+            left: -10%;
+        }
+        
+        /* Unowned state - grayed out */
+        .sticker-item.locked img {
+            filter: grayscale(1) brightness(0.4);
+            opacity: 0.5;
+        }
+        
+        .sticker-item.locked {
+            border-color: transparent;
+        }
+        
+        /* User collection view styles */
+        .user-collection-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        
+        .back-to-profile {
+            position: fixed;
+            top: 100px;
+            left: 20px;
+            background: white;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 999;
+            transition: all 0.2s;
+        }
+        
+        .back-to-profile:hover {
+            background: #000;
+            color: white;
+        }
+        
+        /* Pack Store Modal */
+        .pack-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pack-modal.active {
+            display: flex;
+        }
+        
+        .pack-store {
+            background: white;
+            border-radius: 0;
+            padding: 40px;
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .close-btn:hover {
+            color: #000;
+        }
+        
+        .pack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .pack-option {
+            border: 2px solid #000;
+            border-radius: 0;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            background: white;
+        }
+        
+        .pack-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .pack-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 15px 0;
+        }
+        
+        .pack-btn {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            border-radius: 0;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .pack-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        /* Owned state - no border */
+        .sticker-item.owned {
+            border-color: transparent;
+        }
+        
+        .sticker-item.owned img {
+            filter: none;
+            opacity: 1;
+        }
+        
+        /* Module card styles for Supabase integration */
+        .module-card {
+            position: relative;
+            border: 2px solid #000;
+            background: white;
+            overflow: hidden;
+        }
+        
+        .module-card.locked img {
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+        
+        .module-card.owned img {
+            filter: none;
+            opacity: 1;
+        }
+        
+        
+        /* Rarity indicator badges */
+        .rarity-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 2;
+            text-transform: uppercase;
+        }
+        
+        .rarity-badge.common {
+            background: #888;
+            color: white;
+        }
+        
+        .rarity-badge.rare {
+            background: linear-gradient(45deg, #4169E1, #00BFFF);
+            color: white;
+        }
+        
+        .rarity-badge.epic {
+            background: linear-gradient(45deg, #9370DB, #FF00FF);
+            color: white;
+            animation: shimmer 2s linear infinite;
+        }
+        
+        .rarity-badge.legendary {
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF6347);
+            color: #000;
+            animation: shimmer 1s linear infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+            background-size: 200% 100%;
+        }
+        
+        /* Lock icon for unowned */
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .sticker-item.locked:hover .lock-overlay {
+            opacity: 1;
+        }
+        
+        .lock-icon {
+            font-size: 2rem;
+            color: white;
+        }
+        
+        /* Purchase options menu */
+        .purchase-options {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            padding: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .sticker-item:hover .purchase-options {
+            opacity: 1;
+        }
+        
+        .purchase-btn {
+            color: white;
+            border: none;
+            padding: 6px 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .purchase-btn:nth-child(1) {
+            background: #FF69B4; /* Hot Pink */
+        }
+        
+        .purchase-btn:nth-child(1):hover {
+            background: #FF1493;
+            transform: scale(1.05);
+        }
+        
+        .purchase-btn:nth-child(2) {
+            background: #9370DB; /* Medium Purple */
+        }
+        
+        .purchase-btn:nth-child(2):hover {
+            background: #8A2BE2;
+            transform: scale(1.05);
+        }
+        
+        .purchase-btn:nth-child(3) {
+            background: #4169E1; /* Royal Blue */
+        }
+        
+        .purchase-btn:nth-child(3):hover {
+            background: #1E90FF;
+            transform: scale(1.05);
+        }
+        
+        /* Reorder button for owned stickers */
+        .reorder-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .sticker-item.owned:hover .reorder-btn {
+            opacity: 1;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sticker-item {
+                width: calc(100vw / 3);
+                height: calc(100vw / 3);
+                max-width: 150px;
+                max-height: 150px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .collection-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sticker-item {
+                width: calc(100vw / 2);
+                height: calc(100vw / 2);
+                max-width: 200px;
+                max-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
+        <div class="cart-area">
+            <div class="profile-avatar" onclick="window.location.href='profile.html'">
+                J
+            </div>
+            <button class="cart-counter" onclick="showPackStore()" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; border: 2px solid #FFD700;">
+                <span id="credits-amount">100</span> HP
+            </button>
+            <button class="cart-counter" onclick="window.location.href='collection.html'" style="background: #000; color: white;">
+                MODULES
+            </button>
+            <button class="cart-counter" onclick="window.location.href='my-racks.html'">
+                MY RACKS
+            </button>
+            <button class="cart-counter" onclick="window.location.href='community.html'">
+                COMMUNITY
+            </button>
+            <div class="dropdown">
+                <button class="cart-counter" onclick="toggleShopDropdown()">
+                    SHOP ▼
+                </button>
+                <div class="dropdown-content" id="shop-dropdown">
+                    <a href="collection.html">MODULES</a>
+                    <a href="rack-shop.html">RACKS</a>
+                    <a href="plant-shop.html">PLANTS</a>
+                    <a href="sticker-shop.html">STICKERS</a>
+                    <a href="marketplace.html">MARKETPLACE</a>
+                </div>
+            </div>
+            <button class="cart-counter" onclick="window.location.href='rack-shop.html'">
+                RACK SHOP
+            </button>
+            <button class="cart-counter" onclick="window.location.href='sticker-shop.html'">
+                STICKER SHOP
+            </button>
+            <button class="cart-counter" onclick="window.location.href='marketplace.html'">
+                MARKETPLACE
+            </button>
+            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
+                BUY HP
+            </button>
+            <button class="cart-counter" id="physical-cart-button" onclick="togglePhysicalCart()">
+                CART (<span id="physical-cart-count">0</span>)
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="title-section">
+            <h1 class="page-title">MODULES</h1>
+            <div class="subtitle">Collect and unlock eurorack modules</div>
+            <div class="description">Use HP to unlock modules • Build custom racks • Trade with others</div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill">0%</div>
+                </div>
+            </div>
+            
+            
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-btn active" onclick="filterStickers('all')">ALL</button>
+                <button class="filter-btn" onclick="filterStickers('owned')">OWNED</button>
+                <button class="filter-btn" onclick="filterStickers('locked')">LOCKED</button>
+                <button class="filter-btn" onclick="filterStickers('holo')" style="color: #9370DB;">HOLO</button>
+                <button class="filter-btn" onclick="loadLiveModules()" style="background: linear-gradient(45deg, #FF1493, #FF69B4); color: white; font-weight: bold;">LIVE MODULES</button>
+            </div>
+        </div>
+
+        <!-- Sticker Grid -->
+        <div class="sticker-grid" id="sticker-grid">
+            <!-- Load modules directly in HTML for Safari compatibility -->
+        </div>
+    </div>
+
+    <script>
+        // Supabase URL
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        
+        // Create module catalogs just like plant-shop does
+        const commonModules = [];
+        for (let i = 1; i <= 36; i++) {
+            const paddedId = i.toString().padStart(2, '0');
+            commonModules.push({
+                id: paddedId,
+                url: `/storage/v1/object/public/eurorackart/${paddedId}.png`,
+                name: `Module ${paddedId}`
+            });
+        }
+        
+        const liveModulesList = [];
+        for (let i = 1; i <= 17; i++) {
+            const paddedId = i.toString().padStart(2, '0');
+            liveModulesList.push({
+                id: paddedId,
+                url: `/storage/v1/object/public/eurorackgif/${paddedId}.gif`,
+                name: `Live Module ${paddedId}`
+            });
+        }
+        
+        // Check if viewing another user's collection
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewingUser = urlParams.get('user');
+        const isViewingOtherUser = viewingUser && viewingUser !== 'jadewii';
+        
+        // Collection data
+        let myCollection = {};
+        let currentFilter = 'all';
+        
+        // Load common PNG modules from eurorackart bucket (using the working method!)
+        function loadModulesNow() {
+            const grid = document.getElementById('sticker-grid');
+            if (!grid) {
+                console.error('No grid found!');
+                return;
+            }
+            
+            // Clear grid
+            grid.innerHTML = '';
+            
+            // Load common modules using the catalog
+            commonModules.forEach(module => {
+                const item = document.createElement('div');
+                item.className = 'sticker-item owned';
+                item.setAttribute('data-id', module.id);
+                
+                // Use innerHTML with full URL like the working version!
+                item.innerHTML = `
+                    <img src="${SUPABASE_URL}${module.url}" 
+                         alt="${module.name}" 
+                         style="width: 100%; height: 100%; object-fit: cover;">
+                `;
+                
+                grid.appendChild(item);
+            });
+            
+            console.log('Loaded 36 common modules from eurorackart bucket');
+        }
+        
+        // Initialize with all modules owned for main user
+        if (!isViewingOtherUser) {
+            // Give all modules to the user (using numbers 1-36)
+            for (let i = 1; i <= 36; i++) {
+                myCollection[i] = { owned: true, unlockedDate: new Date().toISOString() };
+            }
+            localStorage.setItem('module-collection', JSON.stringify(myCollection));
+        }
+        
+        // Load immediately when script runs
+        setTimeout(loadModulesNow, 100);
+        
+        // If viewing another user, load their collection
+        if (isViewingOtherUser) {
+            // For demo, show a different collection for other users
+            if (viewingUser === 'synthmaster') {
+                myCollection = {
+                    'Mod-02 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'holographic' },
+                    'Mod-04 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'common' },
+                    'Mod-06 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'common' },
+                    'Mod-08 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'live' },
+                    'Mod-10 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'common' }
+                };
+            } else if (viewingUser === 'modular_joe') {
+                myCollection = {
+                    'Mod-01 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'common' },
+                    'Mod-05 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'holographic' },
+                    'Mod-09 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'common' },
+                    'Mod-11 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'live' }
+                };
+            } else {
+                // Empty collection for unknown users
+                myCollection = {};
+            }
+            
+            // Update page title and header
+            document.addEventListener('DOMContentLoaded', () => {
+                const titleElement = document.querySelector('.main-content h1');
+                if (titleElement) {
+                    titleElement.textContent = `${viewingUser.toUpperCase()}'S MODULES`;
+                }
+                const subtitleElement = document.querySelector('.main-content p');
+                if (subtitleElement) {
+                    subtitleElement.textContent = `Viewing ${viewingUser}'s module collection`;
+                    subtitleElement.style.color = '#667eea';
+                    subtitleElement.style.fontWeight = 'bold';
+                }
+                // Hide progress bar for other users
+                const progressContainer = document.querySelector('.progress-container');
+                if (progressContainer) {
+                    progressContainer.style.display = 'none';
+                }
+                // Add back to profile button
+                const backBtn = document.createElement('button');
+                backBtn.className = 'back-to-profile';
+                backBtn.innerHTML = '← BACK TO PROFILE';
+                backBtn.onclick = () => {
+                    window.location.href = `profile.html?user=${viewingUser}`;
+                };
+                document.body.appendChild(backBtn);
+                
+                // Hide filter buttons except ALL and OWNED
+                const filterBtns = document.querySelectorAll('.filter-btn');
+                filterBtns.forEach((btn, index) => {
+                    if (index > 1) { // Keep only ALL and OWNED
+                        btn.style.display = 'none';
+                    }
+                });
+            });
+        } else {
+            // Demo: unlock a few stickers if collection is empty
+            if (Object.keys(myCollection).length === 0) {
+                const demoUnlocked = ['Mod-01 - eurorack sticker', 'Mod-03 - eurorack sticker', 'Mod-07 - eurorack sticker'];
+                demoUnlocked.forEach(id => {
+                    myCollection[id] = {
+                        unlockedDate: new Date().toISOString(),
+                        points: 100
+                    };
+                });
+                localStorage.setItem('digital-collection', JSON.stringify(myCollection));
+            }
+        }
+        
+        function loadStickers() {
+            console.log('Loading modules...');
+            const grid = document.getElementById('sticker-grid');
+            if (!grid) {
+                console.error('Grid element not found!');
+                return;
+            }
+            grid.innerHTML = '';
+            
+            // First, let's test with one known working image (using the URL you provided)
+            // We know 06.png works, so let's test with padded numbers
+            const testUrl = `${SUPABASE_URL}/storage/v1/object/public/eurorackart/06.png`;
+            console.log('Testing with URL:', testUrl);
+            
+            // Load modules directly from eurorackart bucket - trying PADDED format like 06.png
+            const modules = [];
+            for (let i = 1; i <= 36; i++) {
+                const paddedId = i.toString().padStart(2, '0');
+                modules.push({
+                    id: i,
+                    title: `Module ${i}`,
+                    image: `${SUPABASE_URL}/storage/v1/object/public/eurorackart/${paddedId}.png`,
+                    owned: myCollection[i] ? true : false
+                });
+            }
+            
+            // Apply filter
+            let filteredModules = modules;
+            if (currentFilter === 'owned') {
+                filteredModules = modules.filter(m => m.owned);
+            } else if (currentFilter === 'locked') {
+                filteredModules = modules.filter(m => !m.owned);
+            }
+            
+            console.log(`Showing ${filteredModules.length} modules`);
+            
+            filteredModules.forEach(module => {
+                const isOwned = !isViewingOtherUser ? true : module.owned;
+                const item = document.createElement('div');
+                item.className = `sticker-item ${isOwned ? 'owned' : 'locked'}`;
+                
+                // Create image element
+                const img = document.createElement('img');
+                img.src = module.image;
+                img.alt = module.title;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                
+                // Add error handler to see what's failing
+                img.onerror = function() {
+                    console.error('Failed to load:', this.src);
+                    // Try to show a placeholder
+                    this.style.background = '#f0f0f0';
+                    this.alt = 'Failed to load';
+                };
+                
+                img.onload = function() {
+                    console.log('Successfully loaded:', this.src);
+                };
+                
+                item.appendChild(img);
+                
+                // Add overlay if locked
+                if (!isOwned) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'lock-overlay';
+                    overlay.innerHTML = '<div class="lock-icon">🔒</div>';
+                    item.appendChild(overlay);
+                }
+                
+                item.onclick = () => {
+                    if (isOwned && !isViewingOtherUser) {
+                        console.log(`Module ${module.id} clicked`);
+                    }
+                };
+                
+                grid.appendChild(item);
+            });
+            
+            updateStats();
+        }
+        
+        // Filter function
+        function filterStickers(filter) {
+            currentFilter = filter;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Use the simple loader for now
+            if (filter === 'all') {
+                loadModulesNow();
+            } else if (filter === 'owned') {
+                // Show all as owned for now
+                loadModulesNow();
+            } else if (filter === 'locked') {
+                // Show none for locked since user owns all
+                const grid = document.getElementById('sticker-grid');
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">No locked modules - you own them all!</div>';
+            } else if (filter === 'holo') {
+                // Show some modules as holo (demo)
+                loadModulesNow();
+                setTimeout(() => {
+                    const items = document.querySelectorAll('.sticker-item');
+                    items.forEach((item, index) => {
+                        if (index % 3 === 0) {
+                            item.style.border = '4px solid #9370DB';
+                            item.style.boxShadow = '0 0 20px rgba(147,112,219,0.5)';
+                        }
+                    });
+                }, 100);
+            }
+        }
+        
+        function updateStats() {
+            const total = 36; // Total number of modules
+            const owned = Object.keys(myCollection).filter(key => myCollection[key] && myCollection[key].owned).length;
+            const percentage = Math.round((owned / total) * 100);
+            
+            const progressFill = document.getElementById('progress-fill');
+            if (progressFill) {
+                progressFill.style.width = percentage + '%';
+                progressFill.textContent = percentage + '%';
+            }
+            
+            // Update cart display
+            updateCart();
+        }
+        
+        function updateCart() {
+            // Calculate total across all sizes
+            let totalCount = 0;
+            let totalAmount = 0;
+            
+            // Get all cart selections
+            const cartSelections = JSON.parse(localStorage.getItem('sticker-selections') || '{"2x2":{},"3x3":{},"4x4":{}}');
+            
+            // Count items and calculate price for each size
+            const prices = {'2x2': 5, '3x3': 7, '4x4': 10};
+            
+            Object.entries(cartSelections).forEach(([size, items]) => {
+                Object.values(items).forEach(quantity => {
+                    if (typeof quantity === 'number') {
+                        totalCount += quantity;
+                        totalAmount += quantity * (prices[size] || 5);
+                    }
+                });
+            });
+            
+            document.getElementById('cart-count').textContent = totalCount.toString();
+            document.getElementById('total-amount').textContent = totalAmount.toString();
+            
+            const counter = document.getElementById('cart-counter');
+            if (totalCount > 0) {
+                counter.classList.add('has-items');
+            } else {
+                counter.classList.remove('has-items');
+            }
+        }
+        
+        function filterStickers(filter) {
+            currentFilter = filter;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadStickers();
+        }
+        
+        // Load Live Animated Modules (using the working method!)
+        function loadLiveModules() {
+            const grid = document.getElementById('sticker-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            
+            // Load live modules using the catalog
+            liveModulesList.forEach(module => {
+                const item = document.createElement('div');
+                item.className = 'sticker-item owned';
+                item.setAttribute('data-id', module.id);
+                
+                // Use innerHTML with full URL like the working version!
+                item.innerHTML = `
+                    <img src="${SUPABASE_URL}${module.url}" 
+                         alt="${module.name}" 
+                         style="width: 100%; height: 100%; object-fit: cover;">
+                `;
+                
+                item.style.cursor = 'pointer';
+                item.onclick = () => {
+                    window.open(`${SUPABASE_URL}${module.url}`, '_blank');
+                };
+                
+                grid.appendChild(item);
+            });
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            console.log('Loaded 17 live modules from eurorackgif bucket');
+        }
+        
+        function purchaseDigital(stickerId, stickerTitle) {
+            // For now, digital purchases just add a note - in production this would process payment
+            // Adding a placeholder to cart to track digital purchase intent
+            const cart = JSON.parse(localStorage.getItem('sticker-selections') || '{"2x2":{},"3x3":{},"4x4":{}}');
+            
+            // Add to 2x2 cart as digital placeholder
+            if (!cart['2x2']) cart['2x2'] = {};
+            if (cart['2x2'][stickerId]) {
+                cart['2x2'][stickerId]++;
+            } else {
+                cart['2x2'][stickerId] = 1;
+            }
+            
+            localStorage.setItem('sticker-selections', JSON.stringify(cart));
+            updateCart(); // Update cart display
+        }
+        
+        function purchaseSticker(stickerId, stickerTitle, size, price) {
+            // Check if module is unlocked first
+            const myCollection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+            if (!myCollection[stickerTitle]) {
+                alert(`You must unlock "${stickerTitle}" digitally before ordering physical stickers!\n\nOpen packs to find this module first.`);
+                return;
+            }
+            
+            // Add to cart with size
+            const cart = JSON.parse(localStorage.getItem('sticker-cart') || '{"2x2":{},"3x3":{},"4x4":{}}');
+            
+            if (!cart[size]) cart[size] = {};
+            
+            // Check if already in cart and increment quantity
+            if (cart[size][stickerId]) {
+                cart[size][stickerId].quantity++;
+            } else {
+                cart[size][stickerId] = {
+                    title: stickerTitle,
+                    price: price,
+                    quantity: 1
+                };
+            }
+            
+            localStorage.setItem('sticker-cart', JSON.stringify(cart));
+            
+            alert(`Added ${size} sticker of "${stickerTitle}" to cart ($${price})\n\nThis will sync with your Printify sticker products.`);
+            updateCart();
+        }
+        
+        function purchaseProduct(stickerId, stickerTitle, productType, price) {
+            // Legacy function redirects to purchaseSticker
+            purchaseSticker(stickerId, stickerTitle, '4x4', 12);
+            
+            // Update cart display immediately
+            updateCart();
+        }
+        
+        function reorderSticker(stickerId, stickerTitle) {
+            // Add to cart
+            const cart = JSON.parse(localStorage.getItem('sticker-selections') || '{"2x2":{}}');
+            cart['2x2'][stickerId] = (cart['2x2'][stickerId] || 0) + 1;
+            localStorage.setItem('sticker-selections', JSON.stringify(cart));
+            
+            // Update cart display immediately
+            updateCart();
+        }
+        
+        // Check for new unlocks from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const justUnlocked = urlParams.get('justUnlocked');
+        if (justUnlocked) {
+            setTimeout(() => {
+                alert(`🎉 Congratulations! You unlocked ${justUnlocked} new sticker${justUnlocked > 1 ? 's' : ''} in your digital collection!`);
+            }, 500);
+        }
+        
+        // Cart functionality
+        function updatePhysicalCartCount() {
+            const cart = JSON.parse(localStorage.getItem('sticker-cart') || '{"2x2":{},"3x3":{},"4x4":{}}');
+            let count = 0;
+            Object.values(cart).forEach(sizeGroup => {
+                Object.values(sizeGroup).forEach(item => {
+                    count += item.quantity;
+                });
+            });
+            
+            const countEl = document.getElementById('physical-cart-count');
+            if (countEl) countEl.textContent = count;
+            
+            // Update cart button style - turns PINK when has items!
+            const cartBtn = document.getElementById('physical-cart-button');
+            if (cartBtn) {
+                if (count > 0) {
+                    cartBtn.style.background = '#FFB6C1';
+                    cartBtn.style.color = '#000';
+                    cartBtn.style.border = '2px solid #FFB6C1';
+                } else {
+                    cartBtn.style.background = 'white';
+                    cartBtn.style.color = '#000';
+                    cartBtn.style.border = '2px solid #000';
+                }
+            }
+        }
+        
+        function togglePhysicalCart() {
+            window.location.href = 'sticker-shop.html';
+        }
+        
+        // Initialize immediately - just like plant-shop.html does!
+        console.log('Calling loadModulesNow...');
+        loadModulesNow();
+        updateCredits();
+        updatePhysicalCartCount();
+        console.log('Initialization complete');
+        
+        // Shop dropdown toggle
+        function toggleShopDropdown() {
+            const dropdown = document.getElementById('shop-dropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.cart-counter')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+        
+        function updateCredits() {
+            // Initialize with 100 HP if not set
+            let credits = localStorage.getItem('rack-credits');
+            if (!credits) {
+                credits = '100';
+                localStorage.setItem('rack-credits', credits);
+            }
+            const creditsEl = document.getElementById('credits-amount');
+            if (creditsEl) {
+                creditsEl.textContent = credits;
+            }
+        }
+        
+        function showPackStore() {
+            // Create pack store modal
+            let modal = document.getElementById('pack-store-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'pack-store-modal';
+                modal.className = 'pack-modal';
+                modal.innerHTML = `
+                    <div class="pack-store">
+                        <button class="close-btn" onclick="closePackStore()">&times;</button>
+                        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 10px;">OPEN PACKS</h2>
+                        <p style="text-align: center; color: #666; margin-bottom: 30px;">Collect all 25 rare eurorack module designs!</p>
+                        <div style="background: #f0f0f0; padding: 10px; margin: 0 20px 30px; text-align: center; border: 2px solid #000;">
+                            <strong>HP = Horizontal Pitch</strong> - The currency of modular synthesis!<br>
+                            <span style="color: #666; font-size: 0.9rem;">Need more HP to fit those modules in your rack!</span>
+                        </div>
+                        
+                        <div class="pack-grid">
+                            <div class="pack-option">
+                                <h3 style="font-size: 1.5rem; margin-bottom: 10px;">SINGLE MODULE</h3>
+                                <div style="background: #f0f0f0; padding: 10px; margin: 15px 0;">
+                                    <p style="color: #666; margin-bottom: 5px;">Contains:</p>
+                                    <p style="font-weight: bold; font-size: 1.2rem;">1 Standard Module</p>
+                                    <p style="color: #888; font-size: 0.9rem;">Regular image</p>
+                                </div>
+                                <div class="pack-price" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                    <svg width="30" height="30" viewBox="0 0 30 30">
+                                        <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#00ff88" stroke="#00cc70" stroke-width="2"/>
+                                    </svg>
+                                    <span style="font-size: 2rem; font-weight: bold;">5</span>
+                                </div>
+                                <button class="pack-btn" onclick="buyPack('single', 5)">5 HP</button>
+                            </div>
+                            
+                            <div class="pack-option">
+                                <h3 style="font-size: 1.5rem; margin-bottom: 10px;">STARTER PACK</h3>
+                                <div style="background: #f0f0f0; padding: 10px; margin: 15px 0;">
+                                    <p style="color: #666; margin-bottom: 5px;">Contains:</p>
+                                    <p style="font-weight: bold; font-size: 1.2rem;">3 Standard Modules</p>
+                                    <p style="color: #888; font-size: 0.9rem;">3 regular images</p>
+                                </div>
+                                <div class="pack-price" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                    <svg width="30" height="30" viewBox="0 0 30 30">
+                                        <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#4169E1" stroke="#1E90FF" stroke-width="2"/>
+                                    </svg>
+                                    <span style="font-size: 2rem; font-weight: bold;">10</span>
+                                </div>
+                                <button class="pack-btn" onclick="buyPack('starter', 10)">10 HP</button>
+                            </div>
+                            
+                            <div class="pack-option">
+                                <h3 style="font-size: 1.5rem; margin-bottom: 10px;">HOLO PACK</h3>
+                                <div style="background: #f0f0f0; padding: 10px; margin: 15px 0;">
+                                    <p style="color: #666; margin-bottom: 5px;">Contains:</p>
+                                    <p style="font-weight: bold; font-size: 1.2rem;">4 Modules</p>
+                                    <p style="color: #888; font-size: 0.9rem;">3 Standard + 1 HOLOGRAPHIC!</p>
+                                </div>
+                                <div class="pack-price" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                    <svg width="30" height="30" viewBox="0 0 30 30">
+                                        <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#9370DB" stroke="#8A2BE2" stroke-width="2"/>
+                                    </svg>
+                                    <span style="font-size: 2rem; font-weight: bold;">15</span>
+                                </div>
+                                <button class="pack-btn" onclick="buyPack('holo', 15)">15 HP</button>
+                            </div>
+                            
+                            <div class="pack-option">
+                                <div style="background: #FFD700; color: #000; padding: 5px; margin-bottom: 10px; font-weight: bold;">MOST POPULAR!</div>
+                                <h3 style="font-size: 1.5rem; margin-bottom: 10px;">RARE PACK</h3>
+                                <div style="background: #f0f0f0; padding: 10px; margin: 15px 0;">
+                                    <p style="color: #666; margin-bottom: 5px;">Contains:</p>
+                                    <p style="font-weight: bold; font-size: 1.2rem;">5 Modules!</p>
+                                    <p style="color: #888; font-size: 0.9rem;">3 Standard + 1 Holo + 1 ULTRA RARE!</p>
+                                </div>
+                                <div class="pack-price" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                    <svg width="30" height="30" viewBox="0 0 30 30">
+                                        <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#FFD700" stroke="#FFA500" stroke-width="2"/>
+                                    </svg>
+                                    <span style="font-size: 2rem; font-weight: bold;">20</span>
+                                </div>
+                                <button class="pack-btn" onclick="buyPack('rare', 20)">20 HP</button>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 60px; padding-top: 40px; border-top: 3px solid #000;">
+                            <h2 style="text-align: center; font-size: 2rem; margin-bottom: 10px;">BUY HP</h2>
+                            <p style="text-align: center; color: #666; margin-bottom: 40px;">Get more HP (Horizontal Pitch) to expand your collection!</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto;">
+                                <div style="border: 2px solid #000; padding: 20px; text-align: center; background: white;">
+                                    <h4 style="margin-bottom: 15px;">STARTER</h4>
+                                    <svg width="40" height="40" viewBox="0 0 30 30">
+                                        <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#00ff88" stroke="#00cc70" stroke-width="2"/>
+                                    </svg>
+                                    <div style="font-size: 2rem; font-weight: bold; margin: 10px 0;">10</div>
+                                    <div style="font-size: 1.2rem; color: #666;">$10</div>
+                                    <button class="pack-btn" style="margin-top: 15px;" onclick="buyHP(10, 10)">BUY</button>
+                                </div>
+                                
+                                <div style="border: 2px solid #000; padding: 20px; text-align: center; background: white;">
+                                    <h4 style="margin-bottom: 15px;">VALUE</h4>
+                                    <svg width="40" height="40" viewBox="0 0 30 30">
+                                        <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#4169E1" stroke="#1E90FF" stroke-width="2"/>
+                                    </svg>
+                                    <div style="font-size: 2rem; font-weight: bold; margin: 10px 0;">25</div>
+                                    <div style="font-size: 1.2rem; color: #666;">$25</div>
+                                    <button class="pack-btn" style="margin-top: 15px;" onclick="buyHP(25, 25)">BUY</button>
+                                </div>
+                                
+                                <div style="border: 3px solid #FFD700; padding: 20px; text-align: center; background: white; position: relative;">
+                                    <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #FFD700; color: #000; padding: 3px 10px; font-size: 0.8rem; font-weight: bold;">BEST DEAL</div>
+                                    <h4 style="margin-bottom: 15px;">COLLECTOR</h4>
+                                    <svg width="40" height="40" viewBox="0 0 30 30">
+                                        <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#9370DB" stroke="#8A2BE2" stroke-width="2"/>
+                                    </svg>
+                                    <div style="font-size: 2rem; font-weight: bold; margin: 10px 0;">45</div>
+                                    <div style="font-size: 1.2rem; color: #666;">$45</div>
+                                    <div style="background: #FFD700; color: #000; padding: 5px; margin: 10px 0; font-size: 0.8rem; font-weight: bold;">+ FREE PHYSICAL PACK!</div>
+                                    <button class="pack-btn" style="margin-top: 15px;" onclick="buyHP(45, 45, true)">BUY</button>
+                                </div>
+                                
+                                <div style="border: 2px solid #000; padding: 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                    <h4 style="margin-bottom: 15px;">ULTIMATE</h4>
+                                    <svg width="40" height="40" viewBox="0 0 30 30">
+                                        <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#FFD700" stroke="#FFA500" stroke-width="2"/>
+                                    </svg>
+                                    <div style="font-size: 2rem; font-weight: bold; margin: 10px 0;">100</div>
+                                    <div style="font-size: 1.2rem;">$80</div>
+                                    <div style="background: white; color: #000; padding: 5px; margin: 10px 0; font-size: 0.8rem; font-weight: bold;">+ ALL 25 PHYSICAL STICKERS!</div>
+                                    <button class="pack-btn" style="background: #FFD700; color: #000;" onclick="buyHP(100, 80, true)">BUY</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.classList.add('active');
+        }
+        
+        function closePackStore() {
+            const modal = document.getElementById('pack-store-modal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        // Pack quantities - moved outside to be globally accessible
+        window.packQuantities = {
+            single: 1,
+            basic: 1,
+            rare: 1,
+            legendary: 1
+        };
+        
+        window.updateQuantity = function(type, change) {
+            window.packQuantities[type] = Math.max(1, window.packQuantities[type] + change);
+            document.getElementById('qty-' + type).textContent = window.packQuantities[type];
+            document.getElementById('total-' + type).textContent = window.packQuantities[type];
+            
+            // Check for physical pack reward
+            if (window.packQuantities[type] >= 5) {
+                const rewardDiv = document.getElementById('reward-' + type);
+                if (rewardDiv) {
+                    rewardDiv.style.display = 'block';
+                    rewardDiv.innerHTML = '<div style="background: #FFD700; color: #000; padding: 5px; margin-top: 10px; font-weight: bold; text-transform: uppercase;">FREE PHYSICAL PACK INCLUDED!</div>';
+                }
+            } else {
+                const rewardDiv = document.getElementById('reward-' + type);
+                if (rewardDiv) {
+                    rewardDiv.style.display = 'none';
+                }
+            }
+        }
+        
+        window.buyPacks = function(type, costPerPack) {
+            const quantity = window.packQuantities[type];
+            const totalCost = costPerPack * quantity;
+            const credits = parseInt(localStorage.getItem('rack-credits') || '1000');
+            
+            if (credits < totalCost) {
+                alert('Not enough rupees! You need ' + totalCost + ' rupees for ' + quantity + ' packs.');
+                return;
+            }
+            
+            // Track physical pack rewards
+            let physicalPacks = 0;
+            if (quantity >= 5) {
+                physicalPacks = Math.floor(quantity / 5);
+            }
+            
+            // Save pack purchase info
+            localStorage.setItem('pending-packs', JSON.stringify({
+                type: type,
+                quantity: quantity,
+                totalCost: totalCost,
+                physicalPacks: physicalPacks
+            }));
+            
+            // Track total packs purchased for rewards
+            let totalPacksPurchased = parseInt(localStorage.getItem('total-packs-purchased') || '0');
+            totalPacksPurchased += quantity;
+            localStorage.setItem('total-packs-purchased', totalPacksPurchased.toString());
+            
+            // Deduct credits
+            localStorage.setItem('rack-credits', (credits - totalCost).toString());
+            updateCredits();
+            
+            // Show physical pack reward message if applicable
+            if (physicalPacks > 0) {
+                alert('Congratulations! You earned ' + physicalPacks + ' FREE PHYSICAL PACK(S) with this purchase!');
+            }
+            
+            // Close modal and redirect to pack opening
+            closePackStore();
+            window.location.href = 'pack-opening.html?pack=' + type + '&qty=' + quantity;
+        }
+        
+        window.buyPack = function(type, cost) {
+            const hp = parseInt(localStorage.getItem('rack-credits') || '20');
+            
+            if (hp < cost) {
+                if (confirm('Not enough HP! You need ' + cost + ' HP. Buy more HP now?')) {
+                    // Scroll to HP section
+                    const hpSection = document.querySelector('[style*="BUY HP"]');
+                    if (hpSection) {
+                        hpSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+                return;
+            }
+            
+            // Deduct HP
+            localStorage.setItem('rack-credits', (hp - cost).toString());
+            updateCredits();
+            
+            // Get unlocked modules list or create new one
+            let unlockedModules = JSON.parse(localStorage.getItem('unlocked-modules') || '[]');
+            let newUnlocks = [];
+            
+            // Determine how many modules to unlock based on pack type
+            let modulesToUnlock = 0;
+            if (type === 'single') modulesToUnlock = 1;
+            else if (type === 'starter') modulesToUnlock = 3;
+            else if (type === 'holo') modulesToUnlock = 4;
+            else if (type === 'rare') modulesToUnlock = 5;
+            
+            // Randomly select modules to unlock (from 1-17)
+            const allModuleIds = Array.from({length: 17}, (_, i) => i + 1);
+            const availableModules = allModuleIds.filter(id => !unlockedModules.includes(id));
+            
+            // If all modules unlocked, allow duplicates
+            const modulesPool = availableModules.length > 0 ? availableModules : allModuleIds;
+            
+            for (let i = 0; i < modulesToUnlock && i < modulesPool.length; i++) {
+                const randomIndex = Math.floor(Math.random() * modulesPool.length);
+                const moduleId = modulesPool[randomIndex];
+                if (!unlockedModules.includes(moduleId)) {
+                    unlockedModules.push(moduleId);
+                    newUnlocks.push(moduleId);
+                }
+                modulesPool.splice(randomIndex, 1);
+            }
+            
+            // Save unlocked modules
+            localStorage.setItem('unlocked-modules', JSON.stringify(unlockedModules));
+            
+            // Close modal and show the LIVE modules with new unlocks highlighted
+            closePackStore();
+            
+            // Show the collection with animation
+            showUnlockedModules(newUnlocks);
+        }
+        
+        // Show modules with unlock animation
+        function showUnlockedModules(newUnlocks) {
+            const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+            const grid = document.getElementById('sticker-grid');
+            const unlockedModules = JSON.parse(localStorage.getItem('unlocked-modules') || '[]');
+            
+            grid.innerHTML = '';
+            
+            // Add all 17 modules
+            for (let i = 1; i <= 17; i++) {
+                const item = document.createElement('div');
+                const isUnlocked = unlockedModules.includes(i);
+                const isNew = newUnlocks && newUnlocks.includes(i);
+                
+                item.className = 'sticker-item ' + (isUnlocked ? 'owned' : 'locked');
+                
+                if (isUnlocked) {
+                    // Show the actual GIF
+                    const img = document.createElement('img');
+                    img.src = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${i.toString().padStart(2, '0')}.gif`;
+                    img.alt = `Module ${i}`;
+                    img.style.cssText = 'filter: none; opacity: 1;';
+                    item.appendChild(img);
+                    
+                    // Add NEW badge for recently unlocked
+                    if (isNew) {
+                        item.style.border = '4px solid #FFD700';
+                        item.style.animation = 'pulse 1s ease-in-out 3';
+                        const badge = document.createElement('div');
+                        badge.style.cssText = 'position: absolute; top: 5px; right: 5px; background: #FFD700; color: #000; padding: 5px 10px; font-weight: bold; z-index: 10;';
+                        badge.textContent = 'NEW!';
+                        item.appendChild(badge);
+                    }
+                    
+                    item.onclick = () => window.open(img.src, '_blank');
+                } else {
+                    // Show locked state
+                    item.style.background = '#333';
+                    item.innerHTML = '<div style="color: #666; font-size: 48px; line-height: 1; padding: 40px;">🔒</div>';
+                }
+                
+                grid.appendChild(item);
+            }
+            
+            // Add animation keyframes if not exists
+            if (!document.getElementById('unlock-animation')) {
+                const style = document.createElement('style');
+                style.id = 'unlock-animation';
+                style.textContent = `
+                    @keyframes pulse {
+                        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 1); }
+                        50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 215, 0, 0.5); }
+                        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // Update filter to show collection
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === 'ALL') btn.classList.add('active');
+            });
+        }
+        
+        window.buyHP = function(amount, price, includesPhysical) {
+            let message = 'Purchase ' + amount + ' HP for $' + price;
+            if (includesPhysical) {
+                if (amount === 45) {
+                    message += '\n\nThis includes a LIMITED EDITION physical sticker pack shipped directly to your door!';
+                } else if (amount === 100) {
+                    message += '\n\nThis includes the COMPLETE PHYSICAL COLLECTION - all 25 module stickers shipped to you!';
+                }
+            }
+            message += '\n\n(Demo mode - no actual charge)';
+            
+            if (confirm(message)) {
+                const currentCredits = parseInt(localStorage.getItem('rack-credits') || '1000');
+                localStorage.setItem('rack-credits', (currentCredits + amount).toString());
+                updateCredits();
+                
+                if (includesPhysical) {
+                    // Track physical reward earned
+                    let physicalRewards = JSON.parse(localStorage.getItem('physical-rewards') || '[]');
+                    if (amount === 45) {
+                        physicalRewards.push({
+                            type: 'limited-edition-pack',
+                            date: new Date().toISOString(),
+                            status: 'pending'
+                        });
+                    } else if (amount === 100) {
+                        physicalRewards.push({
+                            type: 'complete-collection',
+                            date: new Date().toISOString(),
+                            status: 'pending'
+                        });
+                    }
+                    localStorage.setItem('physical-rewards', JSON.stringify(physicalRewards));
+                    
+                    alert('Success! Your rupees have been added and your physical rewards will be shipped soon!');
+                } else {
+                    alert('Added ' + amount + ' rupees to your account!');
+                }
+                
+                closePackStore();
+            }
+        }
+        
+        function openPackSelection() {
+            // Redirect to a pack selection interface
+            alert('Pack selection coming soon! Use your rupees to open different pack types.');
+        }
+        
+        // Test Supabase connection
+        async function testSupabase() {
+            console.log('Testing Supabase connection...');
+            
+            try {
+                const url = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+                const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+                
+                // First, list all buckets
+                const bucketsResponse = await fetch(`${url}/storage/v1/bucket`, {
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                const buckets = await bucketsResponse.json();
+                console.log('Available buckets:', buckets);
+                
+                // Try different possible paths
+                const paths = [
+                    'eurorackgif',
+                    'eurorackgif/',
+                    '',  // root level
+                ];
+                
+                for (const path of paths) {
+                    console.log(`Trying path: eurorackgif/${path}`);
+                    const response = await fetch(`${url}/storage/v1/object/list/eurorackgif${path ? '/' + path : ''}`, {
+                        headers: {
+                            'apikey': key,
+                            'Authorization': `Bearer ${key}`
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    console.log(`Response for ${path}:`, data);
+                    
+                    if (Array.isArray(data) && data.length > 0) {
+                        alert(`Found ${data.length} files in eurorackgif/${path}!`);
+                        
+                        // Show first few files
+                        const fileNames = data.slice(0, 5).map(f => f.name).join(', ');
+                        alert(`Files: ${fileNames}...`);
+                        return;
+                    }
+                }
+                
+                alert('No files found. Check console for details.');
+                
+            } catch (error) {
+                console.error('Supabase error:', error);
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        // Initialize the page - just like plant-shop.html!
+        loadModulesNow();
+        updateCredits();
+    </script>
+</body>
+</html>

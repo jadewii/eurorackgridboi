@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product - eurorack.store</title>
+    <link rel="stylesheet" href="styles-minimal.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="logo"><a href="index.html" style="color: #000; text-decoration: none;">eurorack.store</a></h1>
+                <div class="cart-icon" onclick="toggleCart()">
+                    + cart <span id="cart-count" class="cart-count">0</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="product-detail-container">
+            <div class="product-images">
+                <img id="main-image" src="" alt="Product">
+                <div class="image-thumbnails">
+                    <!-- Thumbnails will go here -->
+                </div>
+            </div>
+            <div class="product-details">
+                <h1 id="product-name"></h1>
+                <p id="product-price"></p>
+                <div id="product-description"></div>
+                
+                <div class="product-options">
+                    <label>Select Variant:</label>
+                    <select id="variant-select"></select>
+                </div>
+                
+                <button class="add-to-cart-large" onclick="addProductToCart()">+ add to cart</button>
+                
+                <div class="product-info">
+                    <h3>Details</h3>
+                    <ul>
+                        <li>Printed and shipped on demand</li>
+                        <li>No minimum orders</li>
+                        <li>Worldwide shipping</li>
+                        <li>Production: 2-5 business days</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cart Sidebar (same as main page) -->
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button onclick="toggleCart()" class="close-btn">&times;</button>
+        </div>
+        <div id="cart-items" class="cart-items"></div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Total:</strong>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button class="checkout-btn">checkout</button>
+        </div>
+    </div>
+
+    <style>
+        .product-detail-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .product-images {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        #main-image {
+            width: 100%;
+            height: auto;
+            border: 1px solid #000;
+        }
+
+        .image-thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .image-thumbnails img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+
+        .image-thumbnails img:hover {
+            border: 2px solid #000;
+        }
+
+        .product-details h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+            font-family: 'Noto Sans Mono', monospace;
+        }
+
+        #product-price {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            font-family: 'Noto Sans Mono', monospace;
+            font-weight: 700;
+        }
+
+        #product-description {
+            margin-bottom: 30px;
+            line-height: 1.8;
+            font-family: 'Noto Sans Mono', monospace;
+        }
+
+        .product-options {
+            margin-bottom: 30px;
+        }
+
+        .product-options label {
+            display: block;
+            margin-bottom: 10px;
+            font-family: 'Noto Sans Mono', monospace;
+        }
+
+        #variant-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #000;
+            background: #fff;
+            font-family: 'Noto Sans Mono', monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .add-to-cart-large {
+            width: 100%;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            border: 1px solid #000;
+            font-size: 1.1rem;
+            font-family: 'Noto Sans Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 40px;
+            border-radius: 0;
+        }
+
+        .add-to-cart-large:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .product-info {
+            border-top: 1px solid #000;
+            padding-top: 30px;
+        }
+
+        .product-info h3 {
+            font-family: 'Noto Sans Mono', monospace;
+            font-weight: 400;
+            margin-bottom: 15px;
+        }
+
+        .product-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .product-info li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-family: 'Noto Sans Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .product-detail-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+    </style>
+
+    <script src="printify-products.js"></script>
+    <script>
+        // Get product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        
+        // Find product
+        const product = printifyProducts.find(p => p.id === productId);
+        
+        if (product) {
+            // Set product details
+            document.getElementById('product-name').textContent = product.title;
+            document.getElementById('product-price').textContent = '$' + product.price.toFixed(2);
+            document.getElementById('main-image').src = product.image;
+            document.getElementById('product-description').innerHTML = product.description || 'High quality print-on-demand product.';
+            
+            // Add variants
+            const variantSelect = document.getElementById('variant-select');
+            product.variants.forEach(v => {
+                const option = document.createElement('option');
+                option.value = v.id;
+                option.textContent = v.name;
+                variantSelect.appendChild(option);
+            });
+        }
+        
+        // Cart functions
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        function addProductToCart() {
+            const variantId = document.getElementById('variant-select').value;
+            const variant = product.variants.find(v => v.id === variantId);
+            
+            const existingItem = cart.find(item => 
+                item.productId === product.id && item.variantId === variantId
+            );
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    productId: product.id,
+                    title: product.title,
+                    price: variant.price,
+                    image: product.image,
+                    variantId: variantId,
+                    variantName: variant.name,
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+            alert('Added to cart!');
+        }
+        
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.toggle('open');
+        }
+        
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            // Update cart display
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; color: #666;">Your cart is empty</p>';
+            } else {
+                cartItems.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.title}">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${item.title}</div>
+                            <div class="cart-item-variant">${item.variantName}</div>
+                            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotal.textContent = `$${total.toFixed(2)}`;
+        }
+        
+        // Initialize
+        updateCartUI();
+    </script>
+</body>
+</html>

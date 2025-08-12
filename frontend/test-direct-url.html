@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct URL Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        pre { background: #f0f0f0; padding: 15px; border: 2px solid #000; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        img { max-width: 300px; border: 2px solid #000; margin: 10px; display: block; }
+    </style>
+</head>
+<body>
+    <h1>Test Direct Access to Your GIFs</h1>
+    
+    <button onclick="testKnownFile()">Test 01.gif Directly</button>
+    <button onclick="testPublicUrl()">Test Public URL</button>
+    <button onclick="testSignedUrl()">Test Signed URL</button>
+    
+    <h2>Output:</h2>
+    <pre id="output">Click a button to start...</pre>
+    
+    <div id="preview"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        const preview = document.getElementById('preview');
+        const url = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        function log(msg, data = null) {
+            output.textContent += msg + '\n';
+            if (data) {
+                output.textContent += JSON.stringify(data, null, 2) + '\n';
+            }
+            output.textContent += '------------------------\n';
+        }
+        
+        async function testKnownFile() {
+            output.textContent = 'Testing direct access to 01.gif...\n\n';
+            preview.innerHTML = '';
+            
+            // We know you have 01.gif from your signed URL earlier
+            const testFile = '01.gif';
+            
+            try {
+                // Try to create a signed URL for a file we know exists
+                log('Creating signed URL for 01.gif...');
+                const signResponse = await fetch(`${url}/storage/v1/object/sign/eurorackgif/${testFile}`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ expiresIn: 300 }) // 5 minutes
+                });
+                
+                log(`Sign response status: ${signResponse.status}`);
+                
+                if (signResponse.ok) {
+                    const signData = await signResponse.json();
+                    const signedUrl = `${url}/storage/v1${signData.signedURL}`;
+                    log('✅ Signed URL created successfully!');
+                    log('URL: ' + signedUrl.substring(0, 100) + '...');
+                    
+                    // Try to display it
+                    const img = document.createElement('img');
+                    img.src = signedUrl;
+                    img.onload = () => {
+                        log('✅ SUCCESS! GIF loaded and displayed!');
+                        log('The bucket and files ARE accessible!');
+                        log('The issue is just with listing the bucket.');
+                    };
+                    img.onerror = () => log('❌ Failed to load GIF image');
+                    preview.appendChild(img);
+                } else {
+                    const error = await signResponse.json();
+                    log('❌ Failed to create signed URL:', error);
+                }
+            } catch (error) {
+                log('❌ Error:', error.message);
+            }
+        }
+        
+        async function testPublicUrl() {
+            output.textContent = 'Testing public URL access...\n\n';
+            preview.innerHTML = '';
+            
+            // Try public URL (will fail if bucket is private)
+            const publicUrl = `${url}/storage/v1/object/public/eurorackgif/01.gif`;
+            log('Trying public URL: ' + publicUrl);
+            
+            const img = document.createElement('img');
+            img.src = publicUrl;
+            img.onload = () => log('✅ Loaded via public URL (bucket is public)');
+            img.onerror = () => log('❌ Cannot load via public URL (bucket is private - this is expected)');
+            preview.appendChild(img);
+        }
+        
+        async function testSignedUrl() {
+            output.textContent = 'Testing all 17 GIFs with signed URLs...\n\n';
+            preview.innerHTML = '';
+            
+            // Test all 17 files you mentioned
+            const files = [];
+            for (let i = 1; i <= 17; i++) {
+                files.push(`${i.toString().padStart(2, '0')}.gif`);
+            }
+            
+            log(`Testing ${files.length} files...`);
+            
+            for (const file of files) {
+                try {
+                    const signResponse = await fetch(`${url}/storage/v1/object/sign/eurorackgif/${file}`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': key,
+                            'Authorization': `Bearer ${key}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ expiresIn: 300 })
+                    });
+                    
+                    if (signResponse.ok) {
+                        const signData = await signResponse.json();
+                        const signedUrl = `${url}/storage/v1${signData.signedURL}`;
+                        log(`✅ ${file} - Signed URL created`);
+                        
+                        // Create thumbnail
+                        const img = document.createElement('img');
+                        img.src = signedUrl;
+                        img.style.width = '100px';
+                        img.style.display = 'inline-block';
+                        img.title = file;
+                        preview.appendChild(img);
+                    } else {
+                        log(`❌ ${file} - Failed`);
+                    }
+                } catch (error) {
+                    log(`❌ ${file} - Error: ${error.message}`);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

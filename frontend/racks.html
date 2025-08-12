@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - My Racks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .nav-btn.active {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .rack-controls {
+            background: white;
+            border: 2px solid #000;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-group label {
+            font-weight: bold;
+        }
+        
+        input[type="text"], select {
+            padding: 8px;
+            border: 2px solid #000;
+            font-family: inherit;
+        }
+        
+        .color-options {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #000;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .color-btn.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .rack-container {
+            background: white;
+            border: 3px solid #000;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            max-width: 600px;
+        }
+        
+        .rack-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+        
+        .rack-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .rack-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .rack-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            transition: background 0.3s;
+        }
+        
+        .rack-grid.size-8 {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            min-height: 200px;
+        }
+        
+        .rack-grid.size-16 {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            min-height: 400px;
+        }
+        
+        .rack-grid.size-32 {
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            min-height: 400px;
+            max-width: 800px;
+        }
+        
+        /* Rack background colors */
+        .rack-grid.silver { background: linear-gradient(180deg, #c0c0c0 0%, #808080 100%); }
+        .rack-grid.black { background: linear-gradient(180deg, #333 0%, #000 100%); }
+        .rack-grid.wood { background: linear-gradient(180deg, #8B4513 0%, #654321 100%); }
+        .rack-grid.white { background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%); }
+        .rack-grid.blue { background: linear-gradient(180deg, #4169E1 0%, #1E90FF 100%); }
+        .rack-grid.red { background: linear-gradient(180deg, #DC143C 0%, #8B0000 100%); }
+        
+        .module-slot {
+            aspect-ratio: 1;
+            border: 1px dashed rgba(255,255,255,0.3);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .module-slot:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .module-slot.occupied img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .module-slot.occupied {
+            border: 2px solid #0f0;
+        }
+        
+        .available-modules {
+            background: white;
+            border: 2px solid #000;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .available-modules h3 {
+            margin-bottom: 15px;
+        }
+        
+        .modules-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .draggable-module {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #000;
+            cursor: grab;
+            position: relative;
+        }
+        
+        .draggable-module:active {
+            cursor: grabbing;
+        }
+        
+        .draggable-module img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .save-btn {
+            background: #0f0;
+            color: #000;
+            border: 2px solid #000;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .save-btn:hover {
+            background: #00ff88;
+            transform: scale(1.05);
+        }
+        
+        .rack-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .rack-card {
+            background: white;
+            border: 2px solid #000;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .rack-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .rack-preview {
+            height: 150px;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1px;
+            padding: 10px;
+        }
+        
+        .rack-preview .mini-module {
+            background: #666;
+            aspect-ratio: 1;
+        }
+        
+        .rack-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .like-btn {
+            background: white;
+            border: 2px solid #ff1493;
+            color: #ff1493;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .like-btn:hover {
+            background: #ff1493;
+            color: white;
+        }
+        
+        .like-btn.liked {
+            background: #ff1493;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='collection.html'" style="font-size: 1.5rem; font-weight: bold; letter-spacing: 3px;">EURORACK.STORE</div>
+        <div style="position: absolute; left: 200px; color: #000; font-weight: bold; font-size: 0.9rem;">
+            FREE SHIPPING OVER $60 | EUROGRID BINDER
+        </div>
+        <div class="nav-buttons" style="display: flex; gap: 10px;">
+            <button class="nav-btn" onclick="showPackStore()" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; border: 2px solid #FFD700; padding: 10px 20px;">
+                <span id="credits-amount">100</span> HP
+            </button>
+            <button class="nav-btn" onclick="window.location.href='collection.html'">MODULES</button>
+            <button class="nav-btn active" style="background: #000; color: white;">RACKS</button>
+            <button class="nav-btn" onclick="window.location.href='marketplace.html'">MARKETPLACE</button>
+            <button class="nav-btn" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000;">BUY HP</button>
+            <button class="nav-btn" onclick="togglePhysicalCart()">CART (0)</button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="rack-controls">
+            <div class="control-group">
+                <label>Rack Name:</label>
+                <input type="text" id="rack-name" placeholder="My Eurorack" value="My First Rack">
+            </div>
+            
+            <div class="control-group">
+                <label>Background:</label>
+                <div class="color-options">
+                    <div class="color-btn selected" style="background: #c0c0c0;" onclick="setRackColor('silver')"></div>
+                    <div class="color-btn" style="background: #000;" onclick="setRackColor('black')"></div>
+                    <div class="color-btn" style="background: #8B4513;" onclick="setRackColor('wood')"></div>
+                    <div class="color-btn" style="background: #fff; border: 2px solid #ccc;" onclick="setRackColor('white')"></div>
+                    <div class="color-btn" style="background: #4169E1;" onclick="setRackColor('blue')"></div>
+                    <div class="color-btn" style="background: #DC143C;" onclick="setRackColor('red')"></div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Size:</label>
+                <select id="rack-size" onchange="initRackGrid()">
+                    <option value="8" selected>8 Modules (2x4) - Starter</option>
+                    <option value="16">16 Modules (4x4) - Standard</option>
+                    <option value="32">32 Modules (4x8) - Pro</option>
+                </select>
+            </div>
+            
+            <button class="save-btn" onclick="saveRack()">SAVE RACK</button>
+        </div>
+        
+        <div class="available-modules">
+            <h3>YOUR UNLOCKED MODULES (Drag to rack)</h3>
+            <div class="modules-list" id="modules-list">
+                <!-- Modules will be loaded here -->
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 30px; align-items: flex-start;">
+            <!-- Left side: Rack Display -->
+            <div class="rack-container">
+                <div class="rack-header">
+                    <div class="rack-name" id="display-rack-name">My First Rack</div>
+                    <div class="rack-stats">
+                        <span>Modules: <strong id="hp-used">0/8</strong></span>
+                    </div>
+                </div>
+                
+                <div class="rack-grid size-8 silver" id="rack-grid">
+                    <!-- Grid slots will be generated here -->
+                </div>
+            </div>
+            
+            <!-- Right side: Analytics & Settings -->
+            <div style="flex: 1; max-width: 600px;">
+                <!-- Analytics Panel -->
+                <div style="background: white; border: 2px solid #000; padding: 20px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 20px; font-size: 1.5rem;">RACK ANALYTICS</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div style="text-align: center; padding: 15px; background: white; border: 2px solid #000;">
+                            <div style="display: flex; justify-content: center; align-items: center; height: 40px;">
+                                <div style="width: 100%; max-width: 150px; height: 30px; background: #f0f0f0; border: 1px solid #000; position: relative;">
+                                    <div id="view-bar" style="position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #4169E1, #00BFFF); width: 75%;"></div>
+                                </div>
+                            </div>
+                            <div style="color: #666; margin-top: 5px; font-size: 0.9rem;">VIEWS</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: white; border: 2px solid #000;">
+                            <div style="font-size: 2rem; height: 40px; display: flex; align-items: center; justify-content: center;" id="favorite-status">❤️❤️❤️</div>
+                            <div style="color: #666; margin-top: 5px; font-size: 0.9rem;">LOVED</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: white; border: 2px solid #000;">
+                            <div style="display: flex; justify-content: center; align-items: center; height: 40px;">
+                                <div style="width: 100%; max-width: 150px; height: 30px; background: #f0f0f0; border: 1px solid #000; position: relative;">
+                                    <div id="trade-bar" style="position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #00ff88, #00cc70); width: 30%;"></div>
+                                </div>
+                            </div>
+                            <div style="color: #666; margin-top: 5px; font-size: 0.9rem;">TRADES</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: white; border: 2px solid #000;">
+                            <div style="display: flex; justify-content: center; align-items: center; height: 40px;">
+                                <div style="width: 100%; max-width: 150px; height: 30px; background: #f0f0f0; border: 1px solid #000; position: relative;">
+                                    <div id="clone-bar" style="position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #FFD700, #FFA500); width: 60%;"></div>
+                                </div>
+                            </div>
+                            <div style="color: #666; margin-top: 5px; font-size: 0.9rem;">CLONES</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trading Settings -->
+                <div style="background: white; border: 2px solid #000; padding: 20px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 20px; font-size: 1.5rem;">TRADING SETTINGS</h3>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="open-to-trades" style="width: 20px; height: 20px;">
+                            <span style="font-weight: bold;">OPEN TO TRADES</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: bold; display: block; margin-bottom: 10px;">Looking for:</label>
+                        <textarea id="looking-for" style="width: 100%; min-height: 60px; padding: 10px; border: 2px solid #000; font-family: inherit;" placeholder="e.g. Maths, Rings, Plaits..."></textarea>
+                    </div>
+                    <div>
+                        <label style="font-weight: bold; display: block; margin-bottom: 10px;">Willing to trade:</label>
+                        <div id="tradeable-modules" style="display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; background: #f5f5f5; border: 1px solid #000; min-height: 80px;">
+                            <!-- Modules available for trade will be shown here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Share Options -->
+                <div style="background: white; border: 2px solid #000; padding: 20px;">
+                    <h3 style="margin-bottom: 20px; font-size: 1.5rem;">SHARE YOUR RACK</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="shareRack('link')" style="flex: 1; padding: 12px; background: #4169E1; color: white; border: none; font-weight: bold; cursor: pointer;">COPY LINK</button>
+                        <button onclick="shareRack('twitter')" style="flex: 1; padding: 12px; background: #1DA1F2; color: white; border: none; font-weight: bold; cursor: pointer;">TWITTER</button>
+                        <button onclick="shareRack('forum')" style="flex: 1; padding: 12px; background: #FF4500; color: white; border: none; font-weight: bold; cursor: pointer;">REDDIT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Removed saved racks section from here - now in gallery page -->
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        let currentRackColor = 'silver';
+        let currentRack = {};
+        let draggedModule = null;
+        
+        // Load unlocked modules
+        function loadUnlockedModules() {
+            const modulesList = document.getElementById('modules-list');
+            const unlockedModules = JSON.parse(localStorage.getItem('unlocked-modules') || '[]');
+            
+            modulesList.innerHTML = '';
+            
+            // For demo, show some modules as unlocked
+            if (unlockedModules.length === 0) {
+                // Demo: unlock first 5 modules
+                for (let i = 1; i <= 5; i++) {
+                    unlockedModules.push(i);
+                }
+                localStorage.setItem('unlocked-modules', JSON.stringify(unlockedModules));
+            }
+            
+            unlockedModules.forEach(moduleId => {
+                const moduleDiv = document.createElement('div');
+                moduleDiv.className = 'draggable-module';
+                moduleDiv.draggable = true;
+                moduleDiv.dataset.moduleId = moduleId;
+                
+                const img = document.createElement('img');
+                img.src = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${moduleId.toString().padStart(2, '0')}.gif`;
+                img.alt = `Module ${moduleId}`;
+                
+                moduleDiv.appendChild(img);
+                
+                // Drag events
+                moduleDiv.addEventListener('dragstart', (e) => {
+                    draggedModule = moduleId;
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
+                
+                modulesList.appendChild(moduleDiv);
+            });
+        }
+        
+        // Initialize rack grid
+        function initRackGrid() {
+            const grid = document.getElementById('rack-grid');
+            grid.innerHTML = '';
+            
+            // Get rack size
+            const rackSize = document.getElementById('rack-size').value;
+            let totalSlots = 8; // default 2x4
+            let columns = 4;
+            
+            if (rackSize === '8') {
+                totalSlots = 8;
+                columns = 4;
+                grid.className = 'rack-grid size-8 ' + currentRackColor;
+            } else if (rackSize === '16') {
+                totalSlots = 16;
+                columns = 4;
+                grid.className = 'rack-grid size-16 ' + currentRackColor;
+            } else if (rackSize === '32') {
+                totalSlots = 32;
+                columns = 8;
+                grid.className = 'rack-grid size-32 ' + currentRackColor;
+            }
+            
+            // Create slots
+            for (let i = 0; i < totalSlots; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'module-slot';
+                slot.dataset.slotId = i;
+                
+                // Drop events
+                slot.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'copy';
+                    slot.style.background = 'rgba(0,255,0,0.2)';
+                });
+                
+                slot.addEventListener('dragleave', () => {
+                    slot.style.background = '';
+                });
+                
+                slot.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    slot.style.background = '';
+                    
+                    if (draggedModule && !slot.classList.contains('occupied')) {
+                        const img = document.createElement('img');
+                        img.src = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${draggedModule.toString().padStart(2, '0')}.gif`;
+                        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+                        slot.appendChild(img);
+                        slot.classList.add('occupied');
+                        slot.dataset.moduleId = draggedModule;
+                        
+                        updateRackStats();
+                    }
+                });
+                
+                // Click to remove
+                slot.addEventListener('click', () => {
+                    if (slot.classList.contains('occupied')) {
+                        slot.innerHTML = '';
+                        slot.classList.remove('occupied');
+                        delete slot.dataset.moduleId;
+                        updateRackStats();
+                    }
+                });
+                
+                grid.appendChild(slot);
+            }
+        }
+        
+        // Update rack stats
+        function updateRackStats() {
+            const occupied = document.querySelectorAll('.module-slot.occupied').length;
+            const rackSize = document.getElementById('rack-size').value;
+            document.getElementById('module-count').textContent = occupied;
+            document.getElementById('hp-used').textContent = occupied + '/' + rackSize; // Show as X/8 or X/16
+        }
+        
+        // Set rack color
+        function setRackColor(color) {
+            currentRackColor = color;
+            const grid = document.getElementById('rack-grid');
+            const rackSize = document.getElementById('rack-size').value;
+            grid.className = `rack-grid size-${rackSize} ${color}`;
+            
+            // Update selected color button
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            if (event && event.target) {
+                event.target.classList.add('selected');
+            }
+        }
+        
+        // Update rack name display
+        document.getElementById('rack-name').addEventListener('input', (e) => {
+            document.getElementById('display-rack-name').textContent = e.target.value || 'Untitled Rack';
+        });
+        
+        // Save rack
+        function saveRack() {
+            const rackName = document.getElementById('rack-name').value || 'Untitled Rack';
+            const modules = [];
+            
+            document.querySelectorAll('.module-slot.occupied').forEach(slot => {
+                modules.push({
+                    slotId: slot.dataset.slotId,
+                    moduleId: slot.dataset.moduleId
+                });
+            });
+            
+            const rackSize = document.getElementById('rack-size').value;
+            const rack = {
+                id: Date.now(),
+                name: rackName,
+                color: currentRackColor,
+                size: rackSize,
+                modules: modules,
+                likes: 0,
+                creator: 'You',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            let savedRacks = JSON.parse(localStorage.getItem('saved-racks') || '[]');
+            savedRacks.push(rack);
+            localStorage.setItem('saved-racks', JSON.stringify(savedRacks));
+            
+            alert('Rack saved successfully!');
+            loadSavedRacks();
+        }
+        
+        // Load saved racks
+        function loadSavedRacks() {
+            const savedRacks = JSON.parse(localStorage.getItem('saved-racks') || '[]');
+            const gallery = document.getElementById('saved-racks');
+            
+            gallery.innerHTML = '';
+            
+            savedRacks.forEach(rack => {
+                const card = document.createElement('div');
+                card.className = 'rack-card';
+                
+                const preview = document.createElement('div');
+                preview.className = `rack-preview ${rack.color}`;
+                
+                // Add mini modules to preview
+                rack.modules.forEach(m => {
+                    const mini = document.createElement('div');
+                    mini.className = 'mini-module';
+                    preview.appendChild(mini);
+                });
+                
+                card.innerHTML = `
+                    <div class="rack-preview ${rack.color}"></div>
+                    <div class="rack-info">
+                        <div>
+                            <strong>${rack.name}</strong><br>
+                            <small>${rack.hp} HP • ${rack.modules.length} modules</small>
+                        </div>
+                        <button class="like-btn" onclick="likeRack(${rack.id})">
+                            ❤ ${rack.likes}
+                        </button>
+                    </div>
+                `;
+                
+                card.onclick = () => loadRack(rack);
+                gallery.appendChild(card);
+            });
+        }
+        
+        // Load a rack
+        function loadRack(rack) {
+            document.getElementById('rack-name').value = rack.name;
+            document.getElementById('display-rack-name').textContent = rack.name;
+            
+            // Set rack size
+            if (rack.size) {
+                document.getElementById('rack-size').value = rack.size;
+            }
+            
+            // Reinitialize grid with correct size
+            initRackGrid();
+            setRackColor(rack.color);
+            
+            // Load modules after grid is initialized
+            setTimeout(() => {
+                rack.modules.forEach(m => {
+                    const slot = document.querySelector(`[data-slot-id="${m.slotId}"]`);
+                    if (slot) {
+                        const img = document.createElement('img');
+                        img.src = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${m.moduleId.toString().padStart(2, '0')}.gif`;
+                        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+                        slot.appendChild(img);
+                        slot.classList.add('occupied');
+                        slot.dataset.moduleId = m.moduleId;
+                    }
+                });
+                
+                updateRackStats();
+            }, 100);
+        }
+        
+        // Show community racks
+        function showCommunityRacks() {
+            document.getElementById('community-title').style.display = 'block';
+            document.getElementById('community-racks').style.display = 'grid';
+            
+            // Demo community racks
+            const communityRacks = [
+                { name: 'Techno Monster', hp: 168, modules: 21, likes: 45, creator: 'user123' },
+                { name: 'Ambient Dreams', hp: 104, modules: 13, likes: 32, creator: 'synthmaster' },
+                { name: 'West Coast Setup', hp: 84, modules: 10, likes: 28, creator: 'modular_joe' }
+            ];
+            
+            const gallery = document.getElementById('community-racks');
+            gallery.innerHTML = '';
+            
+            communityRacks.forEach(rack => {
+                const card = document.createElement('div');
+                card.className = 'rack-card';
+                card.innerHTML = `
+                    <div class="rack-preview black"></div>
+                    <div class="rack-info">
+                        <div>
+                            <strong>${rack.name}</strong><br>
+                            <small>by ${rack.creator} • ${rack.hp} HP</small>
+                        </div>
+                        <button class="like-btn liked">
+                            ❤ ${rack.likes}
+                        </button>
+                    </div>
+                `;
+                gallery.appendChild(card);
+            });
+        }
+        
+        // Share rack functions
+        function shareRack(platform) {
+            const rackName = document.getElementById('rack-name').value || 'My Rack';
+            const url = window.location.href;
+            
+            if (platform === 'link') {
+                navigator.clipboard.writeText(url);
+                alert('Rack link copied to clipboard!');
+            } else if (platform === 'twitter') {
+                const text = `Check out my eurorack setup "${rackName}" on EUROGRID!`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`);
+            } else if (platform === 'forum') {
+                const text = `Check out my eurorack setup "${rackName}"`;
+                window.open(`https://reddit.com/submit?title=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`);
+            }
+        }
+        
+        // Load rack analytics (demo data)
+        function loadAnalytics() {
+            // Show engagement levels with simple visuals
+            const viewLevel = Math.random();
+            const favLevel = Math.random();
+            const tradeLevel = Math.random();
+            const cloneLevel = Math.random();
+            
+            // Views bar
+            document.getElementById('view-bar').style.width = (viewLevel * 100) + '%';
+            
+            // Favorites hearts
+            const hearts = Math.floor(favLevel * 5) + 1;
+            let heartString = '';
+            for (let i = 0; i < hearts; i++) {
+                heartString += '❤️';
+            }
+            document.getElementById('favorite-status').innerHTML = heartString;
+            
+            // Trade bar
+            document.getElementById('trade-bar').style.width = (tradeLevel * 100) + '%';
+            
+            // Clone bar
+            document.getElementById('clone-bar').style.width = (cloneLevel * 100) + '%';
+        }
+        
+        // Handle trade settings
+        document.getElementById('open-to-trades').addEventListener('change', (e) => {
+            const isOpen = e.target.checked;
+            localStorage.setItem('trade-settings-open', isOpen);
+            if (isOpen) {
+                document.getElementById('tradeable-modules').style.opacity = '1';
+            } else {
+                document.getElementById('tradeable-modules').style.opacity = '0.5';
+            }
+        });
+        
+        // Load tradeable modules
+        function loadTradeableModules() {
+            const container = document.getElementById('tradeable-modules');
+            const unlockedModules = JSON.parse(localStorage.getItem('unlocked-modules') || '[]');
+            
+            // Show first few modules as tradeable (demo)
+            container.innerHTML = '';
+            unlockedModules.slice(0, 3).forEach(moduleId => {
+                const moduleDiv = document.createElement('div');
+                moduleDiv.style.cssText = 'width: 50px; height: 50px; border: 1px solid #000; cursor: pointer;';
+                const img = document.createElement('img');
+                img.src = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${moduleId.toString().padStart(2, '0')}.gif`;
+                img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+                moduleDiv.appendChild(img);
+                container.appendChild(moduleDiv);
+            });
+            
+            if (unlockedModules.length === 0) {
+                container.innerHTML = '<span style="color: #999;">No modules available for trade</span>';
+            }
+        }
+        
+        // Check if editing existing rack
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('edit');
+        if (editId) {
+            const savedRacks = JSON.parse(localStorage.getItem('saved-racks') || '[]');
+            const rack = savedRacks.find(r => r.id == editId);
+            if (rack) {
+                setTimeout(() => loadRack(rack), 100);
+            }
+        }
+        
+        // Initialize
+        loadUnlockedModules();
+        initRackGrid();
+        loadAnalytics();
+        loadTradeableModules();
+    </script>
+</body>
+</html>

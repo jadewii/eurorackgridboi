@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Optimizer for EUROGRID</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #0f0; border-bottom: 2px solid #0f0; padding-bottom: 10px; }
+        .controls { margin: 20px 0; padding: 20px; border: 1px solid #0f0; }
+        button { 
+            background: #000; 
+            color: #0f0; 
+            border: 2px solid #0f0; 
+            padding: 10px 20px; 
+            margin: 5px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        button:hover { background: #0f0; color: #000; }
+        .status { margin: 20px 0; padding: 10px; border: 1px solid #333; }
+        #output { white-space: pre-wrap; }
+        input { 
+            background: #000; 
+            color: #0f0; 
+            border: 1px solid #0f0; 
+            padding: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎛️ EUROGRID Image Optimizer</h1>
+        
+        <div class="controls">
+            <h2>Settings</h2>
+            <p>
+                Max Width: <input type="number" id="maxWidth" value="400"> px<br><br>
+                JPEG Quality: <input type="number" id="quality" value="85" min="1" max="100"> %<br><br>
+                GIF Frame Reduction: <input type="number" id="frameSkip" value="2" min="1" max="5"> (keep every Nth frame)
+            </p>
+        </div>
+
+        <div class="controls">
+            <h2>Optimize Images</h2>
+            <button onclick="generateOptimizedCSS()">Generate Optimized CSS</button>
+            <button onclick="createLazyLoadScript()">Create Lazy Load Script</button>
+            <button onclick="generateWebPVersions()">Generate WebP Recommendations</button>
+        </div>
+
+        <div class="status">
+            <h3>Output:</h3>
+            <pre id="output"></pre>
+        </div>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+        
+        // List of images used in your app
+        const images = {
+            gifs: [
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/01.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/02.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/03.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/04.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/05.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/06.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/07.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/08.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/09.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/10.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/11.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/12.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/13.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/14.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/15.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/16.gif',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/17.gif'
+            ],
+            pngs: [
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/01.png',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/02.png',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/03.png',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/04.png',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/05.png',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/06.png',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/07.png',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/08.png',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/09.png',
+                'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/10.png',
+                // ... up to 36
+            ]
+        };
+
+        function generateOptimizedCSS() {
+            const maxWidth = document.getElementById('maxWidth').value;
+            
+            let css = `/* Optimized CSS for EUROGRID Images */\n\n`;
+            css += `/* Use CSS to limit image dimensions */\n`;
+            css += `.module-icon {\n`;
+            css += `    max-width: ${maxWidth}px;\n`;
+            css += `    max-height: ${maxWidth}px;\n`;
+            css += `    image-rendering: optimizeSpeed;\n`;
+            css += `    will-change: transform;\n`;
+            css += `}\n\n`;
+            
+            css += `/* Optimize GIF performance */\n`;
+            css += `.module-icon.live {\n`;
+            css += `    animation-play-state: paused;\n`;
+            css += `}\n\n`;
+            css += `.module-icon.live:hover,\n`;
+            css += `.pack-card:hover .module-icon.live {\n`;
+            css += `    animation-play-state: running;\n`;
+            css += `}\n\n`;
+            
+            css += `/* Use transform for better performance */\n`;
+            css += `.pack-card {\n`;
+            css += `    transform: translateZ(0);\n`;
+            css += `    backface-visibility: hidden;\n`;
+            css += `}\n`;
+            
+            output.textContent = css;
+        }
+
+        function createLazyLoadScript() {
+            let script = `// Lazy Loading Script for EUROGRID\n\n`;
+            
+            script += `// Add this to your HTML files\n`;
+            script += `(function() {\n`;
+            script += `    // Convert background images to lazy load\n`;
+            script += `    const lazyImages = document.querySelectorAll('[data-bg]');\n`;
+            script += `    \n`;
+            script += `    const imageObserver = new IntersectionObserver((entries) => {\n`;
+            script += `        entries.forEach(entry => {\n`;
+            script += `            if (entry.isIntersecting) {\n`;
+            script += `                const img = entry.target;\n`;
+            script += `                img.style.backgroundImage = \`url(\${img.dataset.bg})\`;\n`;
+            script += `                img.classList.add('loaded');\n`;
+            script += `                imageObserver.unobserve(img);\n`;
+            script += `            }\n`;
+            script += `        });\n`;
+            script += `    }, {\n`;
+            script += `        rootMargin: '50px'\n`;
+            script += `    });\n`;
+            script += `    \n`;
+            script += `    lazyImages.forEach(img => imageObserver.observe(img));\n`;
+            script += `    \n`;
+            script += `    // Pause GIFs until hover\n`;
+            script += `    document.querySelectorAll('.module-icon.live').forEach(el => {\n`;
+            script += `        el.style.animationPlayState = 'paused';\n`;
+            script += `        el.addEventListener('mouseenter', () => {\n`;
+            script += `            el.style.animationPlayState = 'running';\n`;
+            script += `        });\n`;
+            script += `        el.addEventListener('mouseleave', () => {\n`;
+            script += `            el.style.animationPlayState = 'paused';\n`;
+            script += `        });\n`;
+            script += `    });\n`;
+            script += `})();\n`;
+            
+            output.textContent = script;
+        }
+
+        function generateWebPVersions() {
+            let recommendations = `# WebP Conversion Recommendations\n\n`;
+            recommendations += `WebP images are 25-35% smaller than PNG/JPEG!\n\n`;
+            recommendations += `## Quick Implementation:\n\n`;
+            
+            recommendations += `1. Use Supabase Transform API:\n`;
+            recommendations += `   Add ?width=400&format=webp to your URLs\n\n`;
+            
+            recommendations += `Example:\n`;
+            recommendations += `OLD: https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/01.png\n`;
+            recommendations += `NEW: https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/01.png?width=400&format=webp\n\n`;
+            
+            recommendations += `2. Use picture element for fallback:\n`;
+            recommendations += `<picture>\n`;
+            recommendations += `  <source srcset="image.webp" type="image/webp">\n`;
+            recommendations += `  <img src="image.png" alt="Module">\n`;
+            recommendations += `</picture>\n\n`;
+            
+            recommendations += `3. For GIFs, consider using:\n`;
+            recommendations += `   - Static PNG previews that animate on hover\n`;
+            recommendations += `   - MP4 videos (much smaller than GIFs)\n`;
+            recommendations += `   - CSS animations instead of GIFs where possible\n`;
+            
+            output.textContent = recommendations;
+        }
+        
+        // Show initial message
+        output.textContent = 'Ready to optimize your images!\n\nClick a button above to generate optimization code.';
+    </script>
+</body>
+</html>

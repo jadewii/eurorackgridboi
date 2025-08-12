@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RACK SHOP TEST</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .rack { border: 2px solid black; margin: 10px; padding: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>RACK SHOP TEST</h1>
+    <div id="test-container"></div>
+    
+    <script>
+        // Simple test
+        const container = document.getElementById('test-container');
+        container.innerHTML = '<div class="rack">8HP Rack - $10</div><div class="rack">16HP Rack - $25</div>';
+        console.log('Test page loaded!');
+    </script>
+</body>
+</html>

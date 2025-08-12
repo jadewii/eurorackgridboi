@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>eurorack.store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans Mono', monospace; zoom: 1.3; }
+        .header { background: #000; color: #fff; padding: 40px 20px; text-align: center; }
+        .header h1 { font-size: 5rem; letter-spacing: 10px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .filters { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; justify-content: center; }
+        .filter-btn { padding: 10px 20px; border: 1px solid #000; background: #fff; cursor: pointer; }
+        .filter-btn.active { background: #000; color: #fff; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .product-card { 
+            border: 1px solid #e5e5e5;
+            background: #fff;
+            overflow: hidden; 
+            cursor: default; 
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .product-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .product-image-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        .product-image { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover;
+        }
+        .product-info { 
+            padding: 20px;
+        }
+        .product-title { 
+            font-size: 0.95rem; 
+            margin-bottom: 10px;
+            min-height: 40px;
+            line-height: 1.4;
+        }
+        .product-price { 
+            font-weight: bold; 
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .product-variants {
+            margin-bottom: 15px;
+        }
+        .variant-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #000;
+            background: #fff;
+            color: #000;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Noto Sans Mono', monospace;
+            text-align: center;
+            transition: all 0.2s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"%3e%3cpath fill="%23000" d="M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z"/%3e%3c/svg%3e');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+        .variant-select:hover {
+            /* Keep it the same on hover - no change */
+        }
+        .variant-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+        }
+        .variant-select option {
+            background: #fff;
+            color: #000;
+            padding: 10px;
+        }
+        .add-cart-btn { 
+            width: 100%; 
+            padding: 12px; 
+            background: #fff; 
+            color: #000; 
+            border: 2px solid #000; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .add-cart-btn:hover { 
+            background: #000;
+            color: #fff; 
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal.show {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #fff;
+            width: 90%;
+            max-width: 1200px;
+            height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-close, .modal-prev, .modal-next {
+            position: absolute;
+            font-size: 30px;
+            cursor: pointer;
+            background: #fff;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .modal-close {
+            right: 20px;
+            top: 20px;
+        }
+        .modal-prev {
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .modal-next {
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .modal-close:hover, .modal-prev:hover, .modal-next:hover { background: #000; color: #fff; }
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+            min-height: 500px;
+        }
+        .modal-image-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            background: #f9f9f9;
+        }
+        .modal-image { 
+            width: 100%; 
+            height: auto; 
+            max-height: 500px; 
+            object-fit: contain;
+        }
+        .modal-info h2 { font-size: 2rem; margin-bottom: 20px; }
+        .modal-price { font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; }
+        .modal-variants { margin-bottom: 20px; }
+        .modal-variants label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .modal-variants select { width: 100%; padding: 10px; font-size: 1rem; border: 2px solid #000; }
+        .modal-add-cart { width: 100%; padding: 15px; background: #000; color: #fff; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
+        .modal-add-cart:hover { background: #333; }
+        .related-products { border-top: 2px solid #000; padding: 40px; background: #f5f5f5; }
+        .related-products h3 { margin-bottom: 20px; font-size: 1.5rem; }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+        .related-item { cursor: pointer; transition: transform 0.2s; }
+        .related-item:hover { transform: scale(1.05); }
+        .related-item img { width: 100%; height: 150px; object-fit: cover; border: 1px solid #ddd; }
+        .related-item .title { font-size: 0.8rem; margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .related-item .price { font-weight: bold; font-size: 0.9rem; }
+        .notification { position: fixed; bottom: 20px; right: 20px; background: #000; color: #fff; padding: 15px 20px; z-index: 3000; animation: slideIn 0.3s; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @media (max-width: 768px) {
+            .modal-body { grid-template-columns: 1fr; }
+            .related-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="position: relative; max-width: 1400px; margin: 0 auto;">
+            <h1>EURORACK</h1>
+            <p>eurorack.store</p>
+        </div>
+    </div>
+    <div id="cart-button" style="position: fixed; top: 20px; right: 20px; cursor: pointer; border: 2px solid #000; padding: 10px 20px; transition: all 0.3s; background: #fff; z-index: 999;" onclick="toggleCart()">
+        + cart (<span id="cart-count">0</span>)
+    </div>
+
+    <div class="container">
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterCat('all', this)">All (<span id="count-all">0</span>)</button>
+            <button class="filter-btn" onclick="filterCat('shirts', this)">T-Shirts (<span id="count-shirts">0</span>)</button>
+            <button class="filter-btn" onclick="filterCat('hoodies', this)">Hoodies (<span id="count-hoodies">0</span>)</button>
+            <button class="filter-btn" onclick="filterCat('accessories', this)">Accessories (<span id="count-accessories">0</span>)</button>
+            <button class="filter-btn" onclick="filterCat('prints', this)">Art Prints (<span id="count-prints">0</span>)</button>
+            <button class="filter-btn" onclick="window.location.href='stickers.html'">Stickers (<span id="count-stickers">0</span>)</button>
+            <button class="filter-btn" onclick="filterCat('home', this)">Home (<span id="count-home">0</span>)</button>
+        </div>
+        
+        <div id="grid" class="product-grid"></div>
+        <div style="text-align: center; margin: 40px 0;">
+            <button id="load-more" onclick="loadMore()" style="padding: 15px 40px; background: #000; color: #fff; border: none; cursor: pointer; font-size: 1rem; display: none;">
+                LOAD MORE PRODUCTS
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <span class="modal-prev" onclick="navigateProduct(-1)">&lt;</span>
+            <span class="modal-next" onclick="navigateProduct(1)">&gt;</span>
+            <div class="modal-body">
+                <div class="modal-image-container">
+                    <img id="modal-image" class="modal-image" src="" alt="" style="opacity: 1;">
+                </div>
+                <div class="modal-info">
+                    <h2 id="modal-title"></h2>
+                    <div id="modal-price" class="modal-price"></div>
+                    <div class="modal-variants">
+                        <label>Select Option:</label>
+                        <select id="modal-variant"></select>
+                    </div>
+                    <button class="modal-add-cart" onclick="addToCartFromModal()">ADD TO CART</button>
+                </div>
+            </div>
+            <div class="related-products">
+                <h3>Related Products</h3>
+                <div id="related-grid" class="related-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load products directly -->
+    <script src="printify-products.js"></script>
+    <script>
+        // Global state
+        let currentProduct = null;
+        let currentProductIndex = 0;
+        let currentFilteredProducts = [];
+        let currentLoadedCount = 0;
+        let currentCategory = 'all';
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        // Initialize Stripe (you'll need to replace with your publishable key)
+        const stripe = Stripe('pk_test_51234567890abcdefghijklmnop'); // REPLACE WITH YOUR KEY
+        let elements = null;
+        let cardElement = null;
+        
+        // Check if products loaded
+        if (typeof printifyProducts === 'undefined') {
+            console.error('printifyProducts is undefined!');
+        } else {
+            console.log('✅ Products loaded:', printifyProducts.length);
+            // Show products immediately
+            showAll();
+            updateCartCount();
+            updateCategoryCounts();
+        }
+        
+        function updateCategoryCounts() {
+            const counts = {
+                all: printifyProducts.length,
+                shirts: 0,
+                hoodies: 0,
+                accessories: 0,
+                prints: 0,
+                stickers: 0,
+                home: 0
+            };
+            
+            printifyProducts.forEach(p => {
+                if (counts[p.category] !== undefined) {
+                    counts[p.category]++;
+                }
+            });
+            
+            // Update all count displays
+            Object.keys(counts).forEach(cat => {
+                const el = document.getElementById('count-' + cat);
+                if (el) el.textContent = counts[cat];
+            });
+        }
+        
+        function showAll() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            currentFilteredProducts = printifyProducts;
+            
+            // Show first 50 products
+            // Show only 20 products initially for faster load
+            printifyProducts.slice(0, 20).forEach((p, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                // NO CLICKING ON PRODUCTS - removed onclick
+                let variantHtml = '';
+                if (p.variants && p.variants.length > 0) {
+                    variantHtml = '<div class="product-variants">' +
+                        '<select class="variant-select" id="variant-' + p.id + '" onclick="event.stopPropagation()" onchange="updatePrice(\'' + p.id + '\')">';
+                    // Only first 3 variants in grid
+                    p.variants.slice(0, 3).forEach(v => {
+                        // Clean up variant names - remove quotes and simplify
+                        let cleanName = v.name
+                            .replace(/["\u201c\u201d]/g, '') // Remove all quotes
+                            .replace(/\s*×\s*/g, 'x') // Replace × with x
+                            .replace(/\s*\/\s*White/g, '') // Remove / White
+                            .replace(/\s+/g, ' ') // Clean up spaces
+                            .trim();
+                        variantHtml += '<option value="' + v.id + '" data-price="' + v.price + '">' + cleanName + '</option>';
+                    });
+                    variantHtml += '</select></div>';
+                }
+                
+                // Use smaller image size for grid
+                const smallImage = p.image.includes('?') ? p.image + '&width=400' : p.image + '?width=400';
+                card.innerHTML = '<div class="product-image-container">' +
+                    '<img src="' + smallImage + '" alt="' + p.title + '" class="product-image" loading="lazy">' +
+                    '</div>' +
+                    '<div class="product-info">' +
+                    '<div class="product-title">' + p.title + '</div>' +
+                    '<div class="product-price">$' + p.price.toFixed(2) + '</div>' +
+                    variantHtml +
+                    '<button class="add-cart-btn" onclick="event.stopPropagation(); quickAddToCart(\'' + p.id + '\')">+ cart</button>' +
+                    '</div>';
+                grid.appendChild(card);
+            });
+        }
+        
+        function filterCat(cat, btn) {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            currentCategory = cat;
+            currentLoadedCount = 0;
+            const filtered = cat === 'all' ? printifyProducts : printifyProducts.filter(p => p.category === cat);
+            currentFilteredProducts = filtered;
+            
+            // Show only 20 products for faster filtering
+            filtered.slice(0, 20).forEach((p, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                // NO CLICKING ON PRODUCTS - removed onclick
+                let variantHtml = '';
+                if (p.variants && p.variants.length > 0) {
+                    variantHtml = '<div class="product-variants">' +
+                        '<select class="variant-select" id="variant-' + p.id + '" onclick="event.stopPropagation()" onchange="updatePrice(\'' + p.id + '\')">';
+                    // Only first 3 variants in grid
+                    p.variants.slice(0, 3).forEach(v => {
+                        // Clean up variant names - remove quotes and simplify
+                        let cleanName = v.name
+                            .replace(/["\u201c\u201d]/g, '') // Remove all quotes
+                            .replace(/\s*×\s*/g, 'x') // Replace × with x
+                            .replace(/\s*\/\s*White/g, '') // Remove / White
+                            .replace(/\s+/g, ' ') // Clean up spaces
+                            .trim();
+                        variantHtml += '<option value="' + v.id + '" data-price="' + v.price + '">' + cleanName + '</option>';
+                    });
+                    variantHtml += '</select></div>';
+                }
+                
+                // Use smaller image size for grid
+                const smallImage = p.image.includes('?') ? p.image + '&width=400' : p.image + '?width=400';
+                card.innerHTML = '<div class="product-image-container">' +
+                    '<img src="' + smallImage + '" alt="' + p.title + '" class="product-image" loading="lazy">' +
+                    '</div>' +
+                    '<div class="product-info">' +
+                    '<div class="product-title">' + p.title + '</div>' +
+                    '<div class="product-price">$' + p.price.toFixed(2) + '</div>' +
+                    variantHtml +
+                    '<button class="add-cart-btn" onclick="event.stopPropagation(); quickAddToCart(\'' + p.id + '\')">+ cart</button>' +
+                    '</div>';
+                grid.appendChild(card);
+            });
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        
+        // Modal functions
+        function openModal(product, index) {
+            currentProduct = product;
+            currentProductIndex = index !== undefined ? index : currentFilteredProducts.findIndex(p => p.id === product.id);
+            const modal = document.getElementById('product-modal');
+            const img = document.getElementById('modal-image');
+            
+            // If modal is already open, swap everything instantly
+            if (modal.classList.contains('show')) {
+                // Swap EVERYTHING instantly
+                document.getElementById('modal-title').textContent = product.title;
+                document.getElementById('modal-price').textContent = '$' + product.price.toFixed(2);
+                updateVariants(product);
+                updateRelatedProducts(product);
+                
+                // Change image immediately - no preloading
+                img.src = product.image;
+            } else {
+                // First time opening - set everything BEFORE showing modal
+                document.getElementById('modal-title').textContent = product.title;
+                document.getElementById('modal-price').textContent = '$' + product.price.toFixed(2);
+                updateVariants(product);
+                updateRelatedProducts(product);
+                img.src = product.image;
+                img.style.opacity = '1';
+                
+                // Show modal after content is set
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function updateVariants(product) {
+            
+            const variantSelect = document.getElementById('modal-variant');
+            variantSelect.innerHTML = '';
+            if (product.variants && product.variants.length > 0) {
+                // Show all variants with cleaned names and prices
+                product.variants.forEach(v => {
+                    const option = document.createElement('option');
+                    option.value = v.id;
+                    option.setAttribute('data-price', v.price);
+                    // Clean up variant names - remove quotes and simplify
+                    let cleanName = v.name
+                        .replace(/["\u201c\u201d]/g, '') // Remove all quotes
+                        .replace(/\s*×\s*/g, 'x') // Replace × with x
+                        .replace(/\s*\/\s*White/g, '') // Remove / White
+                        .replace(/\s+/g, ' ') // Clean up spaces
+                        .trim();
+                    option.textContent = cleanName;
+                    variantSelect.appendChild(option);
+                });
+                // Update price when variant changes
+                variantSelect.onchange = function() {
+                    const selected = variantSelect.options[variantSelect.selectedIndex];
+                    const price = selected.getAttribute('data-price');
+                    document.getElementById('modal-price').textContent = '$' + parseFloat(price).toFixed(2);
+                };
+            }
+        }
+        
+        function updateRelatedProducts(product) {
+            const relatedGrid = document.getElementById('related-grid');
+            relatedGrid.innerHTML = '';
+            // Only show 4 related products for speed
+            const related = printifyProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+            related.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'related-item';
+                item.onclick = () => {
+                    // Direct update instead of openModal
+                    currentProduct = p;
+                    currentProductIndex = currentFilteredProducts.findIndex(prod => prod.id === p.id);
+                    document.getElementById('modal-image').src = p.image;
+                    document.getElementById('modal-title').textContent = p.title;
+                    document.getElementById('modal-price').textContent = '$' + p.price.toFixed(2);
+                    updateVariants(p);
+                    updateRelatedProducts(p);
+                };
+                const smallImg = p.image.includes('?') ? p.image + '&width=200' : p.image + '?width=200';
+                item.innerHTML = '<img src="' + smallImg + '" alt="' + p.title + '" loading="lazy">' +
+                    '<div class="title">' + p.title + '</div>' +
+                    '<div class="price">$' + p.price.toFixed(2) + '</div>';
+                relatedGrid.appendChild(item);
+            });
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('product-modal');
+            modal.classList.remove('show');
+            // Clear content immediately
+            document.getElementById('modal-image').src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            document.getElementById('modal-title').textContent = '';
+            document.getElementById('modal-price').textContent = '';
+            document.getElementById('modal-variant').innerHTML = '';
+            document.getElementById('related-grid').innerHTML = '';
+            document.body.style.overflow = 'auto';
+            currentProduct = null;
+        }
+        
+        function addToCartFromModal() {
+            if (!currentProduct) return;
+            const variantSelect = document.getElementById('modal-variant');
+            const variantId = variantSelect.value || (currentProduct.variants && currentProduct.variants[0].id);
+            addToCart(currentProduct, variantId);
+            showNotification('Added to cart!');
+            setTimeout(closeModal, 500);
+        }
+        
+        function quickAddToCart(productId) {
+            const product = printifyProducts.find(p => p.id === productId);
+            if (product) {
+                const variantSelect = document.getElementById('variant-' + productId);
+                const variantId = variantSelect ? variantSelect.value : (product.variants && product.variants[0].id);
+                addToCart(product, variantId);
+                showNotification('Added to cart!');
+            }
+        }
+        
+        function addToCart(product, variantId) {
+            const variant = product.variants && product.variants.find(v => v.id === variantId);
+            const existing = cart.find(item => item.productId === product.id && item.variantId === variantId);
+            
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({
+                    productId: product.id,
+                    title: product.title,
+                    price: product.price,
+                    image: product.image,
+                    variantId: variantId,
+                    variantName: variant ? variant.name : 'Default',
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+        }
+        
+        function updateCartCount() {
+            const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const countEl = document.getElementById('cart-count');
+            if (countEl) countEl.textContent = total;
+            
+            // Update cart button style when items are added
+            const cartBtn = document.getElementById('cart-button');
+            if (cartBtn) {
+                if (total > 0) {
+                    cartBtn.style.background = '#FFB6C1'; // Pastel pink
+                    cartBtn.style.color = '#000'; // Black text
+                    cartBtn.style.border = '2px solid #FFB6C1';
+                } else {
+                    cartBtn.style.background = '#fff';
+                    cartBtn.style.color = '#000';
+                    cartBtn.style.border = '2px solid #000';
+                }
+            }
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+        
+        function updatePrice(productId) {
+            const select = document.getElementById('variant-' + productId);
+            const priceEl = select.closest('.product-card').querySelector('.product-price');
+            if (select && priceEl) {
+                const selected = select.options[select.selectedIndex];
+                const price = selected.getAttribute('data-price');
+                if (price) {
+                    priceEl.textContent = '$' + parseFloat(price).toFixed(2);
+                }
+            }
+        }
+        
+        function toggleCart() {
+            // Go to checkout page instead of modal
+            window.location.href = 'checkout.html';
+            // Or uncomment below to use modal:
+            // openCartModal();
+        }
+        
+        function openCartModal() {
+            // Create cart modal if it doesn't exist
+            let cartModal = document.getElementById('cart-modal');
+            if (!cartModal) {
+                cartModal = document.createElement('div');
+                cartModal.id = 'cart-modal';
+                cartModal.className = 'modal';
+                cartModal.innerHTML = `
+                    <div class="modal-content" style="max-width: 600px; height: auto; max-height: 90vh;">
+                        <span class="modal-close" onclick="closeCartModal()">&times;</span>
+                        <div style="padding: 40px;">
+                            <h2 style="font-size: 2rem; margin-bottom: 30px;">CHECKOUT</h2>
+                            <div id="cart-items" style="margin-bottom: 30px;"></div>
+                            <div style="border-top: 2px solid #000; padding-top: 20px; margin-bottom: 30px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold;">
+                                    <span>TOTAL:</span>
+                                    <span id="cart-total">$0.00</span>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <input type="email" id="checkout-email" placeholder="Email" style="width: 100%; padding: 15px; border: 2px solid #000; margin-bottom: 15px; font-size: 1rem; font-family: 'Noto Sans Mono', monospace;">
+                                <input type="text" id="checkout-name" placeholder="Full Name" style="width: 100%; padding: 15px; border: 2px solid #000; margin-bottom: 15px; font-size: 1rem; font-family: 'Noto Sans Mono', monospace;">
+                                <input type="text" id="checkout-address" placeholder="Shipping Address" style="width: 100%; padding: 15px; border: 2px solid #000; margin-bottom: 15px; font-size: 1rem; font-family: 'Noto Sans Mono', monospace;">
+                                <input type="text" id="checkout-city" placeholder="City, State ZIP" style="width: 100%; padding: 15px; border: 2px solid #000; margin-bottom: 15px; font-size: 1rem; font-family: 'Noto Sans Mono', monospace;">
+                            </div>
+                            <div style="margin-bottom: 20px; padding: 20px; background: #f5f5f5; border: 2px solid #000;">
+                                <h3 style="margin-bottom: 15px; font-size: 1.2rem;">PAYMENT</h3>
+                                <div id="card-element" style="padding: 15px; background: #fff; border: 2px solid #000; margin-bottom: 15px;"></div>
+                                <div id="card-errors" style="color: red; margin-top: 10px;"></div>
+                            </div>
+                            <button onclick="processCheckout()" style="width: 100%; padding: 20px; background: #000; color: #fff; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">PLACE ORDER</button>
+                            <div style="margin-top: 20px; padding: 15px; background: #fffbf0; border: 1px solid #ffc107;">
+                                <p style="font-size: 0.9rem; color: #666; text-align: center;">💡 <strong>Demo Mode:</strong> Use card number 4242 4242 4242 4242 for testing</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(cartModal);
+            }
+            
+            // Update cart items
+            const cartItemsDiv = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p style="text-align: center; color: #999;">Your cart is empty</p>';
+            } else {
+                cartItemsDiv.innerHTML = cart.map(item => `
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e5e5;">
+                        <img src="${item.image}?width=80" style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ddd;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold;">${item.title}</div>
+                            <div style="color: #666; font-size: 0.9rem;">${item.variantName}</div>
+                            <div style="margin-top: 5px;">Qty: ${item.quantity}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: bold;">$${(item.price * item.quantity).toFixed(2)}</div>
+                            <button onclick="removeFromCart('${item.productId}', '${item.variantId}')" style="margin-top: 5px; padding: 5px 10px; background: #fff; border: 1px solid #000; cursor: pointer; font-size: 0.8rem;">REMOVE</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Update total
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
+            
+            // Show modal
+            cartModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // Initialize Stripe Elements if needed
+            if (!elements && typeof Stripe !== 'undefined') {
+                elements = stripe.elements();
+                const style = {
+                    base: {
+                        fontSize: '16px',
+                        fontFamily: 'Noto Sans Mono, monospace',
+                        color: '#000',
+                        '::placeholder': {
+                            color: '#999',
+                        },
+                    },
+                };
+                cardElement = elements.create('card', {style: style});
+                cardElement.mount('#card-element');
+                
+                // Handle validation errors
+                cardElement.on('change', function(event) {
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+            }
+        }
+        
+        function closeCartModal() {
+            const cartModal = document.getElementById('cart-modal');
+            if (cartModal) {
+                cartModal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        function removeFromCart(productId, variantId) {
+            cart = cart.filter(item => !(item.productId === productId && item.variantId === variantId));
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            openCartModal(); // Refresh the cart modal
+        }
+        
+        async function processCheckout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            // Get form values
+            const email = document.getElementById('checkout-email').value;
+            const name = document.getElementById('checkout-name').value;
+            const address = document.getElementById('checkout-address').value;
+            const city = document.getElementById('checkout-city').value;
+            
+            if (!email || !name || !address || !city) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // In demo mode, just simulate success
+            if (!cardElement) {
+                alert('Payment processing not available in demo mode. Order would be sent to Printify API.');
+                // Here you would:
+                // 1. Process payment with Stripe
+                // 2. Send order to your backend
+                // 3. Backend creates order via Printify API
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                closeCartModal();
+                return;
+            }
+            
+            // Create payment method with Stripe
+            const {error, paymentMethod} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+                billing_details: {
+                    name: name,
+                    email: email,
+                    address: {
+                        line1: address,
+                        city: city.split(',')[0],
+                    }
+                }
+            });
+            
+            if (error) {
+                document.getElementById('card-errors').textContent = error.message;
+            } else {
+                // Send to your backend to:
+                // 1. Charge the card
+                // 2. Create order in Printify
+                alert('Payment successful! (Demo - would create Printify order now)');
+                console.log('Payment Method:', paymentMethod);
+                console.log('Cart:', cart);
+                console.log('Shipping:', {email, name, address, city});
+                
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                closeCartModal();
+            }
+        }
+        
+        // Navigate between products - INSTANT
+        function navigateProduct(direction) {
+            const newIndex = currentProductIndex + direction;
+            if (newIndex >= 0 && newIndex < currentFilteredProducts.length) {
+                const nextProduct = currentFilteredProducts[newIndex];
+                // Don't call openModal, just update content directly
+                currentProduct = nextProduct;
+                currentProductIndex = newIndex;
+                
+                // Update everything instantly
+                document.getElementById('modal-image').src = nextProduct.image;
+                document.getElementById('modal-title').textContent = nextProduct.title;
+                document.getElementById('modal-price').textContent = '$' + nextProduct.price.toFixed(2);
+                updateVariants(nextProduct);
+                updateRelatedProducts(nextProduct);
+            }
+        }
+        
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('product-modal');
+            const cartModal = document.getElementById('cart-modal');
+            if (event.target === modal) {
+                closeModal();
+            } else if (event.target === cartModal) {
+                closeCartModal();
+            }
+        }
+    </script>
+</body>
+</html>

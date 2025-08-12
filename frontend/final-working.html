@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - ALL 17 ANIMATED MODULES</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            padding: 20px; 
+            background: #000; 
+            color: #0f0; 
+        }
+        h1 {
+            text-align: center;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .gif-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .module {
+            border: 3px solid #0f0;
+            padding: 15px;
+            text-align: center;
+            background: #111;
+            transition: all 0.3s;
+        }
+        .module:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #0f0;
+        }
+        .module img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background: #000;
+            cursor: pointer;
+        }
+        .module h3 {
+            color: #0f0;
+            margin: 10px 0;
+        }
+        .module .price {
+            color: #ff0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .loading {
+            text-align: center;
+            font-size: 24px;
+            margin: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎹 EUROGRID - LIVE ANIMATED MODULES 🎹</h1>
+    
+    <div id="loading" class="loading">Loading your 17 animated modules...</div>
+    
+    <div id="modules" class="gif-grid"></div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        
+        // All 17 GIF files - we know these exist
+        const modules = [
+            { name: 'Module 01', file: '01.gif', price: 50 },
+            { name: 'Module 02', file: '02.gif', price: 50 },
+            { name: 'Module 03', file: '03.gif', price: 50 },
+            { name: 'Module 04', file: '04.gif', price: 50 },
+            { name: 'Module 05', file: '05.gif', price: 50 },
+            { name: 'Module 06', file: '06.gif', price: 50 },
+            { name: 'Module 07', file: '07.gif', price: 50 },
+            { name: 'Module 08', file: '08.gif', price: 50 },
+            { name: 'Module 09', file: '09.gif', price: 50 },
+            { name: 'Module 10', file: '10.gif', price: 50 },
+            { name: 'Module 11', file: '11.gif', price: 50 },
+            { name: 'Module 12', file: '12.gif', price: 50 },
+            { name: 'Module 13', file: '13.gif', price: 50 },
+            { name: 'Module 14', file: '14.gif', price: 50 },
+            { name: 'Module 15', file: '15.gif', price: 50 },
+            { name: 'Module 16', file: '16.gif', price: 50 },
+            { name: 'Module 17', file: '17.gif', price: 50 }
+        ];
+        
+        function loadModules() {
+            const loadingDiv = document.getElementById('loading');
+            const modulesDiv = document.getElementById('modules');
+            
+            loadingDiv.style.display = 'none';
+            modulesDiv.innerHTML = '';
+            
+            modules.forEach((module, index) => {
+                const div = document.createElement('div');
+                div.className = 'module';
+                
+                const img = document.createElement('img');
+                // Direct public URL that we know works
+                img.src = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${module.file}`;
+                img.alt = module.name;
+                img.title = 'Click to view full size';
+                img.onclick = () => window.open(img.src, '_blank');
+                
+                img.onload = () => {
+                    console.log(`✅ Loaded ${module.file}`);
+                };
+                
+                img.onerror = () => {
+                    console.error(`❌ Failed to load ${module.file}`);
+                    // Show placeholder
+                    img.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="200"><rect width="250" height="200" fill="%23111"/><text x="125" y="100" text-anchor="middle" fill="%23666" font-size="20">Module ${index + 1}</text></svg>`;
+                };
+                
+                const title = document.createElement('h3');
+                title.textContent = module.name;
+                
+                const price = document.createElement('div');
+                price.className = 'price';
+                price.textContent = `${module.price} HP`;
+                
+                div.appendChild(img);
+                div.appendChild(title);
+                div.appendChild(price);
+                
+                modulesDiv.appendChild(div);
+            });
+        }
+        
+        // Load immediately
+        window.onload = loadModules;
+    </script>
+</body>
+</html>
