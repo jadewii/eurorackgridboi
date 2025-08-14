@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EURORACKGRID - Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Sans Mono', monospace;
+            background: #000;
+            color: #FFD700;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Animated background grid */
+        .grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(0deg, 
+                    transparent, 
+                    transparent 50px, 
+                    #FFD700 50px, 
+                    #FFD700 51px),
+                repeating-linear-gradient(90deg, 
+                    transparent, 
+                    transparent 50px, 
+                    #FFD700 50px, 
+                    #FFD700 51px);
+            opacity: 0.05;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 40px;
+            max-width: 800px;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            letter-spacing: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.2;
+        }
+        
+        .jacknut {
+            width: 80px;
+            height: 80px;
+            animation: spin 10s linear infinite;
+            filter: brightness(1.5);
+            margin: 0 -10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .countdown {
+            font-size: 1.2rem;
+            margin: 40px 0;
+            padding: 20px;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .rack-preview {
+            margin: 40px auto;
+            width: 400px;
+            height: 150px;
+            background: #1a1a1a;
+            border: 3px solid #FFD700;
+            border-radius: 5px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2px;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-slot {
+            background: #333;
+            border: 1px solid #555;
+            animation: pulse 3s infinite;
+            animation-delay: calc(var(--i) * 0.2s);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; background: #FFD700; }
+        }
+        
+        .email-form {
+            margin: 40px 0;
+        }
+        
+        .email-input {
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            background: transparent;
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            margin-right: 10px;
+            font-family: 'Noto Sans Mono', monospace;
+            min-width: 300px;
+        }
+        
+        .email-input::placeholder {
+            color: rgba(255, 215, 0, 0.5);
+        }
+        
+        .notify-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            background: #FFD700;
+            color: #000;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Noto Sans Mono', monospace;
+            transition: all 0.3s;
+        }
+        
+        .notify-btn:hover {
+            background: #FFF;
+            transform: translateY(-2px);
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin: 60px 0;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .feature {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .feature-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .launch-date {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 20px 0;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+        
+        @media (max-width: 768px) {
+            .logo { font-size: 2.5rem; }
+            .tagline { font-size: 1.2rem; }
+            .rack-preview { width: 300px; }
+            .email-input { min-width: 200px; margin-bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <div class="container">
+        <h1 class="logo">
+            <div>EUR<img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut" alt="O">RACK</div>
+            <div>GRID</div>
+        </h1>
+        
+        <p class="tagline">The Ultimate Digital Eurorack Experience</p>
+        
+        <div class="rack-preview">
+            <div class="module-slot" style="--i: 0"></div>
+            <div class="module-slot" style="--i: 1"></div>
+            <div class="module-slot" style="--i: 2"></div>
+            <div class="module-slot" style="--i: 3"></div>
+            <div class="module-slot" style="--i: 4"></div>
+            <div class="module-slot" style="--i: 5"></div>
+        </div>
+        
+        <div class="countdown">
+            <div class="launch-date">LAUNCHING SOON</div>
+            <p>Get ready to build your dream modular synth</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">100+ Animated Modules</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🥜</div>
+                <div class="feature-text">Jamnutz Currency</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-text">Custom Racks</div>
+            </div>
+        </div>
+        
+        <form class="email-form" id="notifyForm">
+            <input type="email" class="email-input" placeholder="your@email.com" required>
+            <button type="submit" class="notify-btn">NOTIFY ME</button>
+        </form>
+        
+        <p style="opacity: 0.6; font-size: 0.9rem;">
+            Join the waitlist and get 1000 FREE jamnutz on launch!
+        </p>
+    </div>
+    
+    <script>
+        document.getElementById('notifyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input').value;
+            
+            // Store in localStorage for now (replace with actual backend later)
+            let waitlist = JSON.parse(localStorage.getItem('waitlist') || '[]');
+            if (!waitlist.includes(email)) {
+                waitlist.push(email);
+                localStorage.setItem('waitlist', JSON.stringify(waitlist));
+                
+                // Show success
+                const btn = e.target.querySelector('button');
+                btn.textContent = '✓ ADDED TO WAITLIST';
+                btn.style.background = '#00FF00';
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    btn.textContent = 'NOTIFY ME';
+                    btn.style.background = '#FFD700';
+                    btn.disabled = false;
+                    e.target.reset();
+                }, 3000);
+            } else {
+                const btn = e.target.querySelector('button');
+                btn.textContent = 'ALREADY ON LIST!';
+                setTimeout(() => {
+                    btn.textContent = 'NOTIFY ME';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

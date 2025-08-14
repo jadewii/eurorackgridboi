@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Persistence Test - EUROGRID</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="purchase-integration-fixed.js" defer></script>
+    <script src="universal-nav.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            padding-top: 120px;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-card {
+            background: #f5f5f5;
+            border: 2px solid #000;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .test-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .data-display {
+            background: white;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .test-button {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            border-radius: 3px;
+        }
+        
+        .test-button:hover {
+            background: #333;
+        }
+        
+        .status-ok {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .status-error {
+            color: #f44336;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 style="text-align: center; margin-bottom: 30px;">DATA PERSISTENCE TEST</h1>
+        
+        <!-- LocalStorage Data -->
+        <div class="test-card">
+            <h2 class="test-title">📦 LOCALSTORAGE DATA</h2>
+            <div class="data-display" id="localStorageData">Loading...</div>
+            <button class="test-button" onclick="refreshLocalStorage()">Refresh</button>
+            <button class="test-button" onclick="clearLocalStorage()">Clear All Data</button>
+        </div>
+        
+        <!-- User System State -->
+        <div class="test-card">
+            <h2 class="test-title">👤 USER SYSTEM STATE</h2>
+            <div class="data-display" id="userSystemState">Loading...</div>
+            <button class="test-button" onclick="refreshUserSystem()">Refresh</button>
+        </div>
+        
+        <!-- Persistence Tests -->
+        <div class="test-card">
+            <h2 class="test-title">🧪 PERSISTENCE TESTS</h2>
+            <div id="testResults"></div>
+            <button class="test-button" onclick="runAllTests()">Run All Tests</button>
+        </div>
+        
+        <!-- Actions -->
+        <div class="test-card">
+            <h2 class="test-title">🎮 TEST ACTIONS</h2>
+            <button class="test-button" onclick="addTestModule()">Add Test Module</button>
+            <button class="test-button" onclick="modifyJamnutz()">Add 100 Jamnutz</button>
+            <button class="test-button" onclick="testPageReload()">Test Page Reload</button>
+            <button class="test-button" onclick="testCrossPageNav()">Test Cross-Page Navigation</button>
+        </div>
+    </div>
+    
+    <script>
+        // Refresh localStorage display
+        function refreshLocalStorage() {
+            const display = document.getElementById('localStorageData');
+            const userData = localStorage.getItem('eurorack_user');
+            
+            if (userData) {
+                try {
+                    const parsed = JSON.parse(userData);
+                    display.innerHTML = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    display.innerHTML = 'Error parsing user data: ' + e.message;
+                }
+            } else {
+                display.innerHTML = 'No user data in localStorage';
+            }
+        }
+        
+        // Refresh user system state
+        function refreshUserSystem() {
+            const display = document.getElementById('userSystemState');
+            
+            if (window.userSystem && window.userSystem.currentUser) {
+                display.innerHTML = JSON.stringify(window.userSystem.currentUser, null, 2);
+            } else {
+                display.innerHTML = 'No user logged in via userSystem';
+            }
+        }
+        
+        // Clear all localStorage
+        function clearLocalStorage() {
+            if (confirm('This will clear ALL localStorage data. Continue?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+        
+        // Add a test module
+        function addTestModule() {
+            if (!window.userSystem || !window.userSystem.currentUser) {
+                alert('Please login first');
+                return;
+            }
+            
+            const moduleName = 'TestModule_' + Date.now();
+            window.userSystem.currentUser.ownedModules.push(moduleName);
+            window.userSystem.saveUser();
+            
+            alert('Added module: ' + moduleName);
+            refreshLocalStorage();
+            refreshUserSystem();
+        }
+        
+        // Modify jamnutz
+        function modifyJamnutz() {
+            if (!window.userSystem || !window.userSystem.currentUser) {
+                alert('Please login first');
+                return;
+            }
+            
+            window.userSystem.currentUser.jamnutz += 100;
+            window.userSystem.saveUser();
+            
+            alert('Added 100 jamnutz!');
+            refreshLocalStorage();
+            refreshUserSystem();
+        }
+        
+        // Test page reload
+        function testPageReload() {
+            const beforeData = localStorage.getItem('eurorack_user');
+            sessionStorage.setItem('before_reload', beforeData);
+            location.reload();
+        }
+        
+        // Test cross-page navigation
+        function testCrossPageNav() {
+            window.location.href = 'my-studio.html';
+        }
+        
+        // Run all persistence tests
+        function runAllTests() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '';
+            
+            const tests = [
+                {
+                    name: 'LocalStorage Available',
+                    test: () => {
+                        try {
+                            localStorage.setItem('test', 'test');
+                            localStorage.removeItem('test');
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    }
+                },
+                {
+                    name: 'User Data Exists',
+                    test: () => localStorage.getItem('eurorack_user') !== null
+                },
+                {
+                    name: 'User Data Valid JSON',
+                    test: () => {
+                        try {
+                            const data = localStorage.getItem('eurorack_user');
+                            if (data) JSON.parse(data);
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    }
+                },
+                {
+                    name: 'UserSystem Loaded',
+                    test: () => window.userSystem !== undefined
+                },
+                {
+                    name: 'User Logged In',
+                    test: () => window.userSystem && window.userSystem.currentUser !== null
+                },
+                {
+                    name: 'Data Matches localStorage',
+                    test: () => {
+                        if (!window.userSystem || !window.userSystem.currentUser) return false;
+                        const stored = localStorage.getItem('eurorack_user');
+                        if (!stored) return false;
+                        const parsed = JSON.parse(stored);
+                        return parsed.email === window.userSystem.currentUser.email;
+                    }
+                }
+            ];
+            
+            tests.forEach(test => {
+                const result = test.test();
+                const div = document.createElement('div');
+                div.innerHTML = `${test.name}: <span class="${result ? 'status-ok' : 'status-error'}">${result ? '✅ PASS' : '❌ FAIL'}</span>`;
+                results.appendChild(div);
+            });
+            
+            // Check if data persisted from reload
+            const beforeReload = sessionStorage.getItem('before_reload');
+            if (beforeReload) {
+                const currentData = localStorage.getItem('eurorack_user');
+                const reloadTest = document.createElement('div');
+                reloadTest.innerHTML = `Data Persisted After Reload: <span class="${beforeReload === currentData ? 'status-ok' : 'status-error'}">${beforeReload === currentData ? '✅ PASS' : '❌ FAIL'}</span>`;
+                results.appendChild(reloadTest);
+                sessionStorage.removeItem('before_reload');
+            }
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                refreshLocalStorage();
+                refreshUserSystem();
+                runAllTests();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

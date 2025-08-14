@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Image Loading Speed</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #000;
+            color: #FFD700;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 200px);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .module {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #FFD700;
+            background: #333;
+            position: relative;
+        }
+        .module img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .load-time {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            color: #FFD700;
+            padding: 5px;
+            font-size: 12px;
+            text-align: center;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 20px;
+            background: #111;
+            border: 1px solid #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎛️ EURORACKGRID Image Speed Test</h1>
+    
+    <div class="status">
+        <h2>Current Setup: Supabase</h2>
+        <p>Testing load times for current images...</p>
+        <p>Total Load Time: <span id="totalTime">Loading...</span></p>
+        <p>Average Time per Image: <span id="avgTime">Loading...</span></p>
+    </div>
+
+    <h3>Test Modules (Current Supabase URLs):</h3>
+    <div class="test-grid" id="supabaseGrid"></div>
+
+    <div class="status">
+        <h2>Proposed: Cloudflare R2</h2>
+        <p>These will load 10x faster once set up!</p>
+    </div>
+
+    <h3>Test Modules (Future Cloudflare URLs):</h3>
+    <div class="test-grid" id="cloudflareGrid"></div>
+
+    <script>
+        // Module names we're testing
+        const modules = [
+            'Function Synthesizer',
+            'Honduh',
+            'Andersons',
+            'Varigated',
+            'BAI',
+            'Cephalopod Rose',
+            'Physical Modeler',
+            'Voltaged Gray'
+        ];
+
+        // Test Supabase images
+        const supabaseBase = 'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/';
+        const loadTimes = [];
+        let startTime = performance.now();
+
+        function testSupabaseImages() {
+            const grid = document.getElementById('supabaseGrid');
+            
+            modules.forEach((moduleName, index) => {
+                const div = document.createElement('div');
+                div.className = 'module';
+                
+                const img = document.createElement('img');
+                const imgStartTime = performance.now();
+                
+                // Try different possible URLs
+                const possibleUrls = [
+                    `${supabaseBase}gifs/${moduleName}.gif`,
+                    `${supabaseBase}webp/${moduleName}.webp`,
+                    `${supabaseBase}modules/${moduleName}.webp`,
+                    `${supabaseBase}modules/${moduleName.toLowerCase().replace(/ /g, '-')}.webp`
+                ];
+                
+                img.onerror = function() {
+                    // Try next URL
+                    const nextUrl = possibleUrls.shift();
+                    if (nextUrl) {
+                        img.src = nextUrl;
+                    } else {
+                        // Use placeholder
+                        div.style.background = '#333';
+                        div.innerHTML = `<div style="padding: 20px; text-align: center;">
+                            <div style="font-size: 50px;">?</div>
+                            <div>${moduleName}</div>
+                            <div class="load-time">Not found</div>
+                        </div>`;
+                    }
+                };
+                
+                img.onload = function() {
+                    const loadTime = performance.now() - imgStartTime;
+                    loadTimes.push(loadTime);
+                    
+                    const timeDiv = document.createElement('div');
+                    timeDiv.className = 'load-time';
+                    timeDiv.textContent = `${Math.round(loadTime)}ms`;
+                    div.appendChild(timeDiv);
+                    
+                    updateStats();
+                };
+                
+                img.src = possibleUrls.shift();
+                div.appendChild(img);
+                grid.appendChild(div);
+            });
+        }
+
+        function testCloudflareImages() {
+            const grid = document.getElementById('cloudflareGrid');
+            
+            // Show what Cloudflare URLs would look like
+            const cloudflareURLs = [
+                'https://eurorackgrid.r2.dev/cdn-cgi/image/width=200,format=webp/modules/function-synthesizer.webp',
+                'https://eurorackgrid.r2.dev/cdn-cgi/image/width=200,format=webp/modules/honduh.webp',
+                'https://eurorackgrid.r2.dev/cdn-cgi/image/width=200,format=webp/modules/andersons.webp',
+                'https://eurorackgrid.r2.dev/cdn-cgi/image/width=200,format=webp/modules/varigated.webp'
+            ];
+            
+            cloudflareURLs.forEach((url, index) => {
+                const div = document.createElement('div');
+                div.className = 'module';
+                div.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <div style="font-size: 30px;">⚡</div>
+                        <div>${modules[index]}</div>
+                        <div class="load-time" style="color: #00FF00;">~20ms (est)</div>
+                        <div style="font-size: 10px; margin-top: 10px; word-break: break-all;">
+                            ${url}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function updateStats() {
+            if (loadTimes.length > 0) {
+                const total = loadTimes.reduce((a, b) => a + b, 0);
+                const avg = total / loadTimes.length;
+                
+                document.getElementById('totalTime').textContent = `${Math.round(total)}ms`;
+                document.getElementById('avgTime').textContent = `${Math.round(avg)}ms`;
+                
+                if (avg > 200) {
+                    document.getElementById('avgTime').style.color = '#FF0000';
+                    document.getElementById('avgTime').innerHTML += ' ⚠️ TOO SLOW!';
+                }
+            }
+        }
+
+        // Run tests
+        testSupabaseImages();
+        testCloudflareImages();
+
+        // Also test the jacknut icon
+        const jacknutImg = new Image();
+        jacknutImg.src = 'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png';
+        jacknutImg.onload = function() {
+            console.log('Jacknut icon loaded');
+        };
+    </script>
+</body>
+</html>

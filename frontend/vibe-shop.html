@@ -3,6 +3,8 @@
 <head>
     <title>EUROGRID - Vibe Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="purchase-integration-fixed.js" defer></script>
+    <script src="universal-nav.js" defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -11,54 +13,9 @@
             color: #000;
         }
         
-        .header-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-bottom: 2px solid #000;
-            padding: 15px 20px;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            letter-spacing: 3px;
-            cursor: pointer;
-            color: #000;
-        }
-        
-        .cart-area {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .cart-counter {
-            background: white;
-            color: #000;
-            border: 2px solid #000;
-            padding: 10px 20px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-        }
-        
-        .cart-counter:hover {
-            background: #000;
-            color: white;
-        }
-        
         .main-content {
-            margin-top: 100px;
-            padding: 40px 20px;
+            margin-top: 0;
+            padding: 120px 20px 40px;
             max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
@@ -265,42 +222,6 @@
             opacity: 0.5;
         }
         
-        .profile-avatar-wrapper {
-            position: relative;
-            width: 70px;
-            height: 70px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .profile-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            border: 2px solid #000;
-            z-index: 2;
-            position: relative;
-        }
-        
-        .jacknut-ring {
-            position: absolute;
-            width: 70px;
-            height: 70px;
-            top: 0;
-            left: 0;
-            z-index: 3;
-            pointer-events: none;
-        }
-        
         .jacknut-icon {
             width: 20px;
             height: 20px;
@@ -361,27 +282,6 @@
     </style>
 </head>
 <body>
-    <div class="header-bar">
-        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
-        <div class="cart-area">
-            <div class="profile-avatar-wrapper" onclick="window.location.href='profile.html'">
-                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-ring" alt="ring">
-                <div class="profile-avatar">J</div>
-            </div>
-            <button class="cart-counter" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px;">
-                <span id="credits">100</span>
-                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 35px; height: 35px;" alt="HP">
-            </button>
-            <button class="cart-counter" onclick="window.location.href='collection.html'">MODULES</button>
-            <button class="cart-counter" onclick="window.location.href='rack-shop.html'">RACK SHOP</button>
-            <button class="cart-counter" onclick="window.location.href='module-packs.html'">MODULE PACKS</button>
-            <button class="cart-counter" onclick="window.location.href='vibe-shop.html'" style="background: #000; color: white;">VIBE SHOP</button>
-            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
-                BUY <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 18px; height: 18px; vertical-align: middle;" alt="HP">
-            </button>
-        </div>
-    </div>
-    
     <div class="main-content">
         <h1 class="page-title">VIBE SHOP</h1>
         <p class="page-subtitle">Customize your main rack and display it proudly on your profile</p>
@@ -427,7 +327,7 @@
                         <div class="item-name">Desert Cactus</div>
                         <div class="item-description">Low maintenance studio companion</div>
                         <button class="buy-button" onclick="buyVibeItem('cactus', 5, this)">
-                            5 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            5 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -438,7 +338,7 @@
                         <div class="item-name">Pothos Plant</div>
                         <div class="item-description">Air purifying hanging plant</div>
                         <button class="buy-button" onclick="buyVibeItem('pothos', 7, this)">
-                            7 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            7 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -449,7 +349,7 @@
                         <div class="item-name">Orchid</div>
                         <div class="item-description">Elegant flowering plant</div>
                         <button class="buy-button" onclick="buyVibeItem('orchid', 10, this)">
-                            10 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            10 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -460,7 +360,7 @@
                         <div class="item-name">Lucky Bamboo</div>
                         <div class="item-description">Brings good fortune to your sessions</div>
                         <button class="buy-button" onclick="buyVibeItem('bamboo', 8, this)">
-                            8 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            8 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -472,7 +372,7 @@
                         <div class="item-name">Bonsai Tree</div>
                         <div class="item-description">Ancient wisdom for modern beats</div>
                         <button class="buy-button" onclick="buyVibeItem('bonsai', 25, this)">
-                            25 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            25 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -489,7 +389,7 @@
                         <div class="item-name">Sleepy Cat</div>
                         <div class="item-description">Always napping near the warm modules</div>
                         <button class="buy-button" onclick="buyVibeItem('cat', 15, this)">
-                            15 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            15 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -500,7 +400,7 @@
                         <div class="item-name">Studio Iguana</div>
                         <div class="item-description">Chills on top of your rack</div>
                         <button class="buy-button" onclick="buyVibeItem('iguana', 20, this)">
-                            20 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            20 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -511,7 +411,7 @@
                         <div class="item-name">Beta Fish Bowl</div>
                         <div class="item-description">Mesmerizing aquatic companion</div>
                         <button class="buy-button" onclick="buyVibeItem('fish', 12, this)">
-                            12 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            12 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -523,7 +423,7 @@
                         <div class="item-name">Studio Parrot</div>
                         <div class="item-description">Repeats your beats back to you</div>
                         <button class="buy-button" onclick="buyVibeItem('parrot', 50, this)">
-                            50 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            50 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -540,7 +440,7 @@
                         <div class="item-name">Coffee Mug & Pens</div>
                         <div class="item-description">Essential studio fuel station</div>
                         <button class="buy-button" onclick="buyVibeItem('coffee', 3, this)">
-                            3 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            3 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -551,7 +451,7 @@
                         <div class="item-name">Ashtray</div>
                         <div class="item-description">Classic studio vibes</div>
                         <button class="buy-button" onclick="buyVibeItem('ashtray', 2, this)">
-                            2 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            2 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -562,7 +462,7 @@
                         <div class="item-name">Synth Manual Stack</div>
                         <div class="item-description">Knowledge is power</div>
                         <button class="buy-button" onclick="buyVibeItem('books', 5, this)">
-                            5 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            5 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -573,7 +473,7 @@
                         <div class="item-name">Mood Candle</div>
                         <div class="item-description">Set the vibe right</div>
                         <button class="buy-button" onclick="buyVibeItem('candle', 4, this)">
-                            4 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            4 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -590,7 +490,7 @@
                         <div class="item-name">Gameboy Classic</div>
                         <div class="item-description">Retro beats inspiration</div>
                         <button class="buy-button" onclick="buyVibeItem('gameboy', 15, this)">
-                            15 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            15 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -601,7 +501,7 @@
                         <div class="item-name">Robot Figure</div>
                         <div class="item-description">Your production assistant</div>
                         <button class="buy-button" onclick="buyVibeItem('robot', 10, this)">
-                            10 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            10 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -612,7 +512,7 @@
                         <div class="item-name">Mini Guitar</div>
                         <div class="item-description">Rock meets synthesis</div>
                         <button class="buy-button" onclick="buyVibeItem('guitar', 8, this)">
-                            8 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            8 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -624,7 +524,7 @@
                         <div class="item-name">Vintage Arcade Cabinet</div>
                         <div class="item-description">Full-size Space Invaders</div>
                         <button class="buy-button" onclick="buyVibeItem('arcade', 100, this)">
-                            100 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            100 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -641,7 +541,7 @@
                         <div class="item-name">Crystal Ball</div>
                         <div class="item-description">See the future of your mix</div>
                         <button class="buy-button" onclick="buyVibeItem('crystal', 12, this)">
-                            12 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            12 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -652,7 +552,7 @@
                         <div class="item-name">Skull Ornament</div>
                         <div class="item-description">Dark ambient essential</div>
                         <button class="buy-button" onclick="buyVibeItem('skull', 6, this)">
-                            6 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            6 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -663,7 +563,7 @@
                         <div class="item-name">Prism Light</div>
                         <div class="item-description">Rainbow ambience</div>
                         <button class="buy-button" onclick="buyVibeItem('prism', 20, this)">
-                            20 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            20 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>
@@ -674,7 +574,7 @@
                         <div class="item-name">Saturn Lamp</div>
                         <div class="item-description">Cosmic studio lighting</div>
                         <button class="buy-button" onclick="buyVibeItem('saturn', 30, this)">
-                            30 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                            30 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
                         </button>
                     </div>
                 </div>

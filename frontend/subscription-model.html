@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.GRID Subscription Tiers</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+            margin: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        h1 {
+            font-size: 48px;
+            background: linear-gradient(45deg, #00ff00, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .tier {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .tier:hover {
+            transform: translateY(-10px);
+            border-color: #00ff00;
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.3);
+        }
+        
+        .tier.popular {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, #1a1a1a, #2a1a0a);
+        }
+        
+        .tier.popular::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #ffd700, #ff8800);
+            color: black;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .tier-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .tier-price {
+            font-size: 36px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .tier-price span {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+        
+        .features {
+            list-style: none;
+            padding: 0;
+            margin: 30px 0;
+        }
+        
+        .features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .features li:before {
+            content: '✓ ';
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .tier.pro .features li:before {
+            color: #ffd700;
+        }
+        
+        .cta-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #00ff00;
+            color: black;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cta-button:hover {
+            background: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        .tier.pro .cta-button {
+            background: linear-gradient(45deg, #ffd700, #ff8800);
+        }
+        
+        .comparison {
+            max-width: 1200px;
+            margin: 50px auto;
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 2px solid #00ff00;
+            color: #00ff00;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .check {
+            color: #00ff00;
+            font-size: 20px;
+        }
+        
+        .cross {
+            color: #ff0000;
+            font-size: 20px;
+        }
+        
+        .exclusive-preview {
+            max-width: 1200px;
+            margin: 50px auto;
+            text-align: center;
+        }
+        
+        .module-preview {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-preview::after {
+            content: '👑';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>EURORACK.GRID</h1>
+        <p style="font-size: 20px; opacity: 0.8;">Choose Your Synthesis Journey</p>
+    </div>
+    
+    <div class="pricing-grid">
+        <!-- FREE TIER -->
+        <div class="tier">
+            <div class="tier-name">🎵 FREE</div>
+            <div class="tier-price">$0<span>/month</span></div>
+            <ul class="features">
+                <li>Browse all modules</li>
+                <li>View static previews</li>
+                <li>Build wishlists</li>
+                <li>Access to 3 basic modules</li>
+                <li>Small cases only (3U-6U)</li>
+                <li>Community forum access</li>
+            </ul>
+            <button class="cta-button">Get Started Free</button>
+        </div>
+        
+        <!-- SUBSCRIPTION TIER -->
+        <div class="tier popular">
+            <div class="tier-name">👑 GRID PRO</div>
+            <div class="tier-price">$9.99<span>/month</span></div>
+            <ul class="features">
+                <li><strong>All FREE features PLUS:</strong></li>
+                <li>🎁 5 FREE modules every month</li>
+                <li>💎 Exclusive subscriber modules</li>
+                <li>🏗️ Unlimited case sizes (up to 30U)</li>
+                <li>🎨 Custom case colors & skins</li>
+                <li>⚡ Early access to new modules</li>
+                <li>💾 Cloud save (100 racks)</li>
+                <li>🎯 20% off all module purchases</li>
+                <li>🔧 Beta features access</li>
+                <li>📊 Patch cable routing</li>
+                <li>🎪 Monthly module giveaways</li>
+            </ul>
+            <button class="cta-button">Start 7-Day Free Trial</button>
+        </div>
+        
+        <!-- LIFETIME TIER -->
+        <div class="tier pro">
+            <div class="tier-name">💎 LIFETIME</div>
+            <div class="tier-price">$299<span>/once</span></div>
+            <ul class="features">
+                <li><strong>Everything in GRID PRO PLUS:</strong></li>
+                <li>♾️ Lifetime access</li>
+                <li>🎁 100 modules instantly</li>
+                <li>🚀 All future modules FREE</li>
+                <li>🏭 MEGA cases (up to 100U)</li>
+                <li>🎨 Custom module designer</li>
+                <li>💾 Unlimited cloud saves</li>
+                <li>🏆 Exclusive "Founder" badge</li>
+                <li>🎯 Vote on new modules</li>
+                <li>📱 Mobile app (coming soon)</li>
+                <li>🤝 Commercial use license</li>
+            </ul>
+            <button class="cta-button">Get Lifetime Access</button>
+        </div>
+    </div>
+    
+    <div class="comparison">
+        <h2 style="text-align: center; color: #00ff00;">Feature Comparison</h2>
+        <table>
+            <tr>
+                <th>Feature</th>
+                <th>FREE</th>
+                <th>GRID PRO ($9.99/mo)</th>
+                <th>LIFETIME ($299)</th>
+            </tr>
+            <tr>
+                <td>Basic Modules</td>
+                <td class="check">✓ 3 modules</td>
+                <td class="check">✓ 5/month</td>
+                <td class="check">✓ 100 instant</td>
+            </tr>
+            <tr>
+                <td>Animated Modules</td>
+                <td class="cross">✗</td>
+                <td class="check">✓ With purchase</td>
+                <td class="check">✓ All included</td>
+            </tr>
+            <tr>
+                <td>Case Sizes</td>
+                <td>3U-6U</td>
+                <td>Up to 30U</td>
+                <td>Up to 100U</td>
+            </tr>
+            <tr>
+                <td>Exclusive Modules</td>
+                <td class="cross">✗</td>
+                <td class="check">✓</td>
+                <td class="check">✓</td>
+            </tr>
+            <tr>
+                <td>Purchase Discount</td>
+                <td>0%</td>
+                <td>20%</td>
+                <td>N/A (all free)</td>
+            </tr>
+            <tr>
+                <td>Cloud Saves</td>
+                <td>3 racks</td>
+                <td>100 racks</td>
+                <td>Unlimited</td>
+            </tr>
+            <tr>
+                <td>Custom Colors</td>
+                <td class="cross">✗</td>
+                <td class="check">✓</td>
+                <td class="check">✓</td>
+            </tr>
+            <tr>
+                <td>Early Access</td>
+                <td class="cross">✗</td>
+                <td class="check">✓</td>
+                <td class="check">✓</td>
+            </tr>
+            <tr>
+                <td>Commercial Use</td>
+                <td class="cross">✗</td>
+                <td class="cross">✗</td>
+                <td class="check">✓</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="exclusive-preview">
+        <h2 style="color: #ffd700;">👑 Exclusive Subscriber Modules</h2>
+        <p>Get access to special edition modules only available to subscribers!</p>
+        <div>
+            <div class="module-preview"></div>
+            <div class="module-preview"></div>
+            <div class="module-preview"></div>
+            <div class="module-preview"></div>
+            <div class="module-preview"></div>
+        </div>
+        <p style="opacity: 0.6;">New exclusive modules added every month!</p>
+    </div>
+    
+    <script>
+        // Subscription benefits calculator
+        const monthlyPrice = 9.99;
+        const moduleDiscount = 0.20;
+        const freeModulesPerMonth = 5;
+        const averageModulePrice = 3.50;
+        
+        const monthlySavings = (freeModulesPerMonth * averageModulePrice) + (10 * averageModulePrice * moduleDiscount);
+        
+        console.log(`Subscriber saves ~$${monthlySavings.toFixed(2)}/month in value!`);
+    </script>
+</body>
+</html>
