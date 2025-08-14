@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EURORACK.GRID - Modular Marketplace</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loader">
+            <div class="loader-text">🎛️ EURORACK.GRID</div>
+            <div class="loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-content">
+            <h1 class="logo">🎛️ EURORACK.GRID</h1>
+            
+            <nav class="main-nav">
+                <button class="nav-tab active" data-tab="store">Store</button>
+                <button class="nav-tab" data-tab="inventory">My Modules</button>
+                <button class="nav-tab" data-tab="builder">Rack Builder</button>
+                <button class="nav-tab" data-tab="subscription">PRO</button>
+            </nav>
+            
+            <div class="user-panel">
+                <div class="jamnutz-display">
+                    <span class="jamnutz-icon">🥜</span>
+                    <span id="jamnutzBalance">0</span>
+                </div>
+                <div class="user-info">
+                    <span id="userDisplay">Not logged in</span>
+                    <button id="authButton" class="auth-btn">Login</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Store Tab -->
+        <section id="storeTab" class="tab-content active">
+            <div class="tab-header">
+                <h2>Module Store</h2>
+                <p>Purchase modules for $5 each or 500 jamnutz. They come alive when placed in racks!</p>
+            </div>
+            
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All Modules</button>
+                <button class="filter-btn" data-filter="owned">Owned</button>
+                <button class="filter-btn" data-filter="available">Available</button>
+            </div>
+            
+            <div id="storeGrid" class="module-grid">
+                <!-- Modules will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Inventory Tab -->
+        <section id="inventoryTab" class="tab-content">
+            <div class="tab-header">
+                <h2>My Module Collection</h2>
+                <p>Your owned modules appear here as static images. Drag them into a rack to see them animate!</p>
+            </div>
+            
+            <div id="inventoryStats" class="inventory-stats">
+                <div class="stat-card">
+                    <span class="stat-value" id="totalModules">0</span>
+                    <span class="stat-label">Modules Owned</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="collectionValue">$0</span>
+                    <span class="stat-label">Collection Value</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="racksBuilt">0</span>
+                    <span class="stat-label">Racks Built</span>
+                </div>
+            </div>
+            
+            <div id="inventoryGrid" class="module-grid">
+                <!-- Owned modules will appear here -->
+            </div>
+        </section>
+
+        <!-- Rack Builder Tab -->
+        <section id="builderTab" class="tab-content">
+            <div class="tab-header">
+                <h2>Rack Builder</h2>
+                <p>Design your dream modular setup! Modules animate when placed in powered racks.</p>
+            </div>
+            
+            <div class="builder-controls">
+                <select id="rackSize" class="rack-selector">
+                    <option value="3U">3U (1 row)</option>
+                    <option value="6U" selected>6U (2 rows)</option>
+                    <option value="9U">9U (3 rows)</option>
+                    <option value="12U" disabled>12U (PRO)</option>
+                    <option value="18U" disabled>18U (PRO)</option>
+                </select>
+                
+                <select id="rackWidth" class="rack-selector">
+                    <option value="60HP">60HP</option>
+                    <option value="84HP" selected>84HP</option>
+                    <option value="104HP">104HP</option>
+                    <option value="168HP" disabled>168HP (PRO)</option>
+                </select>
+                
+                <select id="rackColor" class="rack-selector">
+                    <option value="black">Black</option>
+                    <option value="silver">Silver</option>
+                    <option value="gold" disabled>Gold (PRO)</option>
+                    <option value="rainbow" disabled>Rainbow (PRO)</option>
+                </select>
+                
+                <button id="clearRack" class="control-btn">Clear Rack</button>
+                <button id="saveRack" class="control-btn primary">Save Rack</button>
+            </div>
+            
+            <div class="rack-container">
+                <div id="rackGrid" class="rack-grid" data-size="6U">
+                    <!-- Rack slots will be generated here -->
+                </div>
+                
+                <div class="power-controls">
+                    <button class="power-btn" data-effect="sequential">⚡ Power On</button>
+                    <button class="power-btn" data-effect="wave">🌊 Wave</button>
+                    <button class="power-btn" data-effect="random">🎲 Random</button>
+                </div>
+            </div>
+            
+            <div class="module-tray">
+                <h3>Your Modules (Drag to rack)</h3>
+                <div id="moduleTray" class="module-tray-grid">
+                    <!-- Draggable modules appear here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Subscription Tab -->
+        <section id="subscriptionTab" class="tab-content">
+            <div class="tab-header gradient-bg">
+                <h2>🌟 EURORACK.GRID PRO 🌟</h2>
+                <p>Unlock premium features and exclusive content!</p>
+            </div>
+            
+            <div class="subscription-tiers">
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <h3>Monthly</h3>
+                        <div class="tier-price">
+                            $9.99<span>/month</span>
+                        </div>
+                    </div>
+                    <ul class="tier-features">
+                        <li>🥜 1,500 jamnutz every month</li>
+                        <li>🎨 10+ exclusive case colors</li>
+                        <li>📏 Large racks (12U, 18U)</li>
+                        <li>🎛️ 5 exclusive modules</li>
+                        <li>⚡ Early access to new modules</li>
+                        <li>☁️ Cloud save (unlimited racks)</li>
+                        <li>🏷️ 20% discount on all modules</li>
+                    </ul>
+                    <button class="subscribe-btn" data-tier="monthly">Subscribe Monthly</button>
+                </div>
+                
+                <div class="tier-card featured">
+                    <div class="best-value">BEST VALUE</div>
+                    <div class="tier-header">
+                        <h3>Yearly</h3>
+                        <div class="tier-price">
+                            $99<span>/year</span>
+                        </div>
+                    </div>
+                    <ul class="tier-features">
+                        <li>🥜 20,000 jamnutz instantly!</li>
+                        <li>🎨 ALL case colors & patterns</li>
+                        <li>📏 MEGA racks (24U, 30U+)</li>
+                        <li>🎛️ 15 exclusive modules</li>
+                        <li>🎭 Custom rack backgrounds</li>
+                        <li>🏆 Founding member badge</li>
+                        <li>🏷️ 30% discount on all modules</li>
+                        <li>💰 Save $20 vs monthly!</li>
+                    </ul>
+                    <button class="subscribe-btn primary" data-tier="yearly">Subscribe Yearly</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Purchase Modal -->
+    <div id="purchaseModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h3 id="modalTitle">Purchase Module</h3>
+            <div class="module-preview">
+                <img id="modalImage" src="" alt="">
+                <h4 id="modalModuleName"></h4>
+            </div>
+            <div class="purchase-options">
+                <button class="purchase-btn jamnutz" id="buyWithJamnutz">
+                    <span class="price-icon">🥜</span>
+                    <span class="price-amount">500 Jamnutz</span>
+                </button>
+                <button class="purchase-btn cash" id="buyWithCash">
+                    <span class="price-icon">💵</span>
+                    <span class="price-amount">$5.00</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal">
+            <button class="modal-close">&times;</button>
+            <h2 id="authTitle">Welcome Back</h2>
+            <form id="authForm">
+                <input type="email" id="emailInput" placeholder="Email" required>
+                <input type="password" id="passwordInput" placeholder="Password" required>
+                <button type="submit" id="authSubmitBtn" class="auth-submit">Login</button>
+            </form>
+            <div class="auth-divider">OR</div>
+            <button id="googleAuthBtn" class="google-auth-btn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Continue with Google
+            </button>
+            <p class="auth-toggle">
+                <span id="authToggleText">Don't have an account?</span>
+                <button id="authToggleBtn" class="link-btn">Sign up</button>
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

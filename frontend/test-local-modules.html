@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Local Module Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .module {
+            background: white;
+            border: 2px solid #000;
+            padding: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .module:hover {
+            transform: scale(1.05);
+        }
+        .module img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Local Module Gallery</h1>
+    <div class="module-grid" id="moduleGrid"></div>
+    
+    <script>
+        const grid = document.getElementById('moduleGrid');
+        for (let i = 1; i <= 36; i++) {
+            const num = i.toString().padStart(2, '0');
+            const div = document.createElement('div');
+            div.className = 'module';
+            div.innerHTML = `
+                <img src="modules/static/${num}.svg" alt="Module ${num}">
+                <div style="text-align: center; margin-top: 5px;">Module ${num}</div>
+            `;
+            grid.appendChild(div);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Loading Test - EUROGRID</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            padding: 20px;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #000;
+            background: #f5f5f5;
+        }
+        
+        .test-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .image-box {
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+            background: white;
+        }
+        
+        .image-box img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .image-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .status {
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .status.loading {
+            background: #FFC107;
+            color: #000;
+        }
+        
+        .status.success {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; margin-bottom: 30px;">EUROGRID IMAGE LOADING TEST</h1>
+    
+    <!-- Static Modules Test -->
+    <div class="test-section">
+        <h2 class="test-title">📸 STATIC MODULES (PNG)</h2>
+        <div id="staticStatus" class="status loading">Loading static modules...</div>
+        <div class="image-grid" id="staticGrid"></div>
+    </div>
+    
+    <!-- Animated Modules Test -->
+    <div class="test-section">
+        <h2 class="test-title">🎬 ANIMATED MODULES (GIF)</h2>
+        <div id="animatedStatus" class="status loading">Loading animated modules...</div>
+        <div class="image-grid" id="animatedGrid"></div>
+    </div>
+    
+    <!-- Direct URL Test -->
+    <div class="test-section">
+        <h2 class="test-title">🔗 DIRECT URL TEST</h2>
+        <div class="image-grid">
+            <div class="image-box">
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/01.png" 
+                     alt="Direct PNG"
+                     onload="this.parentElement.style.borderColor='#4CAF50'"
+                     onerror="this.parentElement.style.borderColor='#f44336'">
+                <div class="image-label">Direct PNG (01)</div>
+            </div>
+            <div class="image-box">
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/01.gif" 
+                     alt="Direct GIF"
+                     onload="this.parentElement.style.borderColor='#4CAF50'"
+                     onerror="this.parentElement.style.borderColor='#f44336'">
+                <div class="image-label">Direct GIF (01)</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Test Results -->
+    <div class="test-section">
+        <h2 class="test-title">📊 TEST RESULTS</h2>
+        <div id="testResults"></div>
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/';
+        
+        let loadedCount = 0;
+        let errorCount = 0;
+        
+        // Test static modules (01-36)
+        function testStaticModules() {
+            const grid = document.getElementById('staticGrid');
+            const status = document.getElementById('staticStatus');
+            let staticLoaded = 0;
+            let staticErrors = 0;
+            
+            for (let i = 1; i <= 12; i++) { // Test first 12
+                const num = i.toString().padStart(2, '0');
+                const box = document.createElement('div');
+                box.className = 'image-box';
+                box.innerHTML = `
+                    <img src="${SUPABASE_URL}eurorackart/${num}.png" 
+                         alt="Module ${num}"
+                         loading="lazy">
+                    <div class="image-label">Module ${num}</div>
+                `;
+                
+                const img = box.querySelector('img');
+                img.onload = function() {
+                    staticLoaded++;
+                    loadedCount++;
+                    this.parentElement.style.borderColor = '#4CAF50';
+                    updateStaticStatus();
+                };
+                img.onerror = function() {
+                    staticErrors++;
+                    errorCount++;
+                    this.parentElement.style.borderColor = '#f44336';
+                    updateStaticStatus();
+                };
+                
+                grid.appendChild(box);
+            }
+            
+            function updateStaticStatus() {
+                if (staticLoaded + staticErrors === 12) {
+                    status.className = staticLoaded > 0 ? 'status success' : 'status error';
+                    status.textContent = `Loaded: ${staticLoaded}/12, Errors: ${staticErrors}/12`;
+                }
+            }
+        }
+        
+        // Test animated modules (01-17)
+        function testAnimatedModules() {
+            const grid = document.getElementById('animatedGrid');
+            const status = document.getElementById('animatedStatus');
+            let animatedLoaded = 0;
+            let animatedErrors = 0;
+            
+            for (let i = 1; i <= 8; i++) { // Test first 8
+                const num = i.toString().padStart(2, '0');
+                const box = document.createElement('div');
+                box.className = 'image-box';
+                box.innerHTML = `
+                    <img src="${SUPABASE_URL}eurorackgif/${num}.gif" 
+                         alt="Animated ${num}"
+                         loading="lazy">
+                    <div class="image-label">Animated ${num}</div>
+                `;
+                
+                const img = box.querySelector('img');
+                img.onload = function() {
+                    animatedLoaded++;
+                    loadedCount++;
+                    this.parentElement.style.borderColor = '#4CAF50';
+                    updateAnimatedStatus();
+                };
+                img.onerror = function() {
+                    animatedErrors++;
+                    errorCount++;
+                    this.parentElement.style.borderColor = '#f44336';
+                    updateAnimatedStatus();
+                };
+                
+                grid.appendChild(box);
+            }
+            
+            function updateAnimatedStatus() {
+                if (animatedLoaded + animatedErrors === 8) {
+                    status.className = animatedLoaded > 0 ? 'status success' : 'status error';
+                    status.textContent = `Loaded: ${animatedLoaded}/8, Errors: ${animatedErrors}/8`;
+                }
+            }
+        }
+        
+        // Test CORS
+        function testCORS() {
+            fetch(SUPABASE_URL + 'eurorackart/01.png', { mode: 'cors' })
+                .then(response => {
+                    const results = document.getElementById('testResults');
+                    const corsDiv = document.createElement('div');
+                    corsDiv.className = 'status success';
+                    corsDiv.textContent = '✅ CORS enabled - Images can be loaded from any domain';
+                    results.appendChild(corsDiv);
+                })
+                .catch(error => {
+                    const results = document.getElementById('testResults');
+                    const corsDiv = document.createElement('div');
+                    corsDiv.className = 'status error';
+                    corsDiv.textContent = '❌ CORS error: ' + error.message;
+                    results.appendChild(corsDiv);
+                });
+        }
+        
+        // Test with image config
+        function testImageConfig() {
+            const script = document.createElement('script');
+            script.src = 'image-config.js';
+            script.onload = function() {
+                if (window.EuroGridImages) {
+                    const results = document.getElementById('testResults');
+                    const configDiv = document.createElement('div');
+                    configDiv.className = 'status success';
+                    configDiv.textContent = '✅ Image config loaded successfully';
+                    results.appendChild(configDiv);
+                    
+                    // Test getting URL
+                    const testUrl = window.EuroGridImages.getModuleImageUrl('01', 'static');
+                    const urlDiv = document.createElement('div');
+                    urlDiv.className = 'status success';
+                    urlDiv.innerHTML = `✅ Config URL test: <code>${testUrl}</code>`;
+                    results.appendChild(urlDiv);
+                }
+            };
+            script.onerror = function() {
+                const results = document.getElementById('testResults');
+                const configDiv = document.createElement('div');
+                configDiv.className = 'status error';
+                configDiv.textContent = '❌ Failed to load image-config.js';
+                results.appendChild(configDiv);
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Run all tests
+        window.addEventListener('DOMContentLoaded', function() {
+            testStaticModules();
+            testAnimatedModules();
+            testCORS();
+            testImageConfig();
+            
+            // Overall status after 5 seconds
+            setTimeout(() => {
+                const results = document.getElementById('testResults');
+                const overallDiv = document.createElement('div');
+                overallDiv.className = loadedCount > 0 ? 'status success' : 'status error';
+                overallDiv.innerHTML = `<strong>Overall: ${loadedCount} images loaded, ${errorCount} errors</strong>`;
+                results.appendChild(overallDiv);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

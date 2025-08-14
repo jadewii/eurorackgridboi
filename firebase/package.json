@@ -1,0 +1,13 @@
+{
+  "name": "eurorack-grid-firebase",
+  "version": "1.0.0",
+  "description": "Firebase test environment for EURORACK.GRID",
+  "main": "app.js",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "open": "open http://localhost:8000"
+  },
+  "keywords": ["eurorack", "modular", "synth", "firebase"],
+  "author": "",
+  "license": "MIT"
+}
