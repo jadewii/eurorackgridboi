@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modules: [
             'Function Synthesizer',
             'Honduh', 
-            'Physical Modeler',
+            'DPO',
             'Complex Oscillator',
             'Cephalopod'
         ],

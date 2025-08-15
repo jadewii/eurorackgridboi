@@ -434,13 +434,13 @@
     
     <!-- Hero Section -->
     <section class="hero">
-        <h1 class="hero-logo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;">
-            <div>EUR<img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" 
-                 style="width: 70px; height: 70px; animation: spin 10s linear infinite; filter: grayscale(100%) brightness(1.3); display: inline-block; vertical-align: middle; margin: 0 -5px;" 
-                 alt="O">RACK</div>
+        <h1 class="hero-logo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: center;"><span id="eur-text" style="margin-right: -23px;">EUR</span><img id="jamnut-logo" src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" 
+                 style="width: 70px; height: 70px; animation: spin 10s linear infinite; display: inline-block; vertical-align: middle; margin: 0 13px 0 8px; position: relative; top: -8px; filter: brightness(0.7) contrast(1.1);" 
+                 alt="O"><span id="rack-text" style="margin-left: -14px;">RACK</span></div>
             <div style="margin-top: -10px;">GRID</div>
         </h1>
-        <p class="hero-tagline">as if modular wasn't addicting enough</p>
+        <p class="hero-tagline">for synth nerds & hypsters only</p>
         <p class="hero-subtitle">collect, trade, and display live modules in your virtual studio</p>
         
         <div class="hero-cta">
@@ -478,8 +478,8 @@
                         <div class="module-slot powered occupied" data-module="Cephalopod Rose">
                             <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Cephalopod%20Rose.webp" alt="Cephalopod Rose" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
-                        <div class="module-slot powered occupied" data-module="Physical Modeler">
-                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Physical%20Modeler.webp" alt="Physical Modeler" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="module-slot powered occupied" data-module="DPO">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/dpo_fullres_pingpong.webp" alt="DPO" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                         <div class="module-slot powered occupied" data-module="Voltaged Gray">
                             <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Voltaged%20Gray.webp" alt="Voltaged Gray" style="width: 100%; height: 100%; object-fit: cover;">
@@ -531,33 +531,29 @@
         <h2 class="section-title">HOW IT WORKS</h2>
         <div class="steps">
             <div class="step">
-                <div class="step-number" style="background: #FCE4EC;">
-                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="step-jamnut" style="filter: hue-rotate(0deg) saturate(1.2) brightness(1.4); animation: spin 10s linear infinite;">
-                    <span style="color: #F48FB1; position: relative; z-index: 2;">1</span>
+                <div class="step-number" style="background: #000;">
+                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="step-jamnut" style="animation: spin 10s linear infinite; filter: brightness(0.7) contrast(1.1);">
                 </div>
                 <h3 class="step-title">Sign Up</h3>
                 <p class="step-desc">Create your account and get 1000 free jamnutz to start</p>
             </div>
             <div class="step">
-                <div class="step-number" style="background: #E8F5E8;">
-                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="step-jamnut" style="filter: hue-rotate(180deg) saturate(1.5) brightness(1.2); animation: spinReverse 12s linear infinite;">
-                    <span style="color: #4CAF50; position: relative; z-index: 2;">2</span>
+                <div class="step-number" style="background: #000;">
+                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="step-jamnut" style="animation: spinReverse 12s linear infinite; filter: brightness(0.7) contrast(1.1);">
                 </div>
                 <h3 class="step-title">Collect Modules</h3>
                 <p class="step-desc">Browse and purchase modules for 500 jamnutz each</p>
             </div>
             <div class="step">
-                <div class="step-number" style="background: #F3E5F5;">
-                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="step-jamnut" style="filter: hue-rotate(-60deg) saturate(1.2) brightness(1.1); animation: spin 8s linear infinite;">
-                    <span style="color: #9C27B0; position: relative; z-index: 2;">3</span>
+                <div class="step-number" style="background: #000;">
+                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="step-jamnut" style="animation: spin 8s linear infinite; filter: brightness(0.7) contrast(1.1);">
                 </div>
                 <h3 class="step-title">Build Racks</h3>
                 <p class="step-desc">Design custom racks and watch your modules animate</p>
             </div>
             <div class="step">
-                <div class="step-number" style="background: #FFF3E0;">
-                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="step-jamnut" style="filter: hue-rotate(30deg) saturate(1.5) brightness(1.2); animation: spinReverse 15s linear infinite;">
-                    <span style="color: #FF9800; position: relative; z-index: 2;">4</span>
+                <div class="step-number" style="background: #000;">
+                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="step-jamnut" style="animation: spinReverse 15s linear infinite; filter: brightness(0.7) contrast(1.1);">
                 </div>
                 <h3 class="step-title">Share & Trade</h3>
                 <p class="step-desc">Show off your studio and trade with other users</p>
@@ -565,20 +561,65 @@
         </div>
     </section>
     
-    <!-- POWERING YOUR MODULES Section -->
-    <section style="padding: 100px 40px; background: linear-gradient(135deg, #1a1a1a, #2a2a2a);">
-        <h2 class="section-title" style="color: #FFD700;">POWERING YOUR MODULES</h2>
+    <!-- HP and Rack Evolution Section -->
+    <section style="padding: 100px 40px; background: white;">
         <div style="max-width: 1400px; margin: 0 auto;">
-            <!-- HP Explanation -->
-            <div style="background: white; border: 3px solid #FFD700; padding: 40px; border-radius: 10px; margin-bottom: 50px;">
-                <h3 style="text-align: center; font-size: 2rem; margin-bottom: 30px; color: #000;">THE HP SYSTEM EXPLAINED</h3>
-                <p style="text-align: center; font-size: 1.3rem; margin-bottom: 20px; color: #333;">
-                    HP = Horizontal Pitch = Module Width
+            <!-- Large HP Visual First -->
+            <div style="display: flex; justify-content: center; margin-bottom: 80px;">
+                <div style="background: white; border: 6px solid #000; padding: 60px; text-align: center;">
+                    <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 40px;">1 MODULE = 30HP</h2>
+                    <div style="background: #000; padding: 30px; display: inline-block; border-radius: 10px;">
+                        <div style="width: 360px; height: 360px; border: 4px solid #000; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/dpo_fullres_pingpong.webp" alt="DPO Module" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+                            <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #FFD700; padding: 10px 20px; border: 3px solid #000; font-weight: bold; font-size: 2rem; border-radius: 5px;">
+                                30HP
+                            </div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 40px; color: #666; font-size: 1.8rem;">One standard module takes up<br>30HP of space</p>
+                </div>
+            </div>
+            
+            <!-- Cardboard Box to Ultimate Rack Evolution -->
+            <div style="background: #f9f9f9; border: 3px solid #FFD700; padding: 60px; border-radius: 10px; margin-bottom: 50px;">
+                <h3 style="text-align: center; font-size: 2.5rem; margin-bottom: 40px; color: #000;">YOUR EURORACK EVOLUTION</h3>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 60px; flex-wrap: wrap;">
+                    <!-- Cardboard Box -->
+                    <div style="text-align: center;">
+                        <div style="width: 300px; height: 200px; background: #8B7355; border: 4px solid #654321; border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div style="position: absolute; top: 10px; left: 10px; width: 280px; height: 180px; border: 2px dashed #654321; opacity: 0.3;"></div>
+                            <span style="color: white; font-size: 4rem;">📦</span>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 1.2rem; color: #666;">Start with a free<br>powerless cardboard box</p>
+                    </div>
+                    
+                    <!-- Arrow -->
+                    <div style="font-size: 3rem; color: #FFD700;">→</div>
+                    
+                    <!-- Ultimate Rack -->
+                    <div style="text-align: center;">
+                        <div style="width: 300px; height: 200px; background: linear-gradient(135deg, #000, #333); border: 4px solid #FFD700; border-radius: 10px; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); gap: 2px; padding: 15px; position: relative; box-shadow: 0 0 20px rgba(255,215,0,0.5);">
+                            <div style="background: #FF6B6B; border: 1px solid #000;"></div>
+                            <div style="background: #4ECDC4; border: 1px solid #000;"></div>
+                            <div style="background: #45B7D1; border: 1px solid #000;"></div>
+                            <div style="background: #96CEB4; border: 1px solid #000;"></div>
+                            <div style="background: #FFEAA7; border: 1px solid #000;"></div>
+                            <div style="background: #DDA0DD; border: 1px solid #000;"></div>
+                            <div style="background: #98D8C8; border: 1px solid #000;"></div>
+                            <div style="background: #FFB6C1; border: 1px solid #000;"></div>
+                            <div style="background: #87CEEB; border: 1px solid #000;"></div>
+                            <div style="background: #F0E68C; border: 1px solid #000;"></div>
+                            <div style="background: #ADD8E6; border: 1px solid #000;"></div>
+                            <div style="background: #FFD700; border: 1px solid #000;"></div>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 1.2rem; color: #666;">Grow to our powered<br>ultimate rack system</p>
+                    </div>
+                </div>
+                <p style="text-align: center; font-size: 1.3rem; color: #333; max-width: 800px; margin: 40px auto 0;">
+                    Every synth journey starts somewhere. Begin with our free cardboard box template, 
+                    then upgrade to powered racks as your collection grows!
                 </p>
-                <p style="text-align: center; font-size: 1.1rem; color: #666; max-width: 800px; margin: 0 auto 40px;">
-                    In Eurorack, HP measures how wide a module is. Each HP equals 5.08mm (or about 1/5 inch). 
-                    Our standard modules are 30HP wide.
-                </p>
+            </div>
                 
                 <!-- Simple HP Explanation -->
                 <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 60px; flex-wrap: wrap;">
@@ -745,7 +786,7 @@
     
     <!-- Jamnutz Section -->
     <section class="jamnutz-section">
-        <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jamnut-giant" alt="Jamnutz">
+        <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="jamnut-giant" style="filter: brightness(0) saturate(100%) invert(82%) sepia(73%) saturate(476%) hue-rotate(354deg) brightness(105%) contrast(104%);" alt="Jamnutz">
         <h2 class="jamnutz-title">JAMNUTZ CURRENCY</h2>
         <p class="jamnutz-desc">Our exclusive currency for collecting modules. The more you buy, the more you save!</p>
         <div class="jamnutz-price">100 🥜 = $1</div>
@@ -756,9 +797,8 @@
     <section class="showcase">
         <h2 class="section-title">POPULAR MODULES</h2>
         <div class="module-grid">
-            <div class="showcase-module">
-                🎛️
-                <span class="module-label">OSCILLATOR</span>
+            <div class="showcase-module" style="padding: 0; overflow: hidden;">
+                <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/dpo_fullres_pingpong.webp" alt="DPO" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div class="showcase-module">
                 🎚️
