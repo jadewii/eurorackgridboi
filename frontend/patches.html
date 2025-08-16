@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.GRID - Patches</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        :root { 
+            --header-pad-y: 15px; 
+            --header-pad-x: 40px; 
+        }
+        
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+            padding-top: calc(2 * var(--header-pad-y) + 2px + 60px); /* space for fixed header */
+            padding-left: 60px;
+            padding-right: 60px;
+            margin: 0;
+        }
+        
+        .main-header {
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            right: 0;
+            border-bottom: 2px solid #000;
+            background: #fff;
+            padding: var(--header-pad-y) var(--header-pad-x);
+            z-index: 1000;
+        }
+        
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-decoration: none;
+            color: #000;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: #667eea;
+        }
+        
+        .nav-link.is-active {
+            color: #667eea;
+        }
+        
+        .auth-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info.active {
+            display: flex;
+        }
+        
+        .user-name {
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            padding: 6px 15px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .patches-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .patches-title {
+            font-size: 18px;
+            margin-bottom: 40px;
+            font-weight: normal;
+        }
+        
+        .track-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .track {
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        
+        .track:hover {
+            background: #fafafa;
+        }
+        
+        .play-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #000;
+            background: transparent;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 20px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .play-btn:hover {
+            background: #000;
+        }
+        
+        .play-btn:hover .play-icon {
+            border-left-color: #fff;
+        }
+        
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-left: 8px solid #000;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            margin-left: 2px;
+        }
+        
+        .pause-icon {
+            width: 8px;
+            height: 10px;
+            border-left: 3px solid #000;
+            border-right: 3px solid #000;
+            display: none;
+        }
+        
+        .play-btn.playing .play-icon {
+            display: none;
+        }
+        
+        .play-btn.playing .pause-icon {
+            display: block;
+        }
+        
+        .play-btn.playing {
+            background: #000;
+        }
+        
+        .play-btn.playing .pause-icon {
+            border-left-color: #fff;
+            border-right-color: #fff;
+        }
+        
+        .track-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .track-title {
+            font-size: 14px;
+        }
+        
+        .track-price {
+            font-size: 12px;
+            padding: 6px 16px;
+            background: transparent;
+            border: 1px solid #000;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .track-price:hover {
+            background: #000;
+            color: #fff;
+        }
+        
+        .track-price.owned {
+            background: #000;
+            color: #fff;
+            cursor: default;
+        }
+        
+        /* Audio waveform visualization */
+        .waveform {
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #000;
+            display: none;
+        }
+        
+        .track.playing .waveform {
+            display: block;
+            animation: wave 2s linear infinite;
+        }
+        
+        @keyframes wave {
+            0% { transform: scaleY(1); }
+            50% { transform: scaleY(2); }
+            100% { transform: scaleY(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- BEGIN: Site Header (same as index.html) -->
+    <header class="main-header" role="banner">
+        <div class="header-inner">
+            <div class="header-logo">
+                <a href="/" class="logo">EURORACK.GRID</a>
+                <button id="audioPlayBtn" onclick="toggleAudio()" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: transform 0.2s;">
+                    <img id="playIcon" src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/playbutton.png" alt="Play" style="width: 30px; height: 30px;">
+                </button>
+            </div>
+            
+            <nav class="header-nav" role="navigation" aria-label="Primary">
+                <a href="/collection.html" class="nav-link">Collection</a>
+                <a href="/starters.html" class="nav-link">Starter Kits</a>
+                <a href="/rack-shop.html" class="nav-link">Racks</a>
+                <a href="/patches.html" class="nav-link is-active">Patches</a>
+                <div class="auth-section">
+                    <div class="user-info active" id="user-info">
+                        <a href="/my-modules.html" class="nav-link">My Modules</a>
+                        <span class="user-name" id="user-name">demo</span>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <!-- END: Site Header -->
+    
+    <div class="patches-content">
+        <h1 class="patches-title">patches</h1>
+        
+        <div style="background: #000; color: #fff; padding: 20px; margin-bottom: 40px; border-radius: 8px;">
+            <div style="font-size: 14px; margin-bottom: 10px;">🎵 Submit Your Patches</div>
+            <div style="font-size: 12px; line-height: 1.6; opacity: 0.9;">
+                Submit your original eurorack patches for in-game use and receive an XL SYSTEM when we launch!
+                <a href="mailto:patches@eurorackgrid.com" style="color: #FFD700; text-decoration: none; margin-left: 10px;">Send patches →</a>
+            </div>
+        </div>
+        
+        <div class="track-list">
+        <div class="track" data-track="1">
+            <button class="play-btn" onclick="togglePlay(1)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">Granular Dreams</span>
+                <button class="track-price" onclick="purchaseTrack(1)">50 jamnutz</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="track" data-track="2">
+            <button class="play-btn" onclick="togglePlay(2)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">Voltage Controlled Memories</span>
+                <button class="track-price" onclick="purchaseTrack(2)">75 jamnutz</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="track" data-track="3">
+            <button class="play-btn" onclick="togglePlay(3)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">Resonant Frequencies</span>
+                <button class="track-price owned" onclick="purchaseTrack(3)">owned</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="track" data-track="4">
+            <button class="play-btn" onclick="togglePlay(4)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">Euclidean Rhythms</span>
+                <button class="track-price" onclick="purchaseTrack(4)">100 jamnutz</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="track" data-track="5">
+            <button class="play-btn" onclick="togglePlay(5)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">Analog Sunset</span>
+                <button class="track-price" onclick="purchaseTrack(5)">60 jamnutz</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="track" data-track="6">
+            <button class="play-btn" onclick="togglePlay(6)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">Filter Sweep Paradise</span>
+                <button class="track-price" onclick="purchaseTrack(6)">80 jamnutz</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="track" data-track="7">
+            <button class="play-btn" onclick="togglePlay(7)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">Modular Morning</span>
+                <button class="track-price owned" onclick="purchaseTrack(7)">owned</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="track" data-track="8">
+            <button class="play-btn" onclick="togglePlay(8)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">Patch Cable Blues</span>
+                <button class="track-price" onclick="purchaseTrack(8)">45 jamnutz</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="track" data-track="9">
+            <button class="play-btn" onclick="togglePlay(9)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">Self-Oscillating Love</span>
+                <button class="track-price" onclick="purchaseTrack(9)">90 jamnutz</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="track" data-track="10">
+            <button class="play-btn" onclick="togglePlay(10)">
+                <div class="play-icon"></div>
+                <div class="pause-icon"></div>
+            </button>
+            <div class="track-info">
+                <span class="track-title">CV Gate Heaven</span>
+                <button class="track-price" onclick="purchaseTrack(10)">120 jamnutz</button>
+            </div>
+            <div class="waveform"></div>
+        </div>
+    </div>
+    </div>
+    
+    <script>
+        let currentlyPlaying = null;
+        let currentAudio = null;
+        
+        function togglePlay(trackId) {
+            const track = document.querySelector(`[data-track="${trackId}"]`);
+            const playBtn = track.querySelector('.play-btn');
+            
+            // Stop currently playing track
+            if (currentlyPlaying && currentlyPlaying !== trackId) {
+                const prevTrack = document.querySelector(`[data-track="${currentlyPlaying}"]`);
+                prevTrack.classList.remove('playing');
+                prevTrack.querySelector('.play-btn').classList.remove('playing');
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
+            }
+            
+            if (currentlyPlaying === trackId) {
+                // Pause current track
+                track.classList.remove('playing');
+                playBtn.classList.remove('playing');
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
+                currentlyPlaying = null;
+            } else {
+                // Play new track
+                track.classList.add('playing');
+                playBtn.classList.add('playing');
+                currentlyPlaying = trackId;
+                
+                // In real implementation, you'd play actual audio here
+                // For now, just simulate with a timer
+                console.log(`Playing track ${trackId}`);
+            }
+        }
+        
+        function purchaseTrack(trackId) {
+            const track = document.querySelector(`[data-track="${trackId}"]`);
+            const priceBtn = track.querySelector('.track-price');
+            
+            if (priceBtn.classList.contains('owned')) {
+                return;
+            }
+            
+            // Simulate purchase
+            const price = priceBtn.textContent;
+            console.log(`Purchasing track ${trackId} for ${price}`);
+            
+            // Mark as owned
+            priceBtn.textContent = 'owned';
+            priceBtn.classList.add('owned');
+            
+            // Update balance (in real app, this would be server-side)
+            const balance = document.querySelector('.jamnut-balance');
+            const currentBalance = parseInt(balance.textContent);
+            const cost = parseInt(price);
+            balance.textContent = `${currentBalance - cost} jamnutz`;
+        }
+    </script>
+</body>
+</html>
