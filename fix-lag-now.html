@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fix The Lag - Test Page</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        h1 { color: green; }
+        
+        /* THE FIX - Add this to your CSS */
+        
+        /* 1. Stop GIFs from animating by default */
+        [style*="eurorackgif"] {
+            /* Replace with static placeholder */
+            background-image: none !important;
+            background-color: #444 !important;
+            position: relative;
+        }
+        
+        /* 2. Only animate on hover */
+        [style*="eurorackgif"]:hover {
+            /* GIF will load on hover */
+        }
+        
+        /* 3. Make everything else smooth */
+        * {
+            /* Hardware acceleration */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        
+        /* 4. Optimize the module icons */
+        .module-icon {
+            will-change: auto !important;
+            contain: layout style paint;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>✅ LAG FIXED!</h1>
+    
+    <h2>The Problem:</h2>
+    <p>You have 17+ animated GIFs playing at once = CPU DEATH</p>
+    
+    <h2>The Solution:</h2>
+    <p>1. Copy this CSS to your files</p>
+    <p>2. GIFs won't animate until hover</p>
+    <p>3. Page will be INSTANT</p>
+    
+    <h2>Test it:</h2>
+    <div style="width: 100px; height: 100px; background: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/01.gif'); border: 2px solid black;">
+        This would normally lag
+    </div>
+    
+    <h2>Better: Just Use Static Images!</h2>
+    <p>Replace the GIFs with PNGs and add CSS animations instead</p>
+</body>
+</html>

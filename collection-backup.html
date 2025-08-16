@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.STORE - Digital Module Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 2px solid #000;
+            color: #000;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: #000;
+            color: white;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .module-item {
+            border: 2px solid #000;
+            padding: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .module-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .module-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo">EURORACK.STORE</div>
+        <div class="cart-area">
+            <button class="cart-counter" onclick="window.location.href='collection.html'">MODULES</button>
+            <button class="cart-counter" onclick="window.location.href='my-racks.html'">MY RACKS</button>
+            <button class="cart-counter" onclick="window.location.href='community.html'">COMMUNITY</button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1 class="page-title">MODULES</h1>
+        
+        <div class="filter-tabs">
+            <button class="filter-btn active" onclick="showModules('common')">ALL MODULES</button>
+            <button class="filter-btn" onclick="showModules('live')">LIVE MODULES</button>
+        </div>
+        
+        <div class="module-grid" id="module-grid">
+            <!-- Modules will load here -->
+        </div>
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        
+        // Module catalog - just like plant catalog!
+        const commonModules = [];
+        for (let i = 1; i <= 36; i++) {
+            const paddedId = i.toString().padStart(2, '0');
+            commonModules.push({
+                id: paddedId,
+                url: `/storage/v1/object/public/eurorackart/${paddedId}.png`,
+                name: `Module ${paddedId}`
+            });
+        }
+        
+        const liveModules = [];
+        for (let i = 1; i <= 17; i++) {
+            const paddedId = i.toString().padStart(2, '0');
+            liveModules.push({
+                id: paddedId,
+                url: `/storage/v1/object/public/eurorackgif/${paddedId}.gif`,
+                name: `Live Module ${paddedId}`
+            });
+        }
+        
+        // Load modules function - exactly like loadPlantShop!
+        function loadModules(type) {
+            const grid = document.getElementById('module-grid');
+            grid.innerHTML = '';
+            
+            const modules = type === 'live' ? liveModules : commonModules;
+            
+            modules.forEach(module => {
+                const item = document.createElement('div');
+                item.className = 'module-item';
+                
+                // Use innerHTML just like plant shop!
+                item.innerHTML = `
+                    <img src="${SUPABASE_URL}${module.url}" alt="${module.name}">
+                `;
+                
+                grid.appendChild(item);
+            });
+        }
+        
+        // Show modules function
+        function showModules(type) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadModules(type);
+        }
+        
+        // Initialize - just like plant shop!
+        loadModules('common');
+    </script>
+</body>
+</html>

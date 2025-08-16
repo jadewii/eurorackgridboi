@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>eurorack.store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+        }
+        
+        /* Header */
+        .header { 
+            background: #000; 
+            color: #fff; 
+            padding: 60px 20px; 
+            text-align: center;
+        }
+        .header h1 { 
+            font-size: 6rem; 
+            letter-spacing: 15px; 
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        /* Fixed Cart Button */
+        #cart-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: black;
+            border: 2px solid black;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        #cart-btn.has-items {
+            background: #FFB6C1;
+            border-color: #FFB6C1;
+        }
+        
+        /* Navigation */
+        .nav {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #000;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid black;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .nav button:hover, .nav button.active {
+            background: black;
+            color: white;
+        }
+        
+        /* Stickers Page Special Header */
+        .stickers-header {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            margin: 40px auto;
+            max-width: 800px;
+            border: 3px solid black;
+        }
+        .stickers-header h2 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            letter-spacing: 5px;
+        }
+        .stickers-header .price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .stickers-header .desc {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* Sticker Grid (ChatGPT Style) */
+        .sticker-grid {
+            max-width: 1400px;
+            margin: 0 auto 60px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .sticker-card {
+            aspect-ratio: 1;
+            background: white;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sticker-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .sticker-card:hover {
+            border-color: black;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .sticker-card.in-cart {
+            border-color: #FFB6C1;
+            border-width: 4px;
+            box-shadow: 0 0 20px rgba(255, 182, 193, 0.5);
+        }
+        
+        .sticker-card.in-cart::after {
+            content: "✓";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #FFB6C1;
+            color: black;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .sticker-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.95);
+            color: white;
+            padding: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.2s;
+        }
+        
+        .sticker-card:hover .sticker-name {
+            transform: translateY(0);
+        }
+        
+        /* Main Products Grid */
+        .products-grid {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border: 2px solid #e5e5e5;
+            padding: 15px;
+            transition: all 0.2s;
+        }
+        
+        .product-card:hover {
+            border-color: black;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        
+        .product-card h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            min-height: 40px;
+        }
+        
+        .product-card .price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .product-card select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 2px solid black;
+            background: white;
+            font-family: inherit;
+            text-align: center;
+        }
+        
+        .product-card button {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            border: 2px solid black;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .product-card button:hover {
+            background: black;
+            color: white;
+        }
+        
+        /* Hide/Show Sections */
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: black;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            animation: slideUp 0.3s;
+            z-index: 2000;
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Cart Button -->
+    <button id="cart-btn" onclick="goToCart()">
+        CART (<span id="cart-count">0</span>)
+    </button>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>EURORACK</h1>
+        <p>eurorack.store</p>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+        <button onclick="showPage('all')" class="nav-btn active">ALL</button>
+        <button onclick="showPage('stickers')" class="nav-btn">STICKERS</button>
+        <button onclick="showPage('shirts')" class="nav-btn">T-SHIRTS</button>
+        <button onclick="showPage('accessories')" class="nav-btn">ACCESSORIES</button>
+        <button onclick="showPage('prints')" class="nav-btn">PRINTS</button>
+    </div>
+
+    <!-- Stickers Page (ChatGPT Style Grid) -->
+    <div id="stickers-page" class="page-section">
+        <div class="stickers-header">
+            <h2>STICKERS</h2>
+            <div class="price">$5 EACH</div>
+            <div class="desc">2"×2" vinyl indoor stickers</div>
+        </div>
+        <div class="sticker-grid" id="sticker-grid"></div>
+    </div>
+
+    <!-- All Products Page -->
+    <div id="all-page" class="page-section active">
+        <div class="products-grid" id="products-grid"></div>
+    </div>
+
+    <!-- Other Pages -->
+    <div id="shirts-page" class="page-section">
+        <div class="products-grid" id="shirts-grid"></div>
+    </div>
+
+    <div id="accessories-page" class="page-section">
+        <div class="products-grid" id="accessories-grid"></div>
+    </div>
+
+    <div id="prints-page" class="page-section">
+        <div class="products-grid" id="prints-grid"></div>
+    </div>
+
+    <script src="printify-products.js"></script>
+    <script>
+        // Cart management
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        let stickerSelections = new Set();
+        
+        // Load selected stickers from cart
+        cart.forEach(item => {
+            if (item.category === 'stickers') {
+                stickerSelections.add(item.productId);
+            }
+        });
+
+        // Show different pages
+        function showPage(page) {
+            // Hide all sections
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show selected section
+            document.getElementById(page + '-page').classList.add('active');
+            
+            // Load content for that page
+            if (page === 'stickers') {
+                loadStickers();
+            } else if (page === 'all') {
+                loadAllProducts();
+            } else {
+                loadCategoryProducts(page);
+            }
+        }
+
+        // Load stickers page (ChatGPT grid style)
+        function loadStickers() {
+            const grid = document.getElementById('sticker-grid');
+            grid.innerHTML = '';
+            
+            const stickers = printifyProducts.filter(p => p.category === 'stickers');
+            
+            stickers.forEach(sticker => {
+                const card = document.createElement('div');
+                card.className = 'sticker-card';
+                if (stickerSelections.has(sticker.id)) {
+                    card.classList.add('in-cart');
+                }
+                
+                card.innerHTML = `
+                    <img src="${sticker.image}?width=400" alt="${sticker.title}">
+                    <div class="sticker-name">${sticker.title}</div>
+                `;
+                
+                card.onclick = () => toggleSticker(sticker, card);
+                grid.appendChild(card);
+            });
+        }
+
+        // Toggle sticker selection (one-click add/remove)
+        function toggleSticker(sticker, card) {
+            const variant = sticker.variants.find(v => v.name.includes('2"')) || sticker.variants[0];
+            
+            if (stickerSelections.has(sticker.id)) {
+                // Remove from cart
+                stickerSelections.delete(sticker.id);
+                card.classList.remove('in-cart');
+                cart = cart.filter(item => item.productId !== sticker.id);
+                showToast(`Removed ${sticker.title}`);
+            } else {
+                // Add to cart
+                stickerSelections.add(sticker.id);
+                card.classList.add('in-cart');
+                cart.push({
+                    productId: sticker.id,
+                    title: sticker.title,
+                    price: 5,
+                    image: sticker.image,
+                    variantId: variant.id,
+                    variantName: variant.name,
+                    category: 'stickers',
+                    quantity: 1
+                });
+                showToast(`Added ${sticker.title} to cart`);
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartButton();
+        }
+
+        // Load all products
+        function loadAllProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+            
+            printifyProducts.forEach(product => {
+                createProductCard(product, grid);
+            });
+        }
+
+        // Load category products
+        function loadCategoryProducts(category) {
+            const grid = document.getElementById(category + '-grid');
+            grid.innerHTML = '';
+            
+            const products = printifyProducts.filter(p => p.category === category);
+            products.forEach(product => {
+                createProductCard(product, grid);
+            });
+        }
+
+        // Create product card
+        function createProductCard(product, container) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            let variantOptions = '';
+            if (product.variants && product.variants.length > 0) {
+                variantOptions = `
+                    <select id="variant-${product.id}" onchange="updatePrice('${product.id}')">
+                        ${product.variants.slice(0, 3).map(v => {
+                            let cleanName = v.name
+                                .replace(/["\u201c\u201d]/g, '')
+                                .replace(/\s*×\s*/g, 'x')
+                                .replace(/\s*\/\s*White/g, '')
+                                .trim();
+                            return `<option value="${v.id}" data-price="${v.price}">${cleanName}</option>`;
+                        }).join('')}
+                    </select>
+                `;
+            }
+            
+            card.innerHTML = `
+                <img src="${product.image}?width=400" alt="${product.title}">
+                <h3>${product.title}</h3>
+                <div class="price" id="price-${product.id}">$${product.price.toFixed(2)}</div>
+                ${variantOptions}
+                <button onclick="addProduct('${product.id}')">+ CART</button>
+            `;
+            
+            container.appendChild(card);
+        }
+
+        // Update price when variant changes
+        function updatePrice(productId) {
+            const select = document.getElementById('variant-' + productId);
+            const priceEl = document.getElementById('price-' + productId);
+            if (select && priceEl) {
+                const selected = select.options[select.selectedIndex];
+                const price = selected.getAttribute('data-price');
+                if (price) {
+                    priceEl.textContent = '$' + parseFloat(price).toFixed(2);
+                }
+            }
+        }
+
+        // Add product to cart
+        function addProduct(productId) {
+            const product = printifyProducts.find(p => p.id === productId);
+            const variantSelect = document.getElementById('variant-' + productId);
+            const variantId = variantSelect ? variantSelect.value : product.variants[0].id;
+            const variant = product.variants.find(v => v.id === variantId);
+            
+            const existing = cart.find(item => item.productId === productId && item.variantId === variantId);
+            
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({
+                    productId: product.id,
+                    title: product.title,
+                    price: variant ? variant.price : product.price,
+                    image: product.image,
+                    variantId: variantId,
+                    variantName: variant ? variant.name : 'Default',
+                    category: product.category,
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartButton();
+            showToast(`Added ${product.title} to cart`);
+        }
+
+        // Update cart button
+        function updateCartButton() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').textContent = count;
+            
+            const btn = document.getElementById('cart-btn');
+            if (count > 0) {
+                btn.classList.add('has-items');
+            } else {
+                btn.classList.remove('has-items');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        // Go to cart/checkout
+        function goToCart() {
+            window.location.href = 'checkout.html';
+        }
+
+        // Initialize on page load
+        loadAllProducts();
+        updateCartButton();
+    </script>
+</body>
+</html>

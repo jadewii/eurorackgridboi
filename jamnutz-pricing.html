@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.GRID - Jamnutz & Pricing</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+            margin: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        h1 {
+            font-size: 48px;
+            background: linear-gradient(45deg, #ffd700, #ff8800, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .jamnutz-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 15px 25px;
+            font-size: 24px;
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+        }
+        
+        .section h2 {
+            color: #ffd700;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        .module-pricing {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .price-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #333;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .price-option:hover {
+            background: #444;
+            transform: translateX(5px);
+        }
+        
+        .jamnutz-bundle {
+            background: linear-gradient(135deg, #2a2a2a, #3a2a1a);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .jamnutz-bundle.best-value::before {
+            content: 'BEST VALUE';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: #ffd700;
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .subscription-tier {
+            background: linear-gradient(135deg, #1a1a1a, #2a1a2a);
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #ffd700, #ff00ff) 1;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .sub-price {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .sub-price .period {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+        
+        .benefits {
+            text-align: left;
+            margin: 20px 0;
+        }
+        
+        .benefits li {
+            padding: 8px 0;
+            list-style: none;
+        }
+        
+        .benefits li::before {
+            content: '🥜 ';
+            margin-right: 10px;
+        }
+        
+        .buy-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ffd700, #ff8800);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .buy-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        
+        .power-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #00ff00;
+            color: #000;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        
+        .power-button:hover {
+            background: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            animation: pulse 0.5s infinite;
+        }
+        
+        .tracking-info {
+            background: #1a1a1a;
+            border-left: 4px solid #00ff00;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .conversion-rate {
+            text-align: center;
+            font-size: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="jamnutz-display">
+        🥜 1,337 Jamnutz
+    </div>
+    
+    <div class="header">
+        <h1>🥜 JAMNUTZ ECONOMY 🥜</h1>
+        <p style="font-size: 20px; opacity: 0.8;">Animated Modules Only - Because Static is Boring!</p>
+    </div>
+    
+    <div class="conversion-rate">
+        💱 Exchange Rate: 100 Jamnutz = $1.00 USD
+    </div>
+    
+    <div class="pricing-grid">
+        <!-- Module Pricing -->
+        <div class="section">
+            <h2>🎛️ MODULE PRICING</h2>
+            
+            <div class="module-pricing">
+                <h3>Single Module</h3>
+                <div class="price-option">
+                    <span>💵 Pay with Cash</span>
+                    <strong>$5.00</strong>
+                </div>
+                <div class="price-option">
+                    <span>🥜 Pay with Jamnutz</span>
+                    <strong>500 Jamnutz</strong>
+                </div>
+            </div>
+            
+            <div class="module-pricing">
+                <h3>Bundle Deals (Cash)</h3>
+                <div class="price-option">
+                    <span>5 Modules</span>
+                    <strong>$22 (save $3)</strong>
+                </div>
+                <div class="price-option">
+                    <span>10 Modules</span>
+                    <strong>$42 (save $8)</strong>
+                </div>
+                <div class="price-option">
+                    <span>25 Modules</span>
+                    <strong>$100 (save $25)</strong>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Jamnutz Bundles -->
+        <div class="section">
+            <h2>🥜 BUY JAMNUTZ</h2>
+            
+            <div class="jamnutz-bundle">
+                <div class="price-option">
+                    <span>500 Jamnutz</span>
+                    <strong>$4.99</strong>
+                </div>
+            </div>
+            
+            <div class="jamnutz-bundle">
+                <div class="price-option">
+                    <span>1,100 Jamnutz (+10% bonus)</span>
+                    <strong>$9.99</strong>
+                </div>
+            </div>
+            
+            <div class="jamnutz-bundle best-value">
+                <div class="price-option">
+                    <span>2,500 Jamnutz (+25% bonus)</span>
+                    <strong>$19.99</strong>
+                </div>
+            </div>
+            
+            <div class="jamnutz-bundle">
+                <div class="price-option">
+                    <span>5,500 Jamnutz (+37% bonus)</span>
+                    <strong>$39.99</strong>
+                </div>
+            </div>
+            
+            <div class="jamnutz-bundle">
+                <div class="price-option">
+                    <span>12,000 Jamnutz (+50% bonus!)</span>
+                    <strong>$79.99</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subscription Tiers -->
+    <div class="section" style="max-width: 800px; margin: 40px auto;">
+        <h2>🌟 SUBSCRIPTION TIERS</h2>
+        
+        <div class="subscription-tier">
+            <h3 style="color: #ffd700;">MONTHLY GRID PRO</h3>
+            <div class="sub-price">
+                $9.99 <span class="period">/month</span>
+            </div>
+            <ul class="benefits">
+                <li>1,500 Jamnutz every month (worth $15)</li>
+                <li>Access to 5 exclusive subscriber modules</li>
+                <li>20% off all cash purchases</li>
+                <li>Unlimited rack saves</li>
+                <li>Profile rack showcase</li>
+                <li>Early access to new modules</li>
+                <li>Power-up animations</li>
+            </ul>
+            <button class="buy-button">Start Monthly</button>
+        </div>
+        
+        <div class="subscription-tier">
+            <h3 style="color: #ff00ff;">YEARLY GRID MASTER</h3>
+            <div class="sub-price">
+                $99 <span class="period">/year (save $20!)</span>
+            </div>
+            <ul class="benefits">
+                <li>20,000 Jamnutz instantly (worth $200!)</li>
+                <li>All monthly benefits PLUS:</li>
+                <li>10 exclusive yearly-only modules</li>
+                <li>30% off all cash purchases</li>
+                <li>Custom rack colors</li>
+                <li>Beta features access</li>
+                <li>Priority support</li>
+                <li>Annual member badge</li>
+            </ul>
+            <button class="buy-button">Go Yearly & Save</button>
+        </div>
+    </div>
+    
+    <!-- Power Features -->
+    <div class="section" style="max-width: 800px; margin: 40px auto;">
+        <h2>⚡ RACK FEATURES</h2>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <h3>Power Up Your Rack!</h3>
+            <div class="power-button" onclick="powerUpSequence()">
+                ⚡ Power One Module
+            </div>
+            <div class="power-button" onclick="powerUpAll()">
+                ⚡⚡ Power Entire Rack
+            </div>
+            <div class="power-button" onclick="cascadePower()">
+                🌊 Cascade Power Effect
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <h3>Profile Display</h3>
+            <p>Show off your racks on your profile!</p>
+            <p>• Display up to 5 racks (free users: 1)</p>
+            <p>• Share rack URLs with friends</p>
+            <p>• Embed racks on your website</p>
+            <p>• Export rack as image</p>
+        </div>
+    </div>
+    
+    <!-- Tracking System -->
+    <div class="section" style="max-width: 800px; margin: 40px auto;">
+        <h2>📊 HOW WE TRACK YOUR STUFF</h2>
+        
+        <div class="tracking-info">
+            <h3>User Inventory System:</h3>
+            <p><strong>Database tracks:</strong></p>
+            <ul>
+                <li>• User ID + Module ID = Ownership</li>
+                <li>• Purchase date & price paid</li>
+                <li>• Whether bought with cash or jamnutz</li>
+                <li>• Current jamnutz balance</li>
+                <li>• Subscription status & tier</li>
+            </ul>
+        </div>
+        
+        <div class="tracking-info">
+            <h3>What users see:</h3>
+            <ul>
+                <li>✅ Owned modules (unlimited use)</li>
+                <li>🔒 Locked modules (need to purchase)</li>
+                <li>👑 Exclusive modules (subscribers only)</li>
+                <li>🎁 Free monthly modules</li>
+                <li>🥜 Current jamnutz balance</li>
+            </ul>
+        </div>
+        
+        <div class="tracking-info" style="border-left-color: #ffd700;">
+            <h3>Smart Features:</h3>
+            <ul>
+                <li>• Wishlists with price alerts</li>
+                <li>• Bundle suggestions based on your racks</li>
+                <li>• Trade modules with friends (coming soon)</li>
+                <li>• Jamnutz gifting system</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function powerUpSequence() {
+            alert('⚡ Powering up one module at a time with a cool animation!');
+        }
+        
+        function powerUpAll() {
+            alert('⚡⚡ All modules power up simultaneously!');
+        }
+        
+        function cascadePower() {
+            alert('🌊 Modules power up in a wave pattern across the rack!');
+        }
+        
+        // Simulate Jamnutz balance updates
+        setInterval(() => {
+            const display = document.querySelector('.jamnutz-display');
+            const current = parseInt(display.textContent.match(/\d+/)[0]);
+            display.innerHTML = `🥜 ${current + Math.floor(Math.random() * 10)} Jamnutz`;
+        }, 5000);
+    </script>
+</body>
+</html>

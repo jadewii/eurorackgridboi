@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Currency Icon Test</title>
+    <style>
+        /* Jacknut currency icon style */
+        .jacknut-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin: 0 4px;
+        }
+        
+        .jacknut-icon.large {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .jacknut-icon.small {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Usage examples */
+        .hp-display {
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .hp-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: 2px solid #FFD700;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Jacknut Currency Icon Examples</h2>
+    
+    <p>Inline text: You have <span class="hp-display">100<img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="HP"></span> remaining</p>
+    
+    <p>Button: 
+        <button class="hp-button">
+            <span>100</span>
+            <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="HP">
+        </button>
+    </p>
+    
+    <p>Large: <span class="hp-display">500<img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon large" alt="HP"></span></p>
+    
+    <p>Small: <span class="hp-display">25<img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon small" alt="HP"></span></p>
+    
+    <div style="margin-top: 40px; padding: 20px; background: #f0f0f0; border: 2px solid #000;">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>Upload jacknut.png to Supabase Storage in an 'icons' bucket</li>
+            <li>Make the bucket public</li>
+            <li>Replace "HP" text with the icon using: <br>
+                <code>&lt;img src="[supabase-url]/icons/jacknut.png" class="jacknut-icon" alt="HP"&gt;</code>
+            </li>
+        </ol>
+    </div>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>EURORACK.GRID - Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            padding-bottom: 80px; /* For tab bar */
+        }
+        
+        /* View Switcher */
+        .view-switcher {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: #FFD700;
+            border-radius: 30px;
+            padding: 5px;
+            display: flex;
+            gap: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .view-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: #000;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .view-btn.active {
+            background: #000;
+            color: #FFD700;
+        }
+        
+        .view-btn:hover:not(.active) {
+            background: rgba(0,0,0,0.1);
+        }
+        
+        /* Mobile Frame View */
+        body.mobile-view {
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .phone-frame {
+            display: none;
+            width: 390px;
+            height: 844px;
+            background: #000;
+            border-radius: 40px;
+            padding: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body.mobile-view .phone-frame {
+            display: block;
+        }
+        
+        body.mobile-view .mobile-content,
+        body.mobile-view .mobile-header,
+        body.mobile-view .tab-bar {
+            display: none;
+        }
+        
+        body.mobile-view .phone-frame .mobile-content,
+        body.mobile-view .phone-frame .mobile-header,
+        body.mobile-view .phone-frame .tab-bar {
+            display: block;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 30px;
+            overflow: auto;
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 28px;
+            background: #000;
+            border-radius: 0 0 15px 15px;
+            z-index: 1001;
+            pointer-events: none;
+        }
+        
+        body.mobile-view .phone-frame .tab-bar {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            width: calc(100% - 20px);
+            border-radius: 0 0 20px 20px;
+        }
+        
+        body.mobile-view .phone-frame .mobile-header {
+            position: sticky;
+            top: 0;
+        }
+        
+        /* Header */
+        .mobile-header {
+            background: #FFD700;
+            color: #000;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .jamnut-mobile {
+            width: 30px;
+            height: 30px;
+            margin: 0 10px;
+            animation: spin 10s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Rack Display */
+        .mobile-rack {
+            background: #1a1a1a;
+            margin: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            min-height: 300px;
+        }
+        
+        .rack-modules-mobile {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .module-mobile {
+            aspect-ratio: 1/2;
+            background: linear-gradient(135deg, #333, #555);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD700;
+            font-size: 12px;
+            font-weight: bold;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        
+        .module-mobile:active {
+            transform: scale(0.95);
+        }
+        
+        /* Pack Cards */
+        .pack-section {
+            padding: 20px;
+        }
+        
+        .pack-card-mobile {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pack-card-mobile::before {
+            content: '✨';
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.1;
+            right: -20px;
+            top: -20px;
+        }
+        
+        .pack-price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #000;
+            margin: 10px 0;
+        }
+        
+        .open-pack-btn {
+            background: #000;
+            color: #FFD700;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .open-pack-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Bottom Tab Bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #111;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 25px 0; /* Extra padding for iPhone home bar */
+            border-top: 1px solid #333;
+        }
+        
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            color: #666;
+            transition: color 0.3s;
+        }
+        
+        .tab-item.active {
+            color: #FFD700;
+        }
+        
+        .tab-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .tab-label {
+            font-size: 11px;
+        }
+        
+        /* Swipe hint */
+        .swipe-hint {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            font-size: 14px;
+        }
+        
+        /* Module detail modal */
+        .module-detail {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background: #222;
+            border-radius: 30px 30px 0 0;
+            padding: 30px;
+            transition: bottom 0.3s ease;
+            z-index: 200;
+        }
+        
+        .module-detail.active {
+            bottom: 0;
+        }
+        
+        .drag-handle {
+            width: 50px;
+            height: 5px;
+            background: #666;
+            border-radius: 3px;
+            margin: 0 auto 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- View Switcher -->
+    <div class="view-switcher">
+        <button class="view-btn active" onclick="setView('desktop')">Desktop</button>
+        <button class="view-btn" onclick="setView('mobile')">Mobile</button>
+    </div>
+    
+    <!-- Phone Frame Container (shows in mobile view) -->
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <div class="phone-notch"></div>
+            
+    <!-- Header -->
+    <div class="mobile-header">
+        <span>EURORACK</span>
+        <img src="https://pub-189731487c83430b9faea23fb142cae2.r2.dev/jamnutwhite.png" class="jamnut-mobile" alt="O">
+        <span>GRID</span>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="mobile-content">
+        <!-- Your Rack -->
+        <div class="mobile-rack">
+            <h3 style="color: #FFD700; margin-bottom: 15px;">MY RACK</h3>
+            <div class="rack-modules-mobile">
+                <div class="module-mobile">CLOUDS</div>
+                <div class="module-mobile">MATHS</div>
+                <div class="module-mobile">PLAITS</div>
+                <div class="module-mobile">RINGS</div>
+                <div class="module-mobile">BEADS</div>
+                <div class="module-mobile">+</div>
+            </div>
+        </div>
+        
+        <!-- Pack Shop -->
+        <div class="pack-section">
+            <h3 style="color: #FFD700; margin-bottom: 15px;">PACKS</h3>
+            
+            <div class="pack-card-mobile">
+                <h4 style="color: #000;">STARTER PACK</h4>
+                <div class="pack-price">$5</div>
+                <p style="color: #000; opacity: 0.8;">3 Random Modules</p>
+                <button class="open-pack-btn">OPEN PACK</button>
+            </div>
+            
+            <div class="pack-card-mobile" style="background: linear-gradient(135deg, #87CEEB, #4169E1);">
+                <h4 style="color: #fff;">PRO PACK</h4>
+                <div class="pack-price" style="color: #fff;">$15</div>
+                <p style="color: #fff; opacity: 0.8;">8 Modules + 1 Rare Guaranteed</p>
+                <button class="open-pack-btn">OPEN PACK</button>
+            </div>
+        </div>
+        
+        <div class="swipe-hint">
+            ← Swipe between screens →
+        </div>
+    </div>
+    
+    <!-- Module Detail (slides up) -->
+    <div class="module-detail" id="moduleDetail">
+        <div class="drag-handle"></div>
+        <h3 style="color: #FFD700;">CLOUDS</h3>
+        <p style="color: #999; margin: 20px 0;">Granular Texture Synthesizer</p>
+        <div style="display: flex; gap: 10px;">
+            <button style="flex: 1; padding: 15px; background: #FFD700; border: none; border-radius: 10px; font-weight: bold;">TRADE</button>
+            <button style="flex: 1; padding: 15px; background: #333; color: #fff; border: none; border-radius: 10px; font-weight: bold;">SELL</button>
+        </div>
+    </div>
+    
+    <!-- Bottom Tab Bar -->
+    <div class="tab-bar">
+        <div class="tab-item active">
+            <div class="tab-icon">🎹</div>
+            <div class="tab-label">Rack</div>
+        </div>
+        <div class="tab-item">
+            <div class="tab-icon">📦</div>
+            <div class="tab-label">Packs</div>
+        </div>
+        <div class="tab-item">
+            <div class="tab-icon">🔄</div>
+            <div class="tab-label">Trade</div>
+        </div>
+        <div class="tab-item">
+            <div class="tab-icon">👤</div>
+            <div class="tab-label">Profile</div>
+        </div>
+    </div>
+    
+        </div><!-- Close phone-screen -->
+    </div><!-- Close phone-frame -->
+    
+    <script>
+        // View switching function
+        function setView(view) {
+            const buttons = document.querySelectorAll('.view-btn');
+            
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase() === view) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            if (view === 'mobile') {
+                document.body.classList.add('mobile-view');
+            } else {
+                document.body.classList.remove('mobile-view');
+            }
+        }
+        
+        // Touch interactions
+        let startY = 0;
+        const moduleDetail = document.getElementById('moduleDetail');
+        
+        // Tap on module to see details
+        document.querySelectorAll('.module-mobile').forEach(module => {
+            module.addEventListener('click', () => {
+                if (module.textContent !== '+') {
+                    moduleDetail.classList.add('active');
+                }
+            });
+        });
+        
+        // Swipe down to close detail
+        moduleDetail.addEventListener('touchstart', e => {
+            startY = e.touches[0].clientY;
+        });
+        
+        moduleDetail.addEventListener('touchend', e => {
+            const endY = e.changedTouches[0].clientY;
+            if (endY - startY > 50) {
+                moduleDetail.classList.remove('active');
+            }
+        });
+        
+        // Tab bar navigation
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+        
+        // Haptic feedback on buttons (if supported)
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (navigator.vibrate) navigator.vibrate(10);
+            });
+        });
+    </script>
+</body>
+</html>

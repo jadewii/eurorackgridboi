@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Claim Your Digital Stickers - eurorack.store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .claim-container {
+            background: white;
+            color: #000;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .claim-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        label {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        input {
+            padding: 12px;
+            border: 2px solid #000;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .or-divider {
+            text-align: center;
+            position: relative;
+            margin: 10px 0;
+        }
+        
+        .or-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+        
+        .or-divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+            color: #999;
+        }
+        
+        .claim-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .claim-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+        }
+        
+        .claim-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .success-message {
+            display: none;
+            background: #00ff88;
+            color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .unlocked-list {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .unlocked-list.show {
+            display: block;
+        }
+        
+        .unlocked-list h3 {
+            margin-bottom: 15px;
+            color: #000;
+        }
+        
+        .sticker-unlock {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .sticker-unlock img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .error-message {
+            display: none;
+            background: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="claim-container">
+        <h1>🎁 CLAIM DIGITAL STICKERS</h1>
+        <p class="subtitle">Enter your order ID or email to unlock your digital collection</p>
+        
+        <form class="claim-form" id="claim-form">
+            <div class="input-group">
+                <label for="order-id">Order ID</label>
+                <input type="text" id="order-id" placeholder="e.g., ORDER-123456">
+            </div>
+            
+            <div class="or-divider">
+                <span>OR</span>
+            </div>
+            
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="your@email.com">
+            </div>
+            
+            <button type="submit" class="claim-btn" id="claim-btn">
+                CLAIM MY STICKERS
+            </button>
+        </form>
+        
+        <div class="success-message" id="success-message">
+            <h2>🎉 Success!</h2>
+            <p id="success-text"></p>
+            <button onclick="window.location.href='collection.html'" style="margin-top: 15px; padding: 10px 20px; background: #000; color: white; border: none; cursor: pointer; font-weight: bold;">
+                VIEW MY COLLECTION
+            </button>
+        </div>
+        
+        <div class="unlocked-list" id="unlocked-list">
+            <h3>Unlocked Stickers:</h3>
+            <div id="unlocked-items"></div>
+        </div>
+        
+        <div class="error-message" id="error-message">
+            <p id="error-text">No order found. Please check your order ID or email.</p>
+        </div>
+        
+        <a href="index.html" class="back-link">← Back to Shop</a>
+    </div>
+    
+    <script>
+        // Check for claim code in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const claimCode = urlParams.get('code');
+        if (claimCode) {
+            document.getElementById('order-id').value = claimCode;
+        }
+        
+        document.getElementById('claim-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const orderId = document.getElementById('order-id').value;
+            const email = document.getElementById('email').value;
+            
+            if (!orderId && !email) {
+                showError('Please enter either an Order ID or Email');
+                return;
+            }
+            
+            const claimBtn = document.getElementById('claim-btn');
+            claimBtn.disabled = true;
+            claimBtn.textContent = 'CHECKING...';
+            
+            try {
+                // In production, this would call your backend
+                // For demo, we'll simulate with localStorage
+                simulateClaimProcess(orderId, email);
+                
+                /* Real implementation:
+                const response = await fetch('http://localhost:3000/api/claim-digital-unlocks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ claimCode: orderId, email: email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    processUnlocks(data.unlocks);
+                } else {
+                    showError(data.message);
+                }
+                */
+            } catch (error) {
+                showError('Failed to claim stickers. Please try again.');
+            } finally {
+                claimBtn.disabled = false;
+                claimBtn.textContent = 'CLAIM MY STICKERS';
+            }
+        });
+        
+        function simulateClaimProcess(orderId, email) {
+            // Demo: simulate finding an order
+            if (orderId === 'DEMO-123' || email === 'demo@example.com') {
+                // Simulate unlocking some stickers
+                const demoUnlocks = [
+                    { stickerCode: 'mod-01', title: 'Mod-01 - eurorack sticker' },
+                    { stickerCode: 'mod-05', title: 'Mod-05 - eurorack sticker' },
+                    { stickerCode: 'mod-10', title: 'Mod-10 - eurorack sticker' }
+                ];
+                
+                processUnlocks(demoUnlocks);
+            } else {
+                showError('No order found. Try DEMO-123 or demo@example.com for testing.');
+            }
+        }
+        
+        function processUnlocks(unlocks) {
+            // Add to digital collection
+            const digitalCollection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+            
+            unlocks.forEach(unlock => {
+                digitalCollection[unlock.title] = {
+                    unlockedDate: new Date().toISOString(),
+                    method: 'physical_purchase_claim',
+                    stickerCode: unlock.stickerCode
+                };
+            });
+            
+            localStorage.setItem('digital-collection', JSON.stringify(digitalCollection));
+            
+            // Show success
+            showSuccess(`Unlocked ${unlocks.length} digital stickers!`);
+            
+            // Show unlocked items
+            const unlockedItems = document.getElementById('unlocked-items');
+            unlockedItems.innerHTML = unlocks.map(unlock => `
+                <div class="sticker-unlock">
+                    <span>✅</span>
+                    <span>${unlock.title}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('unlocked-list').classList.add('show');
+        }
+        
+        function showSuccess(message) {
+            document.getElementById('success-text').textContent = message;
+            document.getElementById('success-message').classList.add('show');
+            document.getElementById('error-message').classList.remove('show');
+        }
+        
+        function showError(message) {
+            document.getElementById('error-text').textContent = message;
+            document.getElementById('error-message').classList.add('show');
+            document.getElementById('success-message').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

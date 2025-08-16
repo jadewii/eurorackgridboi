@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test RLS Policy</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        pre { background: #f0f0f0; padding: 15px; border: 2px solid #000; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .gif-preview { max-width: 200px; border: 2px solid #000; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Testing RLS Policy for eurorackgif Bucket</h1>
+    
+    <button onclick="testPolicy()">Test Bucket Access</button>
+    <button onclick="loadFirstGif()">Load First GIF</button>
+    
+    <h2>Output:</h2>
+    <pre id="output">Click a button to start...</pre>
+    
+    <div id="preview"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        const preview = document.getElementById('preview');
+        const url = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        function log(msg, data = null) {
+            output.textContent += msg + '\n';
+            if (data) {
+                output.textContent += JSON.stringify(data, null, 2) + '\n';
+            }
+            output.textContent += '------------------------\n';
+        }
+        
+        async function testPolicy() {
+            output.textContent = 'Testing RLS Policy...\n\n';
+            
+            try {
+                // Step 1: List all buckets
+                log('Step 1: Listing all buckets...');
+                const bucketsResponse = await fetch(`${url}/storage/v1/bucket`, {
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                
+                const buckets = await bucketsResponse.json();
+                if (Array.isArray(buckets) && buckets.length > 0) {
+                    log(`✅ Found ${buckets.length} bucket(s)`);
+                    buckets.forEach(b => {
+                        log(`  - ${b.name} (${b.public ? 'public' : 'private'})`);
+                    });
+                } else {
+                    log('⚠️ No buckets visible (might need RLS policy)');
+                }
+                
+                // Step 2: Try to list files in eurorackgif
+                log('\nStep 2: Listing files in eurorackgif bucket...');
+                const filesResponse = await fetch(`${url}/storage/v1/object/list/eurorackgif`, {
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                
+                if (filesResponse.ok) {
+                    const files = await filesResponse.json();
+                    if (Array.isArray(files)) {
+                        log(`✅ SUCCESS! Found ${files.length} files in eurorackgif`);
+                        if (files.length > 0) {
+                            log('First 3 files:');
+                            files.slice(0, 3).forEach(f => {
+                                log(`  - ${f.name} (${f.metadata?.size ? Math.round(f.metadata.size/1024) + 'KB' : 'size unknown'})`);
+                            });
+                        }
+                    } else {
+                        log('❌ Unexpected response:', files);
+                    }
+                } else {
+                    const error = await filesResponse.json();
+                    log(`❌ Failed to list files (${filesResponse.status}):`, error);
+                    log('\n⚠️ RLS Policy might not be active yet. Please ensure you clicked "Review" and "Save policy" in Supabase dashboard.');
+                }
+                
+            } catch (error) {
+                log('❌ Network error:', error.message);
+            }
+        }
+        
+        async function loadFirstGif() {
+            output.textContent = 'Loading first GIF...\n\n';
+            preview.innerHTML = '';
+            
+            try {
+                // List files first
+                const filesResponse = await fetch(`${url}/storage/v1/object/list/eurorackgif`, {
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                
+                if (filesResponse.ok) {
+                    const files = await filesResponse.json();
+                    if (Array.isArray(files) && files.length > 0) {
+                        const firstFile = files[0];
+                        log(`Found ${files.length} files. Loading: ${firstFile.name}`);
+                        
+                        // Create signed URL
+                        const signResponse = await fetch(`${url}/storage/v1/object/sign/eurorackgif/${firstFile.name}`, {
+                            method: 'POST',
+                            headers: {
+                                'apikey': key,
+                                'Authorization': `Bearer ${key}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ expiresIn: 60 })
+                        });
+                        
+                        if (signResponse.ok) {
+                            const signData = await signResponse.json();
+                            const signedUrl = `${url}/storage/v1${signData.signedURL}`;
+                            log('✅ Created signed URL successfully!');
+                            
+                            // Display the GIF
+                            const img = document.createElement('img');
+                            img.src = signedUrl;
+                            img.className = 'gif-preview';
+                            img.onload = () => log('✅ GIF loaded successfully!');
+                            img.onerror = () => log('❌ Failed to load GIF');
+                            preview.appendChild(img);
+                        } else {
+                            log('❌ Failed to create signed URL');
+                        }
+                    } else {
+                        log('❌ No files found in bucket');
+                    }
+                } else {
+                    log('❌ Failed to list files. Make sure RLS policy is saved.');
+                }
+            } catch (error) {
+                log('❌ Error:', error.message);
+            }
+        }
+    </script>
+</body>
+</html>

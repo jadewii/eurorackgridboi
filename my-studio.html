@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>EUROGRID - My Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="module-system.css">
+    <link rel="stylesheet" href="assets/clean-nav.css">
+    <script src="purchase-integration-fixed.js" defer></script>
+    <script src="assets/clean-nav.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .main-content {
+            padding: 100px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .studio-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .studio-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 5px;
+        }
+        
+        .studio-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 2px solid #000;
+            padding: 15px 25px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .studio-section {
+            margin: 50px 0;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-count {
+            font-size: 1rem;
+            color: #666;
+            font-weight: normal;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #000;
+            border-radius: 5px;
+        }
+        
+        .owned-module {
+            aspect-ratio: 1;
+            background: #f0f0f0;
+            border: 2px solid #000;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .owned-module:hover {
+            transform: scale(1.05);
+            background: #000;
+            color: white;
+        }
+        
+        .owned-module img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .owned-module .module-name {
+            position: relative;
+            z-index: 2;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            color: #000;
+        }
+        
+        .racks-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #000;
+            border-radius: 5px;
+        }
+        
+        .rack-preview {
+            border: 2px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .rack-preview:hover {
+            border-color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .rack-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .rack-visual {
+            height: 100px;
+            background: linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%, #ddd),
+                        linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%, #ddd);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            border: 3px solid #000;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        
+        .accessories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #000;
+            border-radius: 5px;
+        }
+        
+        .accessory-item {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .accessory-item:hover {
+            border-color: #000;
+            background: #f9f9f9;
+        }
+        
+        .accessory-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .plants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #000;
+            border-radius: 5px;
+        }
+        
+        .plant-item {
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .plant-item:hover {
+            transform: scale(1.1);
+        }
+        
+        .plant-icon {
+            font-size: 2.5rem;
+            filter: hue-rotate(var(--hue, 0deg));
+        }
+        
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Navigation is injected by clean-nav.js -->
+    
+    
+    <div class="main-content">
+        <!-- Main Profile Section -->
+        <div class="profile-section">
+            <div class="profile-header">
+                <div class="profile-avatar" style="
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-size: 2rem;
+                    font-weight: bold;
+                    border: 3px solid #000;
+                ">J</div>
+                <div class="profile-info">
+                    <h2 id="username" style="font-size: 2rem; margin: 0;">jadewii</h2>
+                    <div class="profile-badges" style="display: flex; gap: 10px; margin-top: 10px;">
+                        <span style="display: inline-block; width: 30px; height: 30px; border-radius: 50%; background: #ff9500; border: 2px solid #000;"></span>
+                        <span style="display: inline-block; width: 30px; height: 30px; border-radius: 50%; background: #00ff00; border: 2px solid #000;"></span>
+                        <span style="display: inline-block; width: 30px; height: 30px; border-radius: 50%; background: #888; border: 2px solid #000;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Display Rack -->
+        <div class="studio-section">
+            <h2 class="section-title">MAIN RACK</h2>
+            <div style="background: #333; border: 4px solid #000; border-radius: 5px; padding: 40px; min-height: 400px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 1.2rem;">
+                <div id="mainRackDisplay" style="width: 100%; height: 100%;">
+                    Click to configure your main display rack
+                </div>
+            </div>
+        </div>
+        
+        <div class="studio-header" style="margin-top: 40px;">
+            <div class="studio-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="moduleCount">0</div>
+                    <div class="stat-label">Modules</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="rackCount">0</div>
+                    <div class="stat-label">Racks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="plantCount">0</div>
+                    <div class="stat-label">Plants</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="tradeCount">0</div>
+                    <div class="stat-label">For Trade</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MY MODULES Section -->
+        <div class="studio-section">
+            <h2 class="section-title">
+                MY MODULES
+                <span class="section-count" id="moduleSectionCount">(0 owned)</span>
+            </h2>
+            <div class="modules-grid" id="modulesGrid">
+                <div class="empty-state">No modules yet. Visit the shop to purchase your first module!</div>
+            </div>
+        </div>
+        
+        <!-- MY RACKS Section -->
+        <div class="studio-section">
+            <h2 class="section-title">
+                MY RACKS
+                <span class="section-count" id="rackSectionCount">(0 configured)</span>
+            </h2>
+            <div class="racks-container" id="racksContainer">
+                <div class="empty-state">No racks configured yet. Visit the Rack Shop to build your setup!</div>
+            </div>
+        </div>
+        
+        <!-- MY PLANTS Section -->
+        <div class="studio-section">
+            <h2 class="section-title">
+                MY PLANTS
+                <span class="section-count" id="plantSectionCount">(0 collected)</span>
+            </h2>
+            <div class="plants-grid" id="plantsGrid">
+                <div class="empty-state">No plants yet. Add some greenery to your studio!</div>
+            </div>
+        </div>
+        
+        <!-- MY ACCESSORIES Section -->
+        <div class="studio-section">
+            <h2 class="section-title">
+                MY ACCESSORIES
+                <span class="section-count" id="accessorySectionCount">(0 items)</span>
+            </h2>
+            <div class="accessories-grid" id="accessoriesGrid">
+                <div class="empty-state">No accessories yet. Customize your studio with cables, stands, and more!</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load user data and populate studio
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            if (!window.userSystem || !window.userSystem.currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const user = window.userSystem.currentUser;
+            
+            // Update jamnutz display
+            document.getElementById('jamnutzAmount').textContent = user.jamnutz || 0;
+            
+            // Update module count and grid
+            const moduleCount = user.ownedModules ? user.ownedModules.length : 0;
+            document.getElementById('moduleCount').textContent = moduleCount;
+            document.getElementById('moduleSectionCount').textContent = `(${moduleCount} owned)`;
+            
+            if (moduleCount > 0) {
+                const grid = document.getElementById('modulesGrid');
+                grid.innerHTML = '';
+                user.ownedModules.forEach(moduleName => {
+                    const moduleDiv = document.createElement('div');
+                    moduleDiv.className = 'owned-module';
+                    moduleDiv.innerHTML = `
+                        <div class="module-name">${moduleName}</div>
+                    `;
+                    grid.appendChild(moduleDiv);
+                });
+            }
+            
+            // Mock data for demo - replace with actual data later
+            const mockRacks = [
+                { name: '90HP 6U System', modules: 12, color: '#000' },
+                { name: '180HP 12U System', modules: 24, color: '#FF1493' }
+            ];
+            
+            if (mockRacks.length > 0) {
+                document.getElementById('rackCount').textContent = mockRacks.length;
+                document.getElementById('rackSectionCount').textContent = `(${mockRacks.length} configured)`;
+                
+                const container = document.getElementById('racksContainer');
+                container.innerHTML = '';
+                mockRacks.forEach(rack => {
+                    const rackDiv = document.createElement('div');
+                    rackDiv.className = 'rack-preview';
+                    rackDiv.innerHTML = `
+                        <div class="rack-info">
+                            <span>${rack.name}</span>
+                            <span>${rack.modules} modules</span>
+                        </div>
+                        <div class="rack-visual" style="background-color: ${rack.color}20; border-color: ${rack.color};">
+                            Click to edit
+                        </div>
+                    `;
+                    container.appendChild(rackDiv);
+                });
+            }
+            
+            // Mock plants for demo
+            const mockPlants = ['🌵', '🌿', '🪴', '🌱'];
+            if (mockPlants.length > 0) {
+                document.getElementById('plantCount').textContent = mockPlants.length;
+                document.getElementById('plantSectionCount').textContent = `(${mockPlants.length} collected)`;
+                
+                const grid = document.getElementById('plantsGrid');
+                grid.innerHTML = '';
+                mockPlants.forEach((plant, i) => {
+                    const plantDiv = document.createElement('div');
+                    plantDiv.className = 'plant-item';
+                    plantDiv.innerHTML = `
+                        <div class="plant-icon" style="--hue: ${i * 60}deg">${plant}</div>
+                    `;
+                    grid.appendChild(plantDiv);
+                });
+            }
+            
+            // Update trade count (for now just show 0, can be expanded later)
+            document.getElementById('tradeCount').textContent = '0';
+        });
+    </script>
+</body>
+</html>

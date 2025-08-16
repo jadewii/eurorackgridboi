@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Products</title>
+</head>
+<body>
+    <h1>Product Test</h1>
+    <div id="result"></div>
+    
+    <script src="printify-products.js"></script>
+    <script>
+        const result = document.getElementById('result');
+        
+        if (typeof printifyProducts !== 'undefined') {
+            result.innerHTML = '<h2>✅ Products loaded: ' + printifyProducts.length + ' items</h2>';
+            
+            // Show first 5 products
+            result.innerHTML += '<h3>First 5 products:</h3>';
+            printifyProducts.slice(0, 5).forEach((p, i) => {
+                result.innerHTML += '<p>' + (i+1) + '. ' + p.title + ' - $' + p.price + '</p>';
+            });
+        } else {
+            result.innerHTML = '<h2>❌ No products found</h2>';
+        }
+    </script>
+</body>
+</html>

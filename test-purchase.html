@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Purchase Flow - EUROGRID</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="purchase-integration-fixed.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            padding-top: 120px;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-section {
+            background: #f5f5f5;
+            border: 2px solid #000;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .test-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #000;
+        }
+        
+        .test-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .module-slot {
+            background: white;
+            border: 3px solid #000;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .module-slot:hover {
+            transform: scale(1.05);
+            background: #f0f0f0;
+        }
+        
+        .module-slot.user-owned {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+        
+        .module-price {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .test-button {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            border-radius: 5px;
+        }
+        
+        .test-button:hover {
+            background: #333;
+        }
+        
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .success {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .error {
+            background: #f44336;
+            color: white;
+        }
+        
+        .info {
+            background: #2196F3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 style="text-align: center; margin-bottom: 40px; font-size: 2.5rem;">PURCHASE FLOW TEST</h1>
+        
+        <!-- Test Status Section -->
+        <div class="test-section">
+            <h2 class="test-title">USER STATUS</h2>
+            <div id="userStatus">Checking user status...</div>
+            <div style="margin-top: 10px;">
+                <button class="test-button" onclick="testLogin()">Test Login</button>
+                <button class="test-button" onclick="testSignup()">Test Signup</button>
+                <button class="test-button" onclick="testLogout()">Test Logout</button>
+            </div>
+        </div>
+        
+        <!-- Test Modules Section -->
+        <div class="test-section">
+            <h2 class="test-title">TEST MODULES (Click to purchase)</h2>
+            <div class="test-modules">
+                <div class="module-slot" data-module="Maths">
+                    <div style="font-size: 2rem;">🎛️</div>
+                    <div>Maths</div>
+                    <div class="module-price">500 🥜</div>
+                </div>
+                <div class="module-slot" data-module="Clouds">
+                    <div style="font-size: 2rem;">☁️</div>
+                    <div>Clouds</div>
+                    <div class="module-price">500 🥜</div>
+                </div>
+                <div class="module-slot" data-module="Plaits">
+                    <div style="font-size: 2rem;">🎵</div>
+                    <div>Plaits</div>
+                    <div class="module-price">500 🥜</div>
+                </div>
+                <div class="module-slot" data-module="Rings">
+                    <div style="font-size: 2rem;">⭕</div>
+                    <div>Rings</div>
+                    <div class="module-price">500 🥜</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Purchase History Section -->
+        <div class="test-section">
+            <h2 class="test-title">PURCHASE HISTORY</h2>
+            <div id="purchaseHistory">No purchases yet</div>
+        </div>
+        
+        <!-- Test Results Section -->
+        <div class="test-section">
+            <h2 class="test-title">TEST RESULTS</h2>
+            <div id="testResults"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Test functions
+        function updateUserStatus() {
+            const statusDiv = document.getElementById('userStatus');
+            if (window.userSystem && window.userSystem.currentUser) {
+                const user = window.userSystem.currentUser;
+                statusDiv.innerHTML = `
+                    <div class="status-message info">
+                        ✅ Logged in as: ${user.email}<br>
+                        🥜 Jamnutz: ${user.jamnutz}<br>
+                        📦 Owned Modules: ${user.ownedModules ? user.ownedModules.length : 0}
+                    </div>
+                `;
+                updatePurchaseHistory();
+            } else {
+                statusDiv.innerHTML = '<div class="status-message error">❌ Not logged in</div>';
+            }
+        }
+        
+        function updatePurchaseHistory() {
+            const historyDiv = document.getElementById('purchaseHistory');
+            if (window.userSystem && window.userSystem.currentUser && window.userSystem.currentUser.ownedModules) {
+                const modules = window.userSystem.currentUser.ownedModules;
+                if (modules.length > 0) {
+                    historyDiv.innerHTML = '<ul>' + modules.map(m => `<li>${m}</li>`).join('') + '</ul>';
+                } else {
+                    historyDiv.innerHTML = 'No modules owned yet';
+                }
+            }
+        }
+        
+        function testLogin() {
+            const email = prompt('Enter test email:') || 'test@example.com';
+            const password = prompt('Enter test password:') || 'password123';
+            
+            try {
+                window.userSystem.login(email, password);
+                addTestResult('✅ Login successful', 'success');
+                location.reload();
+            } catch (error) {
+                addTestResult(`❌ Login failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testSignup() {
+            const email = prompt('Enter new email:') || `test${Date.now()}@example.com`;
+            const password = prompt('Enter password (6+ chars):') || 'password123';
+            
+            try {
+                window.userSystem.createUser(email, password);
+                addTestResult('✅ Signup successful - 1000 jamnutz added!', 'success');
+                location.reload();
+            } catch (error) {
+                addTestResult(`❌ Signup failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testLogout() {
+            if (window.userSystem) {
+                window.userSystem.logout();
+                addTestResult('✅ Logged out', 'success');
+            }
+        }
+        
+        function addTestResult(message, type) {
+            const resultsDiv = document.getElementById('testResults');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `status-message ${type}`;
+            messageDiv.textContent = message;
+            resultsDiv.appendChild(messageDiv);
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update status after userSystem initializes
+            setTimeout(() => {
+                updateUserStatus();
+                
+                // Mark owned modules
+                if (window.userSystem) {
+                    window.userSystem.markOwnedModules();
+                }
+            }, 100);
+        });
+        
+        // Listen for purchases
+        document.addEventListener('click', function(e) {
+            const module = e.target.closest('.module-slot');
+            if (module) {
+                const moduleName = module.getAttribute('data-module');
+                const statusDiv = document.getElementById('testResults');
+                
+                try {
+                    // The purchase system handles this via setupClickHandlers
+                    statusDiv.innerHTML += `<div class="status-message info">Clicked on: ${moduleName}</div>`;
+                } catch (error) {
+                    statusDiv.innerHTML += `<div class="status-message error">Error: ${error.message}</div>`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

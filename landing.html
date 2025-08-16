@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>EURORACK.GRID - Digital Eurorack Modules</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="auth-check.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            z-index: 1000;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: #667eea;
+        }
+        
+        .auth-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .login-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info.active {
+            display: flex;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .logout-btn {
+            padding: 6px 15px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 70px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            background: white;
+        }
+        
+        .hero-logo {
+            font-size: 5rem;
+            font-weight: bold;
+            letter-spacing: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .hero-tagline {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .hero-subtitle {
+            font-size: 1rem;
+            color: #999;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .cta-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 3px solid #000;
+            background: white;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .cta-btn.primary {
+            background: #FFD700;
+        }
+        
+        .cta-btn.primary:hover {
+            background: #000;
+            color: #FFD700;
+        }
+        
+        .cta-btn.newsletter {
+            background: linear-gradient(135deg, #00cc00 0%, #009900 100%);
+            color: white;
+            border: none;
+        }
+        
+        .cta-btn.newsletter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,204,0,0.3);
+        }
+        
+        /* Newsletter Modal */
+        .newsletter-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .newsletter-modal.active {
+            display: flex;
+        }
+        
+        .newsletter-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .newsletter-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .newsletter-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .newsletter-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .newsletter-submit {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #00cc00 0%, #009900 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        .newsletter-close {
+            color: #999;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        /* Animated Rack Display */
+        .hero-rack {
+            margin-top: 60px;
+            padding: 20px;
+            background: #000;
+            border: 4px solid #333;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2px;
+            max-width: 600px;
+            animation: slideUp 1s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .rack-module {
+            aspect-ratio: 1/2;
+            background: linear-gradient(135deg, #333, #222);
+            border: 1px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD700;
+            font-size: 1.5rem;
+            animation: moduleGlow 3s infinite;
+            animation-delay: calc(var(--i) * 0.1s);
+        }
+        
+        @keyframes moduleGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 100px 40px;
+            background: white;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 40px;
+            background: #f9f9f9;
+            border: 2px solid #000;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: #FFD700;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .feature-desc {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 100px 40px;
+            background: #f5f5f5;
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 60px;
+            letter-spacing: 5px;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-around;
+            max-width: 1000px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #000;
+            color: #FFD700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        
+        .step-jamnut {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            top: -15px;
+            left: -15px;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes spinReverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+        
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .step-desc {
+            color: #666;
+        }
+        
+        /* Jamnutz Section */
+        .jamnutz-section {
+            padding: 100px 40px;
+            background: #FFD700;
+            text-align: center;
+        }
+        
+        .jamnut-giant {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            animation: spin 10s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .jamnutz-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .jamnutz-desc {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .jamnutz-price {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        /* Module Showcase */
+        .showcase {
+            padding: 100px 40px;
+            background: white;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 60px auto;
+        }
+        
+        .showcase-module {
+            aspect-ratio: 3/4;
+            background: #f9f9f9;
+            border: 2px solid #000;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .showcase-module:hover {
+            transform: scale(1.05);
+            background: #000;
+            color: #FFD700;
+        }
+        
+        .module-label {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        /* Footer CTA */
+        .footer-cta {
+            padding: 100px 40px;
+            background: #000;
+            color: white;
+            text-align: center;
+        }
+        
+        .footer-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #FFD700;
+        }
+        
+        .footer-desc {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .footer-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .footer-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 3px solid #FFD700;
+            background: transparent;
+            color: #FFD700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .footer-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        /* Login/Signup Prompt */
+        .auth-prompt {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .auth-btn {
+            background: white;
+            border: 2px solid #000;
+            padding: 5px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .auth-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .auth-btn.signup {
+            background: #FFD700;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-logo {
+                font-size: 3rem;
+                letter-spacing: 5px;
+            }
+            
+            .hero-tagline {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-logo">EURORACK.GRID</div>
+        <nav class="header-nav">
+            <a href="/collection.html" class="nav-link">Collection</a>
+            <a href="/starters.html" class="nav-link">Starter Kits</a>
+            <a href="/rack-shop.html" class="nav-link">Racks</a>
+            <div class="auth-section">
+                <a href="/login.html" class="login-btn" id="login-btn">Login</a>
+                <div class="user-info" id="user-info">
+                    <a href="/my-modules.html" class="nav-link">My Modules</a>
+                    <span class="user-name" id="user-name"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 class="hero-logo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: center;"><span id="eur-text" style="margin-right: -23px;">EUR</span><img id="jamnut-logo" src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" 
+                 style="width: 70px; height: 70px; animation: spin 10s linear infinite; display: inline-block; vertical-align: middle; margin: 0 13px 0 8px; position: relative; top: -8px; filter: brightness(0.7) contrast(1.1);" 
+                 alt="O"><span id="rack-text" style="margin-left: -14px;">RACK</span></div>
+            <div style="margin-top: -10px;">GRID</div>
+        </h1>
+        <p class="hero-tagline">for synth nerds & hypsters only</p>
+        <p class="hero-subtitle">collect, trade, and display live modules in your virtual studio</p>
+        
+        <div class="hero-cta">
+            <a href="index.html" class="cta-btn primary">START BUILDING</a>
+            <a href="collection.html" class="cta-btn">BROWSE MODULES</a>
+            <a href="buy-jamnutz.html" class="cta-btn">GET JAMNUTZ</a>
+            <button class="cta-btn newsletter" onclick="showNewsletter()">📬 NEWSLETTER</button>
+        </div>
+        
+        <!-- Animated Rack Display -->
+        <link rel="stylesheet" href="module-system.css">
+        <script src="power-animations.js" defer></script>
+        <div class="showcase-rack" style="margin-top: 60px;">
+            <div class="eurorack" style="background: #000; border: 4px solid #666; border-radius: 10px; padding: 15px; width: 600px; margin: 0 auto;">
+                <div class="rack" style="display: grid; grid-template-rows: repeat(2, 1fr); gap: 10px;">
+                    <!-- Row 1 -->
+                    <div class="rack-row" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; background: #1a1a1a; padding: 10px; border: 2px solid #555; min-height: 150px;">
+                        <div class="module-slot powered occupied" data-module="Function Synthesizer">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Function%20Synthesizer.webp" alt="Function Synthesizer" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div class="module-slot powered occupied" data-module="Honduh">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Honduh.webp" alt="Honduh" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div class="module-slot powered occupied" data-module="Andersons">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Andersons.webp" alt="Andersons" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div class="module-slot powered occupied" data-module="Varigated">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Varigated.webp" alt="Varigated" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="rack-row" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; background: #1a1a1a; padding: 10px; border: 2px solid #555; min-height: 150px;">
+                        <div class="module-slot powered occupied" data-module="BAI">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/BAI.webp" alt="BAI" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div class="module-slot powered occupied" data-module="Cephalopod Rose">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Cephalopod%20Rose.webp" alt="Cephalopod Rose" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div class="module-slot powered occupied" data-module="DPO">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/dpo_fullres_pingpong.webp" alt="DPO" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div class="module-slot powered occupied" data-module="Voltaged Gray">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Voltaged%20Gray.webp" alt="Voltaged Gray" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div style="height: 150px; margin-bottom: 20px; overflow: hidden; border-radius: 10px;">
+                    <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Complex%20Oscillator.webp" 
+                         alt="Powered Module" 
+                         style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 class="feature-title">Power Your Modules</h3>
+                <p class="feature-desc">Load your modules into a powered case and watch them come to life! Display your case and show off your collection.</p>
+            </div>
+            <div class="feature-card">
+                <div style="height: 150px; margin-bottom: 20px; overflow: hidden; border-radius: 10px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 20px;">
+                        <div style="width: 40px; height: 60px; background: #333; border: 2px solid #FFD700; border-radius: 3px;"></div>
+                        <div style="width: 40px; height: 60px; background: #333; border: 2px solid #FFD700; border-radius: 3px;"></div>
+                        <div style="width: 40px; height: 60px; background: #333; border: 2px solid #FFD700; border-radius: 3px;"></div>
+                        <div style="width: 40px; height: 60px; background: #333; border: 2px solid #FFD700; border-radius: 3px;"></div>
+                        <div style="width: 40px; height: 60px; background: #333; border: 2px solid #FFD700; border-radius: 3px;"></div>
+                        <div style="width: 40px; height: 60px; background: #333; border: 2px solid #FFD700; border-radius: 3px;"></div>
+                    </div>
+                </div>
+                <h3 class="feature-title">Custom Racks</h3>
+                <p class="feature-desc">Build racks from 60HP to 180HP in any color. Your studio, your style</p>
+            </div>
+            <div class="feature-card">
+                <div style="height: 150px; margin-bottom: 20px; overflow: hidden; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #4CAF50, #8BC34A);">
+                    <div style="font-size: 3rem;">🌿🎨🌵</div>
+                </div>
+                <h3 class="feature-title">Studio Vibes</h3>
+                <p class="feature-desc">unlock plants, accessories & exclusive panels for your case</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <h2 class="section-title">HOW IT WORKS</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number" style="background: #000;">
+                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="step-jamnut" style="animation: spin 10s linear infinite; filter: brightness(0.7) contrast(1.1);">
+                </div>
+                <h3 class="step-title">Sign Up</h3>
+                <p class="step-desc">Create your account and get 1000 free jamnutz to start</p>
+            </div>
+            <div class="step">
+                <div class="step-number" style="background: #000;">
+                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="step-jamnut" style="animation: spinReverse 12s linear infinite; filter: brightness(0.7) contrast(1.1);">
+                </div>
+                <h3 class="step-title">Collect Modules</h3>
+                <p class="step-desc">Browse and purchase modules for 500 jamnutz each</p>
+            </div>
+            <div class="step">
+                <div class="step-number" style="background: #000;">
+                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="step-jamnut" style="animation: spin 8s linear infinite; filter: brightness(0.7) contrast(1.1);">
+                </div>
+                <h3 class="step-title">Build Racks</h3>
+                <p class="step-desc">Design custom racks and watch your modules animate</p>
+            </div>
+            <div class="step">
+                <div class="step-number" style="background: #000;">
+                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="step-jamnut" style="animation: spinReverse 15s linear infinite; filter: brightness(0.7) contrast(1.1);">
+                </div>
+                <h3 class="step-title">Share & Trade</h3>
+                <p class="step-desc">Show off your studio and trade with other users</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- HP and Rack Evolution Section -->
+    <section style="padding: 100px 40px; background: white;">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <!-- Large HP Visual First -->
+            <div style="display: flex; justify-content: center; margin-bottom: 80px;">
+                <div style="background: white; border: 6px solid #000; padding: 60px; text-align: center;">
+                    <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 40px;">1 MODULE = 30HP</h2>
+                    <div style="background: #000; padding: 30px; display: inline-block; border-radius: 10px;">
+                        <div style="width: 360px; height: 360px; border: 4px solid #000; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                            <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/dpo_fullres_pingpong.webp" alt="DPO Module" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+                            <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #FFD700; padding: 10px 20px; border: 3px solid #000; font-weight: bold; font-size: 2rem; border-radius: 5px;">
+                                30HP
+                            </div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 40px; color: #666; font-size: 1.8rem;">One standard module takes up<br>30HP of space</p>
+                </div>
+            </div>
+            
+            <!-- Cardboard Box to Ultimate Rack Evolution -->
+            <div style="background: #f9f9f9; border: 3px solid #FFD700; padding: 60px; border-radius: 10px; margin-bottom: 50px;">
+                <h3 style="text-align: center; font-size: 2.5rem; margin-bottom: 40px; color: #000;">YOUR EURORACK EVOLUTION</h3>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 60px; flex-wrap: wrap;">
+                    <!-- Cardboard Box -->
+                    <div style="text-align: center;">
+                        <div style="width: 300px; height: 200px; background: #8B7355; border: 4px solid #654321; border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div style="position: absolute; top: 10px; left: 10px; width: 280px; height: 180px; border: 2px dashed #654321; opacity: 0.3;"></div>
+                            <span style="color: white; font-size: 4rem;">📦</span>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 1.2rem; color: #666;">Start with a free<br>powerless cardboard box</p>
+                    </div>
+                    
+                    <!-- Arrow -->
+                    <div style="font-size: 3rem; color: #FFD700;">→</div>
+                    
+                    <!-- Ultimate Rack -->
+                    <div style="text-align: center;">
+                        <div style="width: 300px; height: 200px; background: linear-gradient(135deg, #000, #333); border: 4px solid #FFD700; border-radius: 10px; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); gap: 2px; padding: 15px; position: relative; box-shadow: 0 0 20px rgba(255,215,0,0.5);">
+                            <div style="background: #FF6B6B; border: 1px solid #000;"></div>
+                            <div style="background: #4ECDC4; border: 1px solid #000;"></div>
+                            <div style="background: #45B7D1; border: 1px solid #000;"></div>
+                            <div style="background: #96CEB4; border: 1px solid #000;"></div>
+                            <div style="background: #FFEAA7; border: 1px solid #000;"></div>
+                            <div style="background: #DDA0DD; border: 1px solid #000;"></div>
+                            <div style="background: #98D8C8; border: 1px solid #000;"></div>
+                            <div style="background: #FFB6C1; border: 1px solid #000;"></div>
+                            <div style="background: #87CEEB; border: 1px solid #000;"></div>
+                            <div style="background: #F0E68C; border: 1px solid #000;"></div>
+                            <div style="background: #ADD8E6; border: 1px solid #000;"></div>
+                            <div style="background: #FFD700; border: 1px solid #000;"></div>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 1.2rem; color: #666;">Grow to our powered<br>ultimate rack system</p>
+                    </div>
+                </div>
+                <p style="text-align: center; font-size: 1.3rem; color: #333; max-width: 800px; margin: 40px auto 0;">
+                    Every synth journey starts somewhere. Begin with our free cardboard box template, 
+                    then upgrade to powered racks as your collection grows!
+                </p>
+            </div>
+                
+                <!-- Simple HP Explanation -->
+                <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 60px; flex-wrap: wrap;">
+                    <!-- 1 Module = 30HP -->
+                    <div style="background: white; border: 4px solid #000; padding: 30px; text-align: center; min-width: 280px;">
+                        <h4 style="font-size: 1.3rem; font-weight: bold; margin-bottom: 20px;">1 MODULE = 30HP</h4>
+                        <div style="background: #000; padding: 15px; display: inline-block; border-radius: 5px;">
+                            <div style="width: 120px; height: 120px; background: #FFD700; border: 2px solid #000; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">
+                                30HP
+                            </div>
+                        </div>
+                        <p style="margin-top: 20px; color: #666;">One standard module takes up<br>30HP of space</p>
+                    </div>
+                    
+                    <!-- 60HP Case = 2 Modules -->
+                    <div style="background: white; border: 4px solid #000; padding: 30px; text-align: center; min-width: 280px;">
+                        <h4 style="font-size: 1.3rem; font-weight: bold; margin-bottom: 20px;">60HP CASE = 2 MODULES</h4>
+                        <div style="background: #000; padding: 15px; display: inline-block; border-radius: 5px;">
+                            <div style="display: flex; gap: 3px;">
+                                <div style="width: 100px; height: 100px; background: #9370DB; border: 2px solid #000; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">30HP</div>
+                                <div style="width: 100px; height: 100px; background: #00CED1; border: 2px solid #000; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">30HP</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 20px; color: #666;">A 60HP case fits exactly 2<br>modules</p>
+                    </div>
+                    
+                    <!-- 90HP Case = 3 Modules -->
+                    <div style="background: white; border: 4px solid #000; padding: 30px; text-align: center; min-width: 280px;">
+                        <h4 style="font-size: 1.3rem; font-weight: bold; margin-bottom: 20px;">90HP CASE = 3 MODULES</h4>
+                        <div style="background: #000; padding: 15px; display: inline-block; border-radius: 5px;">
+                            <div style="display: flex; gap: 3px;">
+                                <div style="width: 80px; height: 80px; background: #FF1493; border: 2px solid #000; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">30HP</div>
+                                <div style="width: 80px; height: 80px; background: #00FF00; border: 2px solid #000; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 0.9rem;">30HP</div>
+                                <div style="width: 80px; height: 80px; background: #FFA500; border: 2px solid #000; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 0.9rem;">30HP</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 20px; color: #666;">A 90HP case fits 3 modules<br>perfectly</p>
+                    </div>
+                </div>
+                
+                <!-- U System Explanation -->
+                <h3 style="text-align: center; font-size: 1.8rem; margin: 40px 0 20px; color: #000;">UNDERSTANDING U (RACK UNITS)</h3>
+                <p style="text-align: center; font-size: 1.1rem; color: #666; max-width: 800px; margin: 0 auto 30px;">
+                    U = Rack Unit = Vertical Height. Each U is 3 rack spaces tall. More U means more rows for modules!
+                </p>
+                
+                <!-- Visual Grid System -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                    <!-- 60HP 6U Square Case -->
+                    <div style="text-align: center;">
+                        <h4 style="margin-bottom: 15px; font-size: 1.2rem;">60HP 6U CASE (2x2 GRID)</h4>
+                        <div style="background: #000; padding: 15px; display: inline-block; border-radius: 5px; position: relative;">
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 3px; width: 180px; height: 180px;">
+                                <div style="background: linear-gradient(135deg, #667eea, #764ba2); border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.8rem; font-weight: bold;">30HP</div>
+                                <div style="background: linear-gradient(135deg, #00CED1, #4169E1); border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.8rem; font-weight: bold;">30HP</div>
+                                <div style="background: linear-gradient(135deg, #667eea, #764ba2); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #00CED1, #4169E1); border: 1px solid #fff; opacity: 0.3;"></div>
+                            </div>
+                            <!-- U labels -->
+                            <div style="position: absolute; left: -25px; top: 50%; transform: translateY(-50%); color: #FFD700; font-size: 0.8rem; font-weight: bold;">
+                                <div style="margin-bottom: 90px;">3U</div>
+                                <div>3U</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 10px; color: #fff; font-size: 0.9rem;">2 rows × 2 modules = 4 total slots</p>
+                    </div>
+                    
+                    <!-- 90HP 9U Square Case -->
+                    <div style="text-align: center;">
+                        <h4 style="margin-bottom: 15px; font-size: 1.2rem; color: #fff;">90HP 9U CASE (3x3 GRID)</h4>
+                        <div style="background: #000; padding: 15px; display: inline-block; border-radius: 5px; position: relative;">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 3px; width: 210px; height: 210px;">
+                                <div style="background: linear-gradient(135deg, #FF1493, #FF69B4); border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.6rem; font-weight: bold;">30HP</div>
+                                <div style="background: linear-gradient(135deg, #00FF00, #32CD32); border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 0.6rem; font-weight: bold;">30HP</div>
+                                <div style="background: linear-gradient(135deg, #FFD700, #FFA500); border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 0.6rem; font-weight: bold;">30HP</div>
+                                <div style="background: linear-gradient(135deg, #FF1493, #FF69B4); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #00FF00, #32CD32); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #FFD700, #FFA500); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #FF1493, #FF69B4); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #00FF00, #32CD32); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #FFD700, #FFA500); border: 1px solid #fff; opacity: 0.3;"></div>
+                            </div>
+                            <!-- U labels -->
+                            <div style="position: absolute; left: -25px; top: 50%; transform: translateY(-50%); color: #FFD700; font-size: 0.7rem; font-weight: bold;">
+                                <div style="margin-bottom: 60px;">3U</div>
+                                <div style="margin-bottom: 60px;">3U</div>
+                                <div>3U</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 10px; color: #fff; font-size: 0.9rem;">3 rows × 3 modules = 9 total slots</p>
+                    </div>
+                    
+                    <!-- 120HP 12U Square Case -->
+                    <div style="text-align: center;">
+                        <h4 style="margin-bottom: 15px; font-size: 1.2rem; color: #fff;">120HP 12U CASE (4x4 GRID)</h4>
+                        <div style="background: #000; padding: 15px; display: inline-block; border-radius: 5px; position: relative;">
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 3px; width: 240px; height: 240px;">
+                                <div style="background: linear-gradient(135deg, #9370DB, #BA55D3); border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.5rem; font-weight: bold;">30HP</div>
+                                <div style="background: linear-gradient(135deg, #FF4500, #FF6347); border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.5rem; font-weight: bold;">30HP</div>
+                                <div style="background: linear-gradient(135deg, #4169E1, #00BFFF); border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.5rem; font-weight: bold;">30HP</div>
+                                <div style="background: linear-gradient(135deg, #DC143C, #FF1493); border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.5rem; font-weight: bold;">30HP</div>
+                                <div style="background: linear-gradient(135deg, #9370DB, #BA55D3); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #FF4500, #FF6347); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #4169E1, #00BFFF); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #DC143C, #FF1493); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #9370DB, #BA55D3); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #FF4500, #FF6347); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #4169E1, #00BFFF); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #DC143C, #FF1493); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #9370DB, #BA55D3); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #FF4500, #FF6347); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #4169E1, #00BFFF); border: 1px solid #fff; opacity: 0.3;"></div>
+                                <div style="background: linear-gradient(135deg, #DC143C, #FF1493); border: 1px solid #fff; opacity: 0.3;"></div>
+                            </div>
+                            <!-- U labels -->
+                            <div style="position: absolute; left: -25px; top: 50%; transform: translateY(-50%); color: #FFD700; font-size: 0.6rem; font-weight: bold;">
+                                <div style="margin-bottom: 52px;">3U</div>
+                                <div style="margin-bottom: 52px;">3U</div>
+                                <div style="margin-bottom: 52px;">3U</div>
+                                <div>3U</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 10px; color: #fff; font-size: 0.9rem;">4 rows × 4 modules = 16 total slots</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Power Animation Showcase -->
+            <div style="background: #FFD700; border: 3px solid #000; padding: 40px; border-radius: 10px; text-align: center;">
+                <h3 style="color: #000; margin-bottom: 30px; font-size: 2rem;">⚡ POWER BRINGS MODULES TO LIFE ⚡</h3>
+                <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 40px; max-width: 900px; margin: 0 auto;">
+                    <div>
+                        <h4 style="color: #333; margin-bottom: 15px;">UNPOWERED</h4>
+                        <div style="width: 150px; height: 150px; background: #333; border: 2px solid #000; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: #666;">
+                            STATIC
+                        </div>
+                        <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">Modules sit dormant<br>No animations</p>
+                    </div>
+                    <div style="font-size: 3rem; color: #000;">⚡</div>
+                    <div>
+                        <h4 style="color: #000; margin-bottom: 15px; font-weight: bold;">POWERED!</h4>
+                        <div style="width: 200px; height: 200px; background: linear-gradient(135deg, #000, #333); border: 3px solid #000; margin: 0 auto; animation: glow 2s infinite; display: flex; align-items: center; justify-content: center; color: #FFD700; font-size: 1.5rem; font-weight: bold; position: relative; overflow: hidden;">
+                            <div style="position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,215,0,0.1) 10px, rgba(255,215,0,0.1) 20px); animation: slide 2s linear infinite;"></div>
+                            LIVE!
+                        </div>
+                        <p style="margin-top: 15px; color: #000; font-size: 0.9rem; font-weight: bold;">Modules animate<br>Lights blink, knobs turn!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <style>
+                @keyframes glow {
+                    0%, 100% { box-shadow: 0 0 20px rgba(0,0,0,0.5); transform: scale(1); }
+                    50% { box-shadow: 0 0 40px rgba(0,0,0,0.8); transform: scale(1.02); }
+                }
+                @keyframes slide {
+                    from { transform: translateX(0); }
+                    to { transform: translateX(20px); }
+                }
+            </style>
+        </div>
+    </section>
+    
+    
+    <!-- Jamnutz Section -->
+    <section class="jamnutz-section">
+        <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="jamnut-giant" style="filter: brightness(0) saturate(100%) invert(82%) sepia(73%) saturate(476%) hue-rotate(354deg) brightness(105%) contrast(104%);" alt="Jamnutz">
+        <h2 class="jamnutz-title">JAMNUTZ CURRENCY</h2>
+        <p class="jamnutz-desc">Our exclusive currency for collecting modules. The more you buy, the more you save!</p>
+        <div class="jamnutz-price">100 🥜 = $1</div>
+        <a href="buy-jamnutz.html" class="cta-btn" style="background: white;">BUY JAMNUTZ PACKS</a>
+    </section>
+    
+    <!-- Module Showcase -->
+    <section class="showcase">
+        <h2 class="section-title">POPULAR MODULES</h2>
+        <div class="module-grid">
+            <div class="showcase-module" style="padding: 0; overflow: hidden;">
+                <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/dpo_fullres_pingpong.webp" alt="DPO" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="showcase-module" style="padding: 0; overflow: hidden;">
+                <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/custom_module_animated.webp" alt="CYBER OSCILLATOR" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="showcase-module">
+                🎛️
+                <span class="module-label">ENVELOPE</span>
+            </div>
+            <div class="showcase-module">
+                🎚️
+                <span class="module-label">LFO</span>
+            </div>
+            <div class="showcase-module">
+                🎛️
+                <span class="module-label">VCA</span>
+            </div>
+            <div class="showcase-module">
+                🎚️
+                <span class="module-label">SEQUENCER</span>
+            </div>
+            <div class="showcase-module">
+                🎛️
+                <span class="module-label">MIXER</span>
+            </div>
+            <div class="showcase-module">
+                🎚️
+                <span class="module-label">EFFECTS</span>
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <a href="collection.html" class="cta-btn">VIEW ALL MODULES</a>
+        </div>
+    </section>
+    
+    <!-- Footer CTA -->
+    <section class="footer-cta">
+        <h2 class="footer-title">START YOUR COLLECTION TODAY</h2>
+        <p class="footer-desc">Join thousands of users building their dream modular synths</p>
+        <div class="footer-buttons">
+            <a href="index.html" class="footer-btn">ENTER MY STUDIO</a>
+            <a href="rack-shop.html" class="footer-btn">BUILD A RACK</a>
+            <a href="module-packs.html" class="footer-btn">GET STARTER PACK</a>
+        </div>
+    </section>
+    
+    <!-- Newsletter Modal -->
+    <div class="newsletter-modal" id="newsletterModal">
+        <div class="newsletter-content">
+            <h2 class="newsletter-title">🎵 Stay in the Loop!</h2>
+            <p class="newsletter-subtitle">Get updates on new modules, exclusive drops, and jamnutz deals</p>
+            <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                <input type="email" class="newsletter-input" placeholder="your@email.com" required>
+                <button type="submit" class="newsletter-submit">Subscribe</button>
+            </form>
+            <span class="newsletter-close" onclick="closeNewsletter()">No thanks, I'll miss out</span>
+        </div>
+    </div>
+    
+    <script src="purchase-integration-fixed.js"></script>
+    <script>
+        // Check authentication on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('eurogrid_user');
+            
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    // User is logged in
+                    document.getElementById('login-btn').style.display = 'none';
+                    document.getElementById('user-info').classList.add('active');
+                    document.getElementById('user-name').textContent = user.name;
+                    
+                    // Update CTA buttons for logged in users
+                    const ctaButtons = document.querySelectorAll('.cta-btn.primary');
+                    ctaButtons.forEach(btn => {
+                        if (btn.textContent === 'START BUILDING') {
+                            btn.textContent = 'MY MODULES';
+                            btn.href = '/my-modules.html';
+                        }
+                    });
+                } catch (e) {
+                    console.error('Invalid user data');
+                }
+            }
+            
+            // Animate logo
+            const jamnut = document.getElementById('jamnut-logo');
+            if (jamnut) {
+                jamnut.style.animation = 'spin 10s linear infinite';
+            }
+        });
+        
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('eurogrid_user');
+                localStorage.removeItem('eurogrid_cart');
+                window.location.reload();
+            }
+        }
+        
+        // Newsletter functions
+        function showNewsletter() {
+            document.getElementById('newsletterModal').classList.add('active');
+        }
+        
+        function closeNewsletter() {
+            document.getElementById('newsletterModal').classList.remove('active');
+        }
+        
+        function subscribeNewsletter(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('.newsletter-input').value;
+            
+            // Save subscription (in real app, this would go to a server)
+            localStorage.setItem('newsletter_subscribed', 'true');
+            localStorage.setItem('newsletter_email', email);
+            
+            // Show success
+            alert(`✅ Thanks for subscribing! We'll send updates to ${email}`);
+            
+            // Give bonus jamnutz for subscribing
+            const currentNutz = parseInt(localStorage.getItem('jamnutz') || '0');
+            const newNutz = currentNutz + 100;
+            localStorage.setItem('jamnutz', newNutz.toString());
+            alert('🎁 Bonus: You got 100 FREE jamnutz for subscribing!');
+            
+            closeNewsletter();
+        }
+        
+        // Animate modules on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'slideUp 0.5s ease-out';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.showcase-module').forEach(module => {
+            observer.observe(module);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>EURORACKGRID - Plant Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="module-system.css">
+    <link rel="stylesheet" href="assets/clean-nav.css">
+    <script src="auth-check.js"></script>
+    <script src="purchase-integration-fixed.js" defer></script>
+    <script src="assets/clean-nav.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #e8f5e9;
+            color: #000;
+        }
+        
+        .main-content {
+            padding: 100px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Collection Header */
+        .collection-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .collection-title {
+            font-size: 4rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+            color: #2e7d32;
+        }
+        
+        .collection-progress {
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .progress-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #ddd;
+            border: 2px solid #2e7d32;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* View Controls */
+        .view-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #2e7d32;
+            border-radius: 5px;
+        }
+        
+        .view-tabs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .view-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #2e7d32;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .view-tab:hover {
+            background: #f1f8e9;
+        }
+        
+        .view-tab.active {
+            background: #2e7d32;
+            color: white;
+        }
+        
+        .collection-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #2e7d32;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .action-btn:hover {
+            background: #2e7d32;
+            color: white;
+        }
+        
+        .action-btn.primary {
+            background: #4caf50;
+            border-color: #2e7d32;
+            color: white;
+        }
+        
+        /* Plant Grid */
+        .plants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: white;
+            border: 2px solid #2e7d32;
+            border-radius: 5px;
+            min-height: 500px;
+        }
+        
+        .plant-slot {
+            aspect-ratio: 1/1;
+            border: 2px solid #2e7d32;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            background: white;
+        }
+        
+        /* Empty Slot */
+        .plant-slot.empty {
+            background: #f1f8e9;
+            border: 2px dashed #81c784;
+            color: #81c784;
+            font-size: 3rem;
+        }
+        
+        .plant-slot.empty:hover {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+        
+        /* Owned Plant */
+        .plant-slot.owned {
+            background: white;
+            border-color: #2e7d32;
+        }
+        
+        .plant-slot.owned:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+        }
+        
+        .plant-emoji {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+        
+        .plant-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            padding: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            border-top: 1px solid #2e7d32;
+            color: #2e7d32;
+        }
+        
+        .plant-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #4caf50;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+        
+        /* List View */
+        .plants-list {
+            background: white;
+            border: 2px solid #2e7d32;
+            border-radius: 5px;
+            padding: 20px;
+            display: none;
+        }
+        
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #c8e6c9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .list-item:hover {
+            background: #f1f8e9;
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .list-emoji {
+            font-size: 3rem;
+            margin-right: 20px;
+        }
+        
+        .list-info {
+            flex: 1;
+        }
+        
+        .list-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2e7d32;
+        }
+        
+        .list-stats {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .list-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Empty State */
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-text {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .shop-cta {
+            padding: 15px 40px;
+            background: #4caf50;
+            border: 3px solid #2e7d32;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        
+        .shop-cta:hover {
+            background: #2e7d32;
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        /* Grid Size Slider */
+        .grid-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .size-slider {
+            width: 150px;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Universal navigation will be inserted here -->
+    
+    <div class="main-content">
+        <!-- Collection Header -->
+        <div class="collection-header">
+            <h1 class="collection-title">🌿 PLANT COLLECTION 🌿</h1>
+            <div class="collection-progress">
+                <div class="progress-text">COLLECTION: <span id="plantCount">0</span> / 50</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%">
+                        <span id="progressPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value" id="ownedCount">0</div>
+                <div class="stat-label">Growing</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="missingCount">50</div>
+                <div class="stat-label">Not Planted</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="rareCount">0</div>
+                <div class="stat-label">Rare Species</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="tradableCount">0</div>
+                <div class="stat-label">Tradable</div>
+            </div>
+        </div>
+        
+        <!-- View Controls -->
+        <div class="view-controls">
+            <div class="view-tabs">
+                <button class="view-tab active" onclick="setView('grid')">GRID VIEW</button>
+                <button class="view-tab" onclick="setView('list')">LIST VIEW</button>
+                <button class="view-tab" onclick="setView('compact')">COMPACT</button>
+            </div>
+            
+            <div class="grid-controls">
+                <label>Size:</label>
+                <input type="range" class="size-slider" min="100" max="250" value="150" 
+                       oninput="updateGridSize(this.value)">
+            </div>
+            
+            <div class="collection-actions">
+                <button class="action-btn" onclick="filterOwned()">SHOW OWNED</button>
+                <button class="action-btn" onclick="filterMissing()">SHOW MISSING</button>
+                <button class="action-btn primary" onclick="shopMorePlants()">SHOP PLANTS</button>
+            </div>
+        </div>
+        
+        <!-- Plant Grid (default view) -->
+        <div class="plants-grid" id="plantsGrid">
+            <!-- Will be populated with plant slots -->
+        </div>
+        
+        <!-- List View (hidden by default) -->
+        <div class="plants-list" id="plantsList">
+            <!-- Will be populated in list format -->
+        </div>
+    </div>
+    
+    <script>
+        // Plant collection management
+        const plantTypes = [
+            {id: 'cactus1', name: 'Desert Cactus', emoji: '🌵', rarity: 'common'},
+            {id: 'succulent1', name: 'Jade Plant', emoji: '🪴', rarity: 'common'},
+            {id: 'fern1', name: 'Boston Fern', emoji: '🌿', rarity: 'common'},
+            {id: 'flower1', name: 'Orchid', emoji: '🌺', rarity: 'rare'},
+            {id: 'flower2', name: 'Rose', emoji: '🌹', rarity: 'common'},
+            {id: 'tree1', name: 'Bonsai', emoji: '🌳', rarity: 'rare'},
+            {id: 'palm1', name: 'Palm Tree', emoji: '🌴', rarity: 'uncommon'},
+            {id: 'flower3', name: 'Sunflower', emoji: '🌻', rarity: 'common'},
+            {id: 'flower4', name: 'Tulip', emoji: '🌷', rarity: 'common'},
+            {id: 'herb1', name: 'Basil', emoji: '🌱', rarity: 'common'},
+            {id: 'cactus2', name: 'Prickly Pear', emoji: '🌵', rarity: 'uncommon'},
+            {id: 'succulent2', name: 'Aloe Vera', emoji: '🪴', rarity: 'common'},
+            {id: 'flower5', name: 'Hibiscus', emoji: '🌺', rarity: 'uncommon'},
+            {id: 'tree2', name: 'Japanese Maple', emoji: '🍁', rarity: 'rare'},
+            {id: 'herb2', name: 'Mint', emoji: '🌿', rarity: 'common'},
+            {id: 'flower6', name: 'Daisy', emoji: '🌼', rarity: 'common'},
+            {id: 'succulent3', name: 'String of Pearls', emoji: '🪴', rarity: 'rare'},
+            {id: 'cactus3', name: 'Barrel Cactus', emoji: '🌵', rarity: 'uncommon'},
+            {id: 'flower7', name: 'Lily', emoji: '🌸', rarity: 'uncommon'},
+            {id: 'tree3', name: 'Pine Bonsai', emoji: '🌲', rarity: 'rare'},
+            {id: 'herb3', name: 'Rosemary', emoji: '🌿', rarity: 'common'},
+            {id: 'flower8', name: 'Violet', emoji: '💜', rarity: 'uncommon'},
+            {id: 'succulent4', name: 'Echeveria', emoji: '🪴', rarity: 'uncommon'},
+            {id: 'palm2', name: 'Bamboo', emoji: '🎋', rarity: 'common'},
+            {id: 'flower9', name: 'Jasmine', emoji: '🌺', rarity: 'uncommon'},
+            {id: 'mushroom1', name: 'Mushroom', emoji: '🍄', rarity: 'rare'},
+            {id: 'herb4', name: 'Thyme', emoji: '🌱', rarity: 'common'},
+            {id: 'cactus4', name: 'Golden Barrel', emoji: '🌵', rarity: 'rare'},
+            {id: 'flower10', name: 'Peony', emoji: '🌸', rarity: 'rare'},
+            {id: 'tree4', name: 'Olive Tree', emoji: '🫒', rarity: 'uncommon'},
+            {id: 'succulent5', name: 'Lithops', emoji: '🪴', rarity: 'legendary'},
+            {id: 'flower11', name: 'Bird of Paradise', emoji: '🦜', rarity: 'legendary'},
+            {id: 'herb5', name: 'Lavender', emoji: '💜', rarity: 'uncommon'},
+            {id: 'cactus5', name: 'Moon Cactus', emoji: '🌵', rarity: 'rare'},
+            {id: 'tree5', name: 'Cherry Blossom', emoji: '🌸', rarity: 'legendary'},
+            {id: 'mushroom2', name: 'Glowing Mushroom', emoji: '🍄', rarity: 'legendary'},
+            {id: 'flower12', name: 'Lotus', emoji: '🪷', rarity: 'legendary'},
+            {id: 'herb6', name: 'Sage', emoji: '🌿', rarity: 'uncommon'},
+            {id: 'palm3', name: 'Coconut Palm', emoji: '🥥', rarity: 'rare'},
+            {id: 'succulent6', name: 'Blue Agave', emoji: '🪴', rarity: 'rare'},
+            {id: 'flower13', name: 'Poppy', emoji: '🌺', rarity: 'common'},
+            {id: 'tree6', name: 'Redwood Sapling', emoji: '🌲', rarity: 'legendary'},
+            {id: 'cactus6', name: 'Saguaro', emoji: '🌵', rarity: 'legendary'},
+            {id: 'herb7', name: 'Oregano', emoji: '🌱', rarity: 'common'},
+            {id: 'flower14', name: 'Carnation', emoji: '🌹', rarity: 'common'},
+            {id: 'succulent7', name: 'Haworthia', emoji: '🪴', rarity: 'uncommon'},
+            {id: 'mushroom3', name: 'Fairy Ring', emoji: '🍄', rarity: 'legendary'},
+            {id: 'palm4', name: 'Fan Palm', emoji: '🌴', rarity: 'uncommon'},
+            {id: 'flower15', name: 'Chrysanthemum', emoji: '🌼', rarity: 'uncommon'},
+            {id: 'herb8', name: 'Cilantro', emoji: '🌿', rarity: 'common'}
+        ];
+        
+        const totalPlants = plantTypes.length;
+        let ownedPlants = [];
+        let currentView = 'grid';
+        let currentUser = null;
+        
+        // Initialize page when user is authenticated
+        window.addEventListener('userAuthenticated', function(e) {
+            currentUser = e.detail;
+            console.log('User authenticated:', currentUser);
+            
+            // Update welcome message
+            const welcomeMsg = document.querySelector('.collection-title');
+            if (welcomeMsg && currentUser) {
+                welcomeMsg.innerHTML = `🌿 ${currentUser.name.toUpperCase()}'S PLANTS 🌿`;
+            }
+            
+            loadUserPlants();
+            populateGrid();
+            updateStats();
+        });
+        
+        // Fallback initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                if (!currentUser) {
+                    console.log('Fallback initialization');
+                    loadUserPlants();
+                    populateGrid();
+                    updateStats();
+                }
+            }, 500);
+        });
+        
+        // Load user's plants
+        function loadUserPlants() {
+            // Get from localStorage
+            const userData = localStorage.getItem('eurogrid_user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                ownedPlants = user.plants || [];
+            }
+            
+            // Also check purchased plants
+            const purchased = JSON.parse(localStorage.getItem('purchased_plants') || '[]');
+            purchased.forEach(plantId => {
+                if (!ownedPlants.includes(plantId)) {
+                    ownedPlants.push(plantId);
+                }
+            });
+            
+            // Save back to user
+            if (currentUser) {
+                currentUser.plants = ownedPlants;
+                localStorage.setItem('eurogrid_user', JSON.stringify(currentUser));
+            }
+        }
+        
+        // Populate the grid with all plant slots
+        function populateGrid() {
+            const grid = document.getElementById('plantsGrid');
+            grid.innerHTML = '';
+            
+            plantTypes.forEach((plant, i) => {
+                const slot = document.createElement('div');
+                slot.className = 'plant-slot';
+                
+                if (ownedPlants.includes(plant.id)) {
+                    // Owned plant
+                    slot.classList.add('owned');
+                    const rarityBadge = plant.rarity === 'legendary' ? 'LEGENDARY' : 
+                                       plant.rarity === 'rare' ? 'RARE' : 
+                                       plant.rarity === 'uncommon' ? 'UNCOMMON' : '';
+                    slot.innerHTML = `
+                        <div class="plant-emoji">${plant.emoji}</div>
+                        <div class="plant-name">${plant.name}</div>
+                        ${rarityBadge ? `<div class="plant-badge">${rarityBadge}</div>` : ''}
+                    `;
+                } else {
+                    // Empty slot
+                    slot.classList.add('empty');
+                    slot.innerHTML = '?';
+                    slot.onclick = () => {
+                        window.location.href = 'vibe-shop.html';
+                    };
+                }
+                
+                grid.appendChild(slot);
+            });
+            
+            // If no plants owned, show call to action
+            if (ownedPlants.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'empty-message';
+                emptyMsg.innerHTML = `
+                    <div class="empty-icon">🌱</div>
+                    <div class="empty-text">Start your virtual garden!</div>
+                    <div style="color: #666; margin: 20px 0;">First plant only 100 🥜!</div>
+                    <button class="shop-cta" onclick="window.location.href='vibe-shop.html'">
+                        GET YOUR FIRST PLANT
+                    </button>
+                `;
+                grid.appendChild(emptyMsg);
+            }
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const owned = ownedPlants.length;
+            const missing = totalPlants - owned;
+            const percentage = Math.round((owned / totalPlants) * 100);
+            
+            // Count rare plants
+            let rareCount = 0;
+            ownedPlants.forEach(plantId => {
+                const plant = plantTypes.find(p => p.id === plantId);
+                if (plant && (plant.rarity === 'rare' || plant.rarity === 'legendary')) {
+                    rareCount++;
+                }
+            });
+            
+            document.getElementById('plantCount').textContent = owned;
+            document.getElementById('ownedCount').textContent = owned;
+            document.getElementById('missingCount').textContent = missing;
+            document.getElementById('rareCount').textContent = rareCount;
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressPercent').textContent = percentage + '%';
+        }
+        
+        // View switching
+        function setView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (view === 'list') {
+                document.getElementById('plantsGrid').style.display = 'none';
+                document.getElementById('plantsList').style.display = 'block';
+                populateList();
+            } else {
+                document.getElementById('plantsGrid').style.display = 'grid';
+                document.getElementById('plantsList').style.display = 'none';
+                if (view === 'compact') {
+                    updateGridSize(100);
+                } else {
+                    updateGridSize(150);
+                }
+            }
+        }
+        
+        // Update grid size
+        function updateGridSize(size) {
+            const grid = document.getElementById('plantsGrid');
+            grid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${size}px, 1fr))`;
+        }
+        
+        // Filter functions
+        function filterOwned() {
+            const slots = document.querySelectorAll('.plant-slot');
+            slots.forEach(slot => {
+                if (slot.classList.contains('empty')) {
+                    slot.style.display = 'none';
+                } else {
+                    slot.style.display = 'flex';
+                }
+            });
+        }
+        
+        function filterMissing() {
+            const slots = document.querySelectorAll('.plant-slot');
+            slots.forEach(slot => {
+                if (slot.classList.contains('owned')) {
+                    slot.style.display = 'none';
+                } else {
+                    slot.style.display = 'flex';
+                }
+            });
+        }
+        
+        // Populate list view
+        function populateList() {
+            const list = document.getElementById('plantsList');
+            list.innerHTML = '';
+            
+            ownedPlants.forEach(plantId => {
+                const plant = plantTypes.find(p => p.id === plantId);
+                if (plant) {
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    item.innerHTML = `
+                        <div class="list-emoji">${plant.emoji}</div>
+                        <div class="list-info">
+                            <div class="list-name">${plant.name}</div>
+                            <div class="list-stats">${plant.rarity} • Indoor Plant • Decorative</div>
+                        </div>
+                        <div class="list-actions">
+                            <button class="action-btn">TRADE</button>
+                            <button class="action-btn">VIEW</button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                }
+            });
+        }
+        
+        // Shop more plants
+        function shopMorePlants() {
+            window.location.href = 'vibe-shop.html';
+        }
+    </script>
+</body>
+</html>

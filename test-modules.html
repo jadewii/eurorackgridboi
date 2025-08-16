@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Module Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .module {
+            background: white;
+            border: 2px solid #000;
+            padding: 5px;
+            text-align: center;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .error {
+            background: #ffcccc;
+        }
+        .success {
+            background: #ccffcc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Testing Eurogrid Modules</h1>
+    <p>This page tests loading modules directly from Supabase storage.</p>
+    
+    <button onclick="testModules()">Test Load Modules</button>
+    <button onclick="testSingleModule()">Test Single Module (01.gif)</button>
+    
+    <div id="status"></div>
+    <div id="grid" class="grid"></div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        
+        function testSingleModule() {
+            const status = document.getElementById('status');
+            const grid = document.getElementById('grid');
+            
+            status.innerHTML = '<p>Testing single module: 01.gif from eurorackgif bucket...</p>';
+            grid.innerHTML = '';
+            
+            const url = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/01.gif`;
+            
+            const div = document.createElement('div');
+            div.className = 'module';
+            
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = 'Module 01';
+            
+            img.onload = function() {
+                div.classList.add('success');
+                status.innerHTML += `<p style="color: green;">✓ Successfully loaded: ${url}</p>`;
+            };
+            
+            img.onerror = function() {
+                div.classList.add('error');
+                status.innerHTML += `<p style="color: red;">✗ Failed to load: ${url}</p>`;
+                div.innerHTML = `<p>Failed to load</p><small>${url}</small>`;
+            };
+            
+            div.appendChild(img);
+            grid.appendChild(div);
+        }
+        
+        function testModules() {
+            const status = document.getElementById('status');
+            const grid = document.getElementById('grid');
+            
+            status.innerHTML = '<p>Loading modules from eurorackgif bucket...</p>';
+            grid.innerHTML = '';
+            
+            let loaded = 0;
+            let failed = 0;
+            
+            // Test loading 17 modules
+            for (let i = 1; i <= 17; i++) {
+                const paddedId = i.toString().padStart(2, '0');
+                const url = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/${paddedId}.gif`;
+                
+                const div = document.createElement('div');
+                div.className = 'module';
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = `Module ${paddedId}`;
+                
+                const label = document.createElement('p');
+                label.textContent = `${paddedId}.gif`;
+                
+                img.onload = function() {
+                    loaded++;
+                    div.classList.add('success');
+                    updateStatus();
+                };
+                
+                img.onerror = function() {
+                    failed++;
+                    div.classList.add('error');
+                    img.style.display = 'none';
+                    div.innerHTML += `<p style="color: red;">Failed</p>`;
+                    updateStatus();
+                };
+                
+                div.appendChild(img);
+                div.appendChild(label);
+                grid.appendChild(div);
+            }
+            
+            function updateStatus() {
+                status.innerHTML = `
+                    <p>Testing 17 modules from eurorackgif bucket...</p>
+                    <p style="color: green;">Loaded: ${loaded}</p>
+                    <p style="color: red;">Failed: ${failed}</p>
+                    <p>Total: ${loaded + failed} / 17</p>
+                `;
+            }
+        }
+        
+        // Auto-test on load
+        window.onload = function() {
+            console.log('Page loaded, testing modules...');
+            testModules();
+        };
+    </script>
+</body>
+</html>

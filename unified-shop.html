@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.GRID - Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="auth-check.js"></script>
+    <script src="purchase-integration-fixed.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .main-content {
+            padding: 100px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Shop Header */
+        .shop-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .shop-title {
+            font-size: 4rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .shop-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        /* Shop Navigation Tabs */
+        .shop-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #000;
+            padding-bottom: 0;
+        }
+        
+        .shop-tab {
+            padding: 15px 30px;
+            background: white;
+            border: 3px solid #000;
+            border-bottom: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            position: relative;
+            top: 3px;
+        }
+        
+        .shop-tab:hover {
+            background: #f0f0f0;
+        }
+        
+        .shop-tab.active {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Module Packs Section */
+        .packs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .pack-card {
+            background: white;
+            border: 3px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .pack-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .pack-visual {
+            padding: 30px;
+            background: #1a1a1a;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .module-count {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .pack-info {
+            padding: 20px;
+        }
+        
+        .pack-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .pack-price {
+            font-size: 1.2rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .pack-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .buy-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        
+        .buy-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Cases Section */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        
+        .case-card {
+            background: white;
+            border: 3px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .case-visual {
+            padding: 30px;
+            background: #2a2a2a;
+            text-align: center;
+        }
+        
+        .case-rack {
+            background: #000;
+            border: 3px solid #444;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 0 auto;
+            display: inline-block;
+        }
+        
+        .case-slots {
+            display: grid;
+            gap: 2px;
+        }
+        
+        .case-slot {
+            width: 30px;
+            height: 60px;
+            background: #333;
+            border: 1px solid #555;
+        }
+        
+        /* Modal for Post-Purchase Flow */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .modal-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .modal-subtitle {
+            opacity: 0.9;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .purchase-summary {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .summary-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .module-list {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+        
+        .module-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .module-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .next-steps {
+            margin-bottom: 25px;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .step-options {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .step-option {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .step-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .step-icon {
+            font-size: 2rem;
+        }
+        
+        .step-info h4 {
+            margin-bottom: 5px;
+        }
+        
+        .step-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-btn {
+            padding: 10px 20px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* User Flow Progress */
+        .flow-progress {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            gap: 30px;
+        }
+        
+        .flow-step {
+            text-align: center;
+            position: relative;
+        }
+        
+        .flow-step-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 10px;
+            transition: all 0.3s;
+        }
+        
+        .flow-step.active .flow-step-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .flow-step.completed .flow-step-icon {
+            background: #00cc00;
+            color: white;
+        }
+        
+        .flow-step-label {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .flow-connector {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            width: calc(100% - 60px);
+            height: 2px;
+            background: #e0e0e0;
+        }
+        
+        .flow-step.completed .flow-connector {
+            background: #00cc00;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation will be inserted here -->
+    
+    <div class="main-content">
+        <!-- Shop Header -->
+        <div class="shop-header">
+            <h1 class="shop-title">SHOP</h1>
+            <p class="shop-subtitle">Build your dream modular system</p>
+        </div>
+        
+        <!-- User Flow Progress -->
+        <div class="flow-progress">
+            <div class="flow-step active" id="step-modules">
+                <div class="flow-step-icon">📦</div>
+                <div class="flow-step-label">Get Modules</div>
+                <div class="flow-connector"></div>
+            </div>
+            <div class="flow-step" id="step-case">
+                <div class="flow-step-icon">🎛️</div>
+                <div class="flow-step-label">Choose Case</div>
+                <div class="flow-connector"></div>
+            </div>
+            <div class="flow-step" id="step-studio">
+                <div class="flow-step-icon">🏠</div>
+                <div class="flow-step-label">Build Studio</div>
+            </div>
+        </div>
+        
+        <!-- Shop Tabs -->
+        <div class="shop-tabs">
+            <button class="shop-tab active" onclick="switchTab('modules')">Module Packs</button>
+            <button class="shop-tab" onclick="switchTab('cases')">Cases & Racks</button>
+            <button class="shop-tab" onclick="switchTab('bundles')">Complete Bundles</button>
+        </div>
+        
+        <!-- Module Packs Tab -->
+        <div class="tab-content active" id="tab-modules">
+            <div class="packs-grid">
+                <!-- 2-Module Starter -->
+                <div class="pack-card" onclick="buyModulePack(2, 400, 'Starter')">
+                    <div class="pack-visual">
+                        <div class="module-count">2</div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">Starter Pack</h3>
+                        <div class="pack-price">400 🥜</div>
+                        <p class="pack-description">2 random modules - Perfect for Pod cases</p>
+                        <button class="buy-btn">Get Pack</button>
+                    </div>
+                </div>
+                
+                <!-- 6-Module Essential -->
+                <div class="pack-card" onclick="buyModulePack(6, 1000, 'Essential')">
+                    <div class="pack-visual">
+                        <div class="module-count">6</div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">Essential Pack</h3>
+                        <div class="pack-price">1,000 🥜</div>
+                        <p class="pack-description">6 modules - Fills a Happy Ending Kit</p>
+                        <button class="buy-btn">Get Pack</button>
+                    </div>
+                </div>
+                
+                <!-- 8-Module Pro -->
+                <div class="pack-card" onclick="buyModulePack(8, 1200, 'Pro')">
+                    <div class="pack-visual">
+                        <div class="module-count">8</div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">Pro Pack</h3>
+                        <div class="pack-price">1,200 🥜</div>
+                        <p class="pack-description">8 modules - Perfect for 60HP case</p>
+                        <button class="buy-btn">Get Pack</button>
+                    </div>
+                </div>
+                
+                <!-- 16-Module Studio -->
+                <div class="pack-card" onclick="buyModulePack(16, 2000, 'Studio')">
+                    <div class="pack-visual">
+                        <div class="module-count">16</div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">Studio Pack</h3>
+                        <div class="pack-price">2,000 🥜</div>
+                        <p class="pack-description">16 modules - Complete 6U system</p>
+                        <button class="buy-btn">Get Pack</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cases Tab -->
+        <div class="tab-content" id="tab-cases">
+            <div class="cases-grid">
+                <!-- Pod Case -->
+                <div class="case-card">
+                    <div class="case-visual">
+                        <div class="case-rack">
+                            <div class="case-slots" style="grid-template-columns: repeat(2, 1fr);">
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">2HP Pod</h3>
+                        <div class="pack-price">100 🥜</div>
+                        <p class="pack-description">Holds 2 modules - Ultra portable</p>
+                        <button class="buy-btn" onclick="buyCase('Pod', 2, 100)">Buy Case</button>
+                    </div>
+                </div>
+                
+                <!-- Happy Ending -->
+                <div class="case-card">
+                    <div class="case-visual">
+                        <div class="case-rack">
+                            <div class="case-slots" style="grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr);">
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">Happy Ending Kit</h3>
+                        <div class="pack-price">300 🥜</div>
+                        <p class="pack-description">Holds 6 modules - Desktop friendly</p>
+                        <button class="buy-btn" onclick="buyCase('Happy Ending', 6, 300)">Buy Case</button>
+                    </div>
+                </div>
+                
+                <!-- 3U 60HP -->
+                <div class="case-card">
+                    <div class="case-visual">
+                        <div class="case-rack">
+                            <div class="case-slots" style="grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr);">
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">3U 60HP Case</h3>
+                        <div class="pack-price">500 🥜</div>
+                        <p class="pack-description">Holds 8 modules - Professional size</p>
+                        <button class="buy-btn" onclick="buyCase('3U 60HP', 8, 500)">Buy Case</button>
+                    </div>
+                </div>
+                
+                <!-- 6U System -->
+                <div class="case-card">
+                    <div class="case-visual">
+                        <div class="case-rack">
+                            <div class="case-slots" style="grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);">
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                                <div class="case-slot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">6U 84HP System</h3>
+                        <div class="pack-price">1000 🥜</div>
+                        <p class="pack-description">Holds 16 modules - Complete studio</p>
+                        <button class="buy-btn" onclick="buyCase('6U System', 16, 1000)">Buy Case</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bundles Tab -->
+        <div class="tab-content" id="tab-bundles">
+            <div class="cases-grid">
+                <!-- Complete Bundle Options -->
+                <div class="case-card">
+                    <div class="case-visual" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div style="color: white; text-align: center;">
+                            <div style="font-size: 3rem;">🎁</div>
+                            <div style="font-size: 1.2rem; margin-top: 10px;">COMPLETE STARTER</div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">Starter Bundle</h3>
+                        <div class="pack-price">1,300 🥜 <span style="text-decoration: line-through; color: #999;">1,500</span></div>
+                        <p class="pack-description">6 modules + Happy Ending case + cables</p>
+                        <button class="buy-btn" onclick="buyBundle('starter')">Buy Bundle</button>
+                    </div>
+                </div>
+                
+                <div class="case-card">
+                    <div class="case-visual" style="background: linear-gradient(135deg, #00cc00 0%, #009900 100%);">
+                        <div style="color: white; text-align: center;">
+                            <div style="font-size: 3rem;">🚀</div>
+                            <div style="font-size: 1.2rem; margin-top: 10px;">PRO SYSTEM</div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <h3 class="pack-name">Pro Bundle</h3>
+                        <div class="pack-price">2,500 🥜 <span style="text-decoration: line-through; color: #999;">3,000</span></div>
+                        <p class="pack-description">16 modules + 6U case + full studio setup</p>
+                        <button class="buy-btn" onclick="buyBundle('pro')">Buy Bundle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Post-Purchase Modal -->
+    <div class="modal" id="purchaseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🎉 Purchase Complete!</h2>
+                <p class="modal-subtitle" id="purchaseMessage">Your modules have been added</p>
+            </div>
+            <div class="modal-body">
+                <div class="purchase-summary">
+                    <h3 class="summary-title">You received:</h3>
+                    <ul class="module-list" id="receivedModules">
+                        <!-- Modules will be listed here -->
+                    </ul>
+                </div>
+                
+                <div class="next-steps">
+                    <h3 class="step-title">What's next?</h3>
+                    <div class="step-options" id="nextStepOptions">
+                        <!-- Options will be generated based on purchase -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="close-btn" onclick="closeModal()">Maybe Later</button>
+                <div id="modalBalance" style="color: #666;">Balance: <span id="nutzBalance">0</span> 🥜</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Module pool
+        const modulePool = [
+            'Complex Oscillator', 'Varigated', 'Function Synthesizer',
+            'Physical Modeler', 'Textural Synthesizer', 'Cephalopod Rose',
+            'Altered Black', 'Voltaged Gray', 'Mangler Tangler',
+            'Filter Bank', 'Quad VCA', 'Envelope Generator',
+            'LFO Bank', 'Sequencer', 'Clock Divider'
+        ];
+        
+        // Current user state
+        let userModules = [];
+        let userCases = [];
+        
+        function switchTab(tab) {
+            // Update tabs
+            document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            // Update flow progress
+            updateFlowProgress(tab);
+        }
+        
+        function updateFlowProgress(currentStep) {
+            document.querySelectorAll('.flow-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            if (currentStep === 'modules') {
+                document.getElementById('step-modules').classList.add('active');
+            } else if (currentStep === 'cases') {
+                document.getElementById('step-case').classList.add('active');
+                document.getElementById('step-modules').classList.add('completed');
+            } else if (currentStep === 'bundles') {
+                document.getElementById('step-studio').classList.add('active');
+                document.getElementById('step-modules').classList.add('completed');
+                document.getElementById('step-case').classList.add('completed');
+            }
+        }
+        
+        function buyModulePack(count, price, packName) {
+            // Check auth
+            const userData = localStorage.getItem('eurogrid_user');
+            if (!userData) {
+                alert('Please login to make purchases!');
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Check balance
+            const nutz = parseInt(localStorage.getItem('jamnutz') || '0');
+            if (nutz < price) {
+                alert(`Not enough jamnutz! You need ${price}🥜 but only have ${nutz}🥜`);
+                return;
+            }
+            
+            // Process purchase
+            if (confirm(`Buy ${packName} Pack (${count} modules) for ${price}🥜?`)) {
+                // Deduct jamnutz
+                const newBalance = nutz - price;
+                localStorage.setItem('jamnutz', newBalance.toString());
+                
+                // Generate random modules
+                const received = [];
+                for (let i = 0; i < count; i++) {
+                    const module = modulePool[Math.floor(Math.random() * modulePool.length)];
+                    received.push(module);
+                    userModules.push(module);
+                }
+                
+                // Save to user data
+                const user = JSON.parse(userData);
+                if (!user.modules) user.modules = [];
+                user.modules = user.modules.concat(received);
+                localStorage.setItem('eurogrid_user', JSON.stringify(user));
+                
+                // Show post-purchase modal
+                showPurchaseModal('modules', received, count);
+            }
+        }
+        
+        function buyCase(caseName, capacity, price) {
+            const nutz = parseInt(localStorage.getItem('jamnutz') || '0');
+            if (nutz < price) {
+                alert(`Not enough jamnutz! You need ${price}🥜 but only have ${nutz}🥜`);
+                return;
+            }
+            
+            if (confirm(`Buy ${caseName} for ${price}🥜?`)) {
+                localStorage.setItem('jamnutz', (nutz - price).toString());
+                userCases.push({ name: caseName, capacity: capacity });
+                
+                // Save to user
+                const userData = localStorage.getItem('eurogrid_user');
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    if (!user.cases) user.cases = [];
+                    user.cases.push({ name: caseName, capacity: capacity });
+                    localStorage.setItem('eurogrid_user', JSON.stringify(user));
+                }
+                
+                showPurchaseModal('case', [caseName], capacity);
+            }
+        }
+        
+        function buyBundle(bundleType) {
+            // Bundle includes modules + case
+            if (bundleType === 'starter') {
+                buyModulePack(6, 1300, 'Starter Bundle');
+                // Auto-add case
+                userCases.push({ name: 'Happy Ending Kit', capacity: 6 });
+            } else if (bundleType === 'pro') {
+                buyModulePack(16, 2500, 'Pro Bundle');
+                // Auto-add case
+                userCases.push({ name: '6U System', capacity: 16 });
+            }
+        }
+        
+        function showPurchaseModal(purchaseType, items, extra) {
+            const modal = document.getElementById('purchaseModal');
+            const messageEl = document.getElementById('purchaseMessage');
+            const modulesListEl = document.getElementById('receivedModules');
+            const optionsEl = document.getElementById('nextStepOptions');
+            const balanceEl = document.getElementById('nutzBalance');
+            
+            // Update balance display
+            balanceEl.textContent = localStorage.getItem('jamnutz') || '0';
+            
+            // Clear previous content
+            modulesListEl.innerHTML = '';
+            optionsEl.innerHTML = '';
+            
+            // Show what was purchased
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                modulesListEl.appendChild(li);
+            });
+            
+            // Generate next step options based on purchase type
+            if (purchaseType === 'modules') {
+                messageEl.textContent = `${items.length} modules added to your collection!`;
+                
+                // Suggest buying a case
+                optionsEl.innerHTML = `
+                    <div class="step-option" onclick="goToCases()">
+                        <div class="step-icon">🎛️</div>
+                        <div class="step-info">
+                            <h4>Get a Case</h4>
+                            <p>You need a case to hold ${items.length} modules</p>
+                        </div>
+                    </div>
+                    <div class="step-option" onclick="goToStudio()">
+                        <div class="step-icon">🏠</div>
+                        <div class="step-info">
+                            <h4>Go to My Studio</h4>
+                            <p>Organize your modules in your virtual studio</p>
+                        </div>
+                    </div>
+                    <div class="step-option" onclick="goToCollection()">
+                        <div class="step-icon">📦</div>
+                        <div class="step-info">
+                            <h4>View Collection</h4>
+                            <p>See all your modules</p>
+                        </div>
+                    </div>
+                `;
+            } else if (purchaseType === 'case') {
+                messageEl.textContent = `${items[0]} added to your studio!`;
+                
+                // Suggest filling the case
+                const emptySlots = extra - userModules.length;
+                if (emptySlots > 0) {
+                    optionsEl.innerHTML = `
+                        <div class="step-option" onclick="goToModules()">
+                            <div class="step-icon">📦</div>
+                            <div class="step-info">
+                                <h4>Fill Your Case</h4>
+                                <p>You need ${emptySlots} more modules to fill this case</p>
+                            </div>
+                        </div>
+                        <div class="step-option" onclick="goToStudio()">
+                            <div class="step-icon">🏠</div>
+                            <div class="step-info">
+                                <h4>Setup Studio</h4>
+                                <p>Arrange your case in your studio</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    optionsEl.innerHTML = `
+                        <div class="step-option" onclick="goToStudio()">
+                            <div class="step-icon">🏠</div>
+                            <div class="step-info">
+                                <h4>Setup Studio</h4>
+                                <p>Your case is ready! Let's set it up</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('purchaseModal').classList.remove('active');
+        }
+        
+        function goToCases() {
+            closeModal();
+            document.querySelector('[onclick="switchTab(\'cases\')"]').click();
+        }
+        
+        function goToModules() {
+            closeModal();
+            document.querySelector('[onclick="switchTab(\'modules\')"]').click();
+        }
+        
+        function goToStudio() {
+            window.location.href = '/my-studio.html';
+        }
+        
+        function goToCollection() {
+            window.location.href = '/my-modules.html';
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load user data
+            const userData = localStorage.getItem('eurogrid_user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                userModules = user.modules || [];
+                userCases = user.cases || [];
+            }
+        });
+    </script>
+</body>
+</html>

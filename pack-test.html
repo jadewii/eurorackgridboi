@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack Opening Test - EURORACK.GRID</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            text-align: center;
+            letter-spacing: 5px;
+        }
+        
+        .pack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .pack-card {
+            background: white;
+            border: 3px solid #000;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .pack-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .pack-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .pack-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 15px 0;
+        }
+        
+        .pack-contents {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .pack-guarantees {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .open-btn {
+            background: #000;
+            color: #FFD700;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+        
+        .open-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .results {
+            background: white;
+            border: 3px solid #000;
+            padding: 30px;
+            margin-top: 40px;
+            display: none;
+        }
+        
+        .results.active {
+            display: block;
+        }
+        
+        .results h2 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .item {
+            text-align: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 2px solid #000;
+            border-radius: 5px;
+            animation: reveal 0.5s ease-out;
+        }
+        
+        @keyframes reveal {
+            from {
+                opacity: 0;
+                transform: scale(0.8) rotate(-5deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+        
+        .item-id {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .item-rarity {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .rarity-common { background: #e0e0e0; }
+        .rarity-uncommon { background: #90EE90; }
+        .rarity-rare { background: #87CEEB; }
+        .rarity-legendary { background: #FFD700; }
+        
+        .auth-section {
+            background: #FFD700;
+            border: 3px solid #000;
+            padding: 20px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .auth-section input {
+            padding: 10px;
+            font-size: 1rem;
+            margin: 0 10px;
+            border: 2px solid #000;
+        }
+        
+        .auth-section button {
+            padding: 10px 20px;
+            background: #000;
+            color: #FFD700;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 PACK OPENING TEST</h1>
+        
+        <div class="auth-section">
+            <h3>Test Authentication</h3>
+            <p>For testing, enter any user ID (real auth coming with Clerk)</p>
+            <input type="text" id="userId" placeholder="test-user-123" value="test-user-123">
+            <button onclick="setTestUser()">Set User</button>
+            <span id="authStatus" style="margin-left: 20px;">Ready!</span>
+        </div>
+        
+        <h2>MODULE PACKS</h2>
+        <div class="pack-grid">
+            <div class="pack-card" onclick="openPack('module-starter')">
+                <h3>Starter Pack</h3>
+                <div class="pack-price">$5</div>
+                <div class="pack-contents">3 Modules</div>
+                <div class="pack-guarantees">
+                    Guaranteed: 3 Common
+                </div>
+                <button class="open-btn">OPEN PACK</button>
+            </div>
+            
+            <div class="pack-card" onclick="openPack('module-pro')">
+                <h3>Pro Pack</h3>
+                <div class="pack-price">$15</div>
+                <div class="pack-contents">8 Modules</div>
+                <div class="pack-guarantees">
+                    Guaranteed: 5 Common, 2 Uncommon, 1 Rare
+                </div>
+                <button class="open-btn">OPEN PACK</button>
+            </div>
+            
+            <div class="pack-card" onclick="openPack('module-legendary')">
+                <h3>Legendary Pack</h3>
+                <div class="pack-price">$30</div>
+                <div class="pack-contents">12 Modules</div>
+                <div class="pack-guarantees">
+                    Guaranteed: 7 Common, 3 Uncommon, 1 Rare, 1 Legendary!
+                </div>
+                <button class="open-btn">OPEN PACK</button>
+            </div>
+        </div>
+        
+        <h2>PLANT PACKS</h2>
+        <div class="pack-grid">
+            <div class="pack-card" onclick="openPack('plant-pack')">
+                <h3>Plant Pack</h3>
+                <div class="pack-price">$8</div>
+                <div class="pack-contents">5 Plants</div>
+                <div class="pack-guarantees">
+                    Guaranteed: 4 Common, 1 Uncommon
+                </div>
+                <button class="open-btn">OPEN PACK</button>
+            </div>
+            
+            <div class="pack-card" onclick="openPack('plant-garden')">
+                <h3>Garden Pack</h3>
+                <div class="pack-price">$20</div>
+                <div class="pack-contents">10 Plants</div>
+                <div class="pack-guarantees">
+                    Guaranteed: 7 Common, 2 Uncommon, 1 Rare
+                </div>
+                <button class="open-btn">OPEN PACK</button>
+            </div>
+        </div>
+        
+        <h2>PANEL PACKS</h2>
+        <div class="pack-grid">
+            <div class="pack-card" onclick="openPack('panel-basic')">
+                <h3>Basic Panels</h3>
+                <div class="pack-price">$10</div>
+                <div class="pack-contents">6 Panels</div>
+                <div class="pack-guarantees">
+                    Guaranteed: 5 Common, 1 Uncommon
+                </div>
+                <button class="open-btn">OPEN PACK</button>
+            </div>
+            
+            <div class="pack-card" onclick="openPack('panel-designer')">
+                <h3>Designer Panels</h3>
+                <div class="pack-price">$25</div>
+                <div class="pack-contents">10 Panels</div>
+                <div class="pack-guarantees">
+                    Guaranteed: 6 Common, 3 Uncommon, 1 Rare
+                </div>
+                <button class="open-btn">OPEN PACK</button>
+            </div>
+        </div>
+        
+        <h2>🌟 ULTIMATE PACK</h2>
+        <div class="pack-grid">
+            <div class="pack-card" onclick="openPack('ultimate-studio')" style="background: linear-gradient(45deg, #FFD700, #FFA500);">
+                <h3>Ultimate Studio</h3>
+                <div class="pack-price">$50</div>
+                <div class="pack-contents">8 Modules + 4 Plants + 3 Panels</div>
+                <div class="pack-guarantees">
+                    Guaranteed: 2 Rare items minimum!
+                </div>
+                <button class="open-btn">OPEN PACK</button>
+            </div>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>🎉 PACK OPENED!</h2>
+            <div id="itemGrid" class="item-grid"></div>
+        </div>
+    </div>
+    
+    <script>
+        // For testing - replace with real Clerk auth later
+        let testToken = 'test-token-123';
+        let apiUrl = 'https://eurorack-api.eurorack-grid.workers.dev'; // Update with your actual URL
+        
+        function setTestUser() {
+            const userId = document.getElementById('userId').value;
+            testToken = btoa(JSON.stringify({ sub: userId }));
+            document.getElementById('authStatus').textContent = `User: ${userId}`;
+        }
+        
+        async function openPack(packType) {
+            const resultsDiv = document.getElementById('results');
+            const itemGrid = document.getElementById('itemGrid');
+            
+            // Clear previous results
+            itemGrid.innerHTML = '';
+            resultsDiv.classList.remove('active');
+            
+            try {
+                // For testing without auth - remove this in production
+                const mockResponse = {
+                    packType: packType,
+                    items: generateMockItems(packType),
+                    count: 0
+                };
+                mockResponse.count = mockResponse.items.length;
+                
+                // In production, use this:
+                /*
+                const response = await fetch(`${apiUrl}/api/open-pack`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${testToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ packType })
+                });
+                const data = await response.json();
+                */
+                
+                const data = mockResponse;
+                
+                // Display results with animation
+                resultsDiv.classList.add('active');
+                
+                data.items.forEach((item, index) => {
+                    setTimeout(() => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'item';
+                        
+                        // Determine rarity based on item ID
+                        const rarity = getRarity(item);
+                        
+                        itemDiv.innerHTML = `
+                            <div class="item-id">${item}</div>
+                            <div class="item-rarity rarity-${rarity}">${rarity}</div>
+                        `;
+                        
+                        itemGrid.appendChild(itemDiv);
+                        
+                        // Play sound effect (optional)
+                        if (rarity === 'legendary') {
+                            document.body.style.animation = 'shake 0.5s';
+                        }
+                    }, index * 200);
+                });
+                
+            } catch (error) {
+                console.error('Error opening pack:', error);
+                alert('Error opening pack. Check console for details.');
+            }
+        }
+        
+        // Mock function for testing without backend
+        function generateMockItems(packType) {
+            const configs = {
+                'module-starter': 3,
+                'module-pro': 8,
+                'module-legendary': 12,
+                'plant-pack': 5,
+                'plant-garden': 10,
+                'panel-basic': 6,
+                'panel-designer': 10,
+                'ultimate-studio': 15
+            };
+            
+            const count = configs[packType] || 3;
+            const items = [];
+            
+            for (let i = 0; i < count; i++) {
+                const type = packType.includes('plant') ? 'plant' : 
+                            packType.includes('panel') ? 'panel' : 'mod';
+                const rarity = Math.random() < 0.7 ? 'common' : 
+                              Math.random() < 0.9 ? 'uncommon' : 
+                              Math.random() < 0.95 ? 'rare' : 'legendary';
+                items.push(`${type}_${rarity}_${Math.random().toString(36).substr(2, 5)}`);
+            }
+            
+            return items;
+        }
+        
+        function getRarity(itemId) {
+            if (itemId.includes('legendary')) return 'legendary';
+            if (itemId.includes('rare')) return 'rare';
+            if (itemId.includes('uncommon')) return 'uncommon';
+            return 'common';
+        }
+        
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

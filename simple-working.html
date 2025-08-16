@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - SIMPLE WORKING VERSION</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .module { border: 2px solid #0f0; padding: 10px; text-align: center; }
+        img { width: 100%; height: 200px; object-fit: contain; }
+        button { padding: 20px; font-size: 20px; background: #0f0; color: #000; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>YOUR 17 GIFS - SIMPLE VERSION</h1>
+    
+    <button onclick="showGifs()">SHOW MY GIFS</button>
+    
+    <div id="status"></div>
+    <div id="gifs" class="grid"></div>
+    
+    <script>
+        // Your 17 GIF files in the bucket
+        const files = [
+            '01.gif', '02.gif', '03.gif', '04.gif', '05.gif',
+            '06.gif', '07.gif', '08.gif', '09.gif', '10.gif',
+            '11.gif', '12.gif', '13.gif', '14.gif', '15.gif',
+            '16.gif', '17.gif'
+        ];
+        
+        async function showGifs() {
+            const status = document.getElementById('status');
+            const gifsDiv = document.getElementById('gifs');
+            
+            status.innerHTML = '<h2>Loading your 17 GIFs...</h2>';
+            gifsDiv.innerHTML = '';
+            
+            // Since bucket is private, we need to create signed URLs
+            // This would normally be done server-side, but for testing:
+            
+            for (const file of files) {
+                const div = document.createElement('div');
+                div.className = 'module';
+                
+                // For now, show placeholders since private bucket needs backend
+                const img = document.createElement('img');
+                img.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="%23111"/><text x="100" y="100" text-anchor="middle" fill="%230f0" font-size="20">${file}</text></svg>`;
+                img.alt = file;
+                
+                const name = document.createElement('div');
+                name.textContent = file;
+                name.style.color = '#0f0';
+                name.style.marginTop = '10px';
+                
+                div.appendChild(img);
+                div.appendChild(name);
+                gifsDiv.appendChild(div);
+            }
+            
+            status.innerHTML = `
+                <h2 style="color: #ff0;">⚠️ YOUR FILES ARE IN THE BUCKET BUT...</h2>
+                <p>Private buckets can't be accessed from frontend directly.</p>
+                <p>You have 2 options:</p>
+                <ol>
+                    <li><strong>Make bucket PUBLIC</strong> - Takes 10 seconds, works immediately</li>
+                    <li><strong>Deploy Edge Function</strong> - Takes 10 minutes, keeps bucket private</li>
+                </ol>
+                <p style="color: #0f0;">For testing, just make it public. You can make it private again later.</p>
+            `;
+        }
+    </script>
+</body>
+</html>
