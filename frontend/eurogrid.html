@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>eurorack.store - Eurogrid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            overflow-x: hidden;
+        }
+        
+        /* Fixed Header Bar */
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .cart-counter.has-items {
+            background: #FFB6C1;
+        }
+        
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .checkout-btn {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .checkout-btn:hover {
+            background: #333;
+        }
+        
+        /* Size Selector Inline */
+        .size-selector-inline {
+            margin-top: 20px;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .size-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .size-btn {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 12px 25px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        
+        .size-btn.size-2x2:hover {
+            background: #FFB6C1;
+            border-color: #FFB6C1;
+            color: white;
+        }
+        
+        .size-btn.size-3x3:hover {
+            background: #C8B6DB;
+            border-color: #C8B6DB;
+            color: white;
+        }
+        
+        .size-btn.size-4x4:hover {
+            background: #87CEEB;
+            border-color: #87CEEB;
+            color: white;
+        }
+        
+        .size-btn.size-digital {
+            background: #FFD700;
+            border-color: #FFD700;
+            color: #000;
+        }
+        
+        .size-btn.size-digital:hover {
+            background: #FFA500;
+            border-color: #FFA500;
+            color: #000;
+        }
+        
+        .size-price {
+            font-size: 0.9rem;
+            color: #000;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 100px;
+            padding: 0;
+            width: 100vw;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .description {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        /* Zero Gap Grid */
+        .sticker-grid {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            line-height: 0;
+            margin: 0 auto;
+            padding: 0;
+            justify-content: center;
+        }
+        
+        .sticker-item {
+            width: calc(100vw / 6);
+            max-width: 250px;
+            height: calc(100vw / 6);
+            max-height: 250px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            line-height: 0;
+            border: 4px solid transparent;
+            flex-shrink: 0;
+        }
+        
+        .sticker-item img {
+            width: 120%;
+            height: 120%;
+            object-fit: cover;
+            display: block;
+            position: absolute;
+            top: -10%;
+            left: -10%;
+        }
+        
+        .sticker-item:hover {
+            z-index: 10;
+        }
+        
+        /* Size-specific colors */
+        .size-2x2 .sticker-item.selected {
+            border: 4px solid #FFB6C1 !important; /* Pink */
+        }
+        
+        .size-3x3 .sticker-item.selected {
+            border: 4px solid #C8B6DB !important; /* Light Purple */
+        }
+        
+        .size-4x4 .sticker-item.selected {
+            border: 4px solid #87CEEB !important; /* Sky Blue */
+        }
+        
+        .size-2x2 .quantity-btn {
+            background: #FFB6C1; /* Pink */
+        }
+        
+        .size-3x3 .quantity-btn {
+            background: #C8B6DB; /* Light Purple */
+        }
+        
+        .size-4x4 .quantity-btn {
+            background: #87CEEB; /* Sky Blue */
+        }
+        
+        .quantity-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .size-2x2 .quantity-btn:hover {
+            background: #FF9DB4; /* Darker Pink */
+            transform: scale(1.1);
+        }
+        
+        .size-3x3 .quantity-btn:hover {
+            background: #A594C1; /* Darker Purple */
+            transform: scale(1.1);
+        }
+        
+        .size-4x4 .quantity-btn:hover {
+            background: #5CACCC; /* Darker Blue */
+            transform: scale(1.1);
+        }
+        
+        
+        .quantity-btn.number {
+            font-size: 16px;
+        }
+        
+        
+        /* Side Cart */
+        .side-cart {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .side-cart.open {
+            right: 0;
+        }
+        
+        .side-cart-header {
+            padding: 20px;
+            border-bottom: 2px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .side-cart-close {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .side-cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-price {
+            color: #666;
+        }
+        
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cart-item-remove {
+            color: #ff0000;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .side-cart-footer {
+            padding: 20px;
+            border-top: 2px solid #000;
+        }
+        
+        .side-cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .side-cart-checkout {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1999;
+        }
+        
+        .cart-overlay.open {
+            display: block;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sticker-item {
+                width: calc(100vw / 3);
+                height: calc(100vw / 3);
+                max-width: 150px;
+                max-height: 150px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sticker-item {
+                width: calc(100vw / 2);
+                height: calc(100vw / 2);
+                max-width: 200px;
+                max-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <div class="header-bar">
+        <div class="logo">EURORACK.STORE</div>
+        
+        <!-- Items per row slider -->
+        <div style="position: absolute; left: 280px; display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 0.8rem; font-weight: bold;">GRID:</label>
+            <input type="range" id="grid-slider" min="2" max="10" value="6" style="width: 100px;">
+            <span id="grid-value" style="font-size: 0.8rem; font-weight: bold;">6</span>
+        </div>
+        
+        <div style="position: absolute; left: 50%; transform: translateX(-50%); color: #000; font-weight: bold; font-size: 0.9rem;">
+            FREE SHIPPING OVER $60 | <a href="collection.html" style="color: #FFB6C1; text-decoration: none;">VIEW MY COLLECTION</a>
+        </div>
+        <div class="cart-area">
+            <div class="cart-total">$<span id="total-amount">0</span></div>
+            <div class="cart-counter" id="cart-counter" onclick="toggleCart()">
+                CART (<span id="cart-count">0</span>)
+            </div>
+            <button class="checkout-btn" onclick="checkout()">CHECKOUT</button>
+        </div>
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="title-section">
+            <h1 class="page-title">EUROGRID COLLECTION</h1>
+            <div class="subtitle" id="price-subtitle">
+                <span id="collection-progress">0/25 MODULES COLLECTED</span>
+            </div>
+            <div class="description">🔒 Locked modules can only be unlocked through pack opening!</div>
+            
+            <!-- Progress bar -->
+            <div style="max-width: 400px; margin: 20px auto;">
+                <div style="background: #eee; height: 30px; border-radius: 15px; overflow: hidden; border: 2px solid #000;">
+                    <div id="progress-bar" style="background: linear-gradient(90deg, #00ff88, #00cc70); height: 100%; width: 0%; transition: width 0.5s; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                        <span id="progress-text">0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pack Opening Link -->
+            <div class="size-selector-inline">
+                <a href="pack-opening.html" style="background: linear-gradient(45deg, #ff00ff, #00ffff); color: #000; padding: 15px 40px; text-decoration: none; font-weight: bold; border-radius: 25px; display: inline-block; animation: rainbow 3s linear infinite; box-shadow: 0 0 30px rgba(255,0,255,0.5);">
+                    🎰 OPEN PACKS TO COLLECT
+                </a>
+                <div style="font-size: 0.9rem; color: #666; margin-top: 15px;">
+                    <div>Basic Pack: 50 credits (1 module)</div>
+                    <div>Rare Pack: 150 credits (1 module, 50% rare+)</div>
+                    <div>Legendary Pack: 300 credits (1 module, 25% legendary)</div>
+                </div>
+            </div>
+            
+            <style>
+                @keyframes rainbow {
+                    0% { filter: hue-rotate(0deg); }
+                    100% { filter: hue-rotate(360deg); }
+                }
+            </style>
+        </div>
+
+        <!-- Zero Gap Grid -->
+        <div class="sticker-grid size-2x2" id="sticker-grid"></div>
+    </div>
+
+    <script src="printify-products.js"></script>
+    <script>
+        // Separate selections for each size with quantities
+        let stickerSelections = {
+            '2x2': {},  // {stickerId: quantity}
+            '3x3': {},
+            '4x4': {},
+            'digital': {} // Digital collection
+        };
+        let currentSizeIndex = 0;
+        let myDigitalCollection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+        let itemsPerRow = 6; // Default items per row
+        
+        // Add demo digital collection if empty (for demonstration)
+        if (Object.keys(myDigitalCollection).length === 0) {
+            // Demo: You own some digital stickers already
+            myDigitalCollection = {
+                'Mod-24 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'legendary' },
+                'Mod-23 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'epic' },
+                'Mod-22 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'rare' },
+                'Mod-20 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'common' },
+                'Mod-18 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'rare' },
+                'Mod-15 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'common' },
+                'Mod-10 - eurorack sticker': { unlockedDate: new Date().toISOString(), rarity: 'epic' }
+            };
+            localStorage.setItem('digital-collection', JSON.stringify(myDigitalCollection));
+        }
+        
+        // Only Eurogrid option now
+        const sizeOptions = [
+            { size: 'digital', price: 2, display: 'EUROGRID' }
+        ];
+        
+        // Add grid slider functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const slider = document.getElementById('grid-slider');
+            const valueDisplay = document.getElementById('grid-value');
+            
+            slider.addEventListener('input', function() {
+                itemsPerRow = parseInt(this.value);
+                valueDisplay.textContent = itemsPerRow;
+                updateGridLayout();
+            });
+            
+            // Initialize
+            loadCartFromStorage();
+            loadStickers();
+        });
+        
+        function updateGridLayout() {
+            const items = document.querySelectorAll('.sticker-item');
+            const itemWidth = `calc(100vw / ${itemsPerRow})`;
+            
+            items.forEach(item => {
+                item.style.width = itemWidth;
+                item.style.height = itemWidth;
+            });
+        }
+        
+        // Load stickers
+        function loadStickers() {
+            const grid = document.getElementById('sticker-grid');
+            grid.innerHTML = ''; // Clear grid
+            
+            let stickers = printifyProducts.filter(p => p.category === 'stickers');
+            
+            // Update collection progress
+            const ownedCount = Object.keys(myDigitalCollection).length;
+            const totalCount = Math.min(stickers.length, 25); // Cap at 25
+            document.getElementById('collection-progress').textContent = `${ownedCount}/${totalCount} MODULES COLLECTED`;
+            
+            // Update progress bar
+            const progressPercent = (ownedCount / totalCount) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+            document.getElementById('progress-text').textContent = `${Math.floor(progressPercent)}%`;
+            
+            // Sort stickers by title - newest first (highest number first)
+            stickers.sort((a, b) => {
+                // Extract the number from titles like "Mod-XX - eurorack sticker"
+                const getNumber = (title) => {
+                    const match = title.match(/Mod-(\d+)/);
+                    return match ? parseInt(match[1]) : 0;
+                };
+                return getNumber(b.title) - getNumber(a.title); // b - a for descending order
+            });
+            
+            const currentSize = sizeOptions[currentSizeIndex].size;
+            // Always show Eurogrid mode
+            const isDigitalMode = true;
+            
+            if (isDigitalMode) {
+                // Show ALL modules with locked/unlocked states
+                const selections = stickerSelections['digital'];
+                
+                stickers.forEach(sticker => {
+                    const isOwned = myDigitalCollection[sticker.title];
+                    const item = document.createElement('div');
+                    item.className = 'sticker-item';
+                    item.style.width = `calc(100vw / ${itemsPerRow})`;
+                    item.style.height = `calc(100vw / ${itemsPerRow})`;
+                    
+                    item.dataset.id = sticker.id;
+                    item.dataset.title = sticker.title;
+                    
+                    // Style based on owned status
+                    if (!isOwned) {
+                        // Not owned - show as locked
+                        item.style.filter = 'grayscale(100%) brightness(0.3)';
+                        item.style.position = 'relative';
+                        
+                        // Add lock overlay
+                        item.innerHTML = `
+                            <img src="${sticker.image}?width=600" alt="${sticker.title}">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 2rem;">🔒</span>
+                            </div>
+                            <div style="position: absolute; bottom: 5px; left: 5px; right: 5px; background: rgba(0,0,0,0.9); color: white; padding: 3px; font-size: 0.6rem; text-align: center;">
+                                ${sticker.title.replace(' - eurorack sticker', '')}
+                            </div>
+                        `;
+                    } else {
+                        // Owned - show normally with rarity
+                        const moduleData = myDigitalCollection[sticker.title];
+                        const rarity = moduleData.rarity || 'common';
+                        
+                        let rarityColor = '#888';
+                        let rarityText = 'COMMON';
+                        if (rarity === 'legendary') {
+                            rarityColor = 'linear-gradient(45deg, #FFD700, #FFA500)';
+                            rarityText = 'LEGENDARY';
+                            item.style.border = '4px solid #FFD700';
+                        } else if (rarity === 'epic') {
+                            rarityColor = '#9370DB';
+                            rarityText = 'EPIC';
+                            item.style.border = '4px solid #9370DB';
+                        } else if (rarity === 'rare') {
+                            rarityColor = '#4169E1';
+                            rarityText = 'RARE';
+                            item.style.border = '4px solid #4169E1';
+                        } else {
+                            item.style.border = '4px solid #00ff88';
+                        }
+                        
+                        item.innerHTML = `
+                            <img src="${sticker.image}?width=600" alt="${sticker.title}">
+                            <div style="position: absolute; top: 5px; right: 5px; background: ${rarityColor}; color: ${rarity === 'legendary' ? '#000' : '#fff'}; padding: 3px 8px; font-weight: bold; font-size: 0.6rem; z-index: 2;">
+                                ${rarityText}
+                            </div>
+                            <div style="position: absolute; bottom: 5px; left: 5px; right: 5px; background: rgba(0,255,136,0.9); color: #000; padding: 3px; font-size: 0.6rem; text-align: center; font-weight: bold;">
+                                ✓ OWNED
+                            </div>
+                        `;
+                    }
+                    
+                    // Click behavior
+                    item.onclick = () => {
+                        if (!isOwned) {
+                            alert('🔒 This module is locked! Open packs to unlock it.');
+                            window.location.href = 'pack-opening.html';
+                        } else {
+                            // Show module details or trading options
+                            alert(`✨ ${sticker.title}\nRarity: ${myDigitalCollection[sticker.title].rarity || 'common'}\nUnlocked: ${new Date(myDigitalCollection[sticker.title].unlockedDate).toLocaleDateString()}`);
+                        }
+                    };
+                    item.style.cursor = 'pointer';
+                    
+                    grid.appendChild(item);
+                });
+            } else {
+                // Physical mode - existing code
+                const currentSize = sizeOptions[currentSizeIndex].size;
+                const selections = stickerSelections[currentSize];
+                
+                stickers.forEach(sticker => {
+                    const item = document.createElement('div');
+                    item.className = 'sticker-item';
+                    item.style.width = `calc(100vw / ${itemsPerRow})`;
+                    item.style.height = `calc(100vw / ${itemsPerRow})`;
+                    const quantity = selections[sticker.id] || 0;
+                
+                if (quantity > 0) {
+                    item.classList.add('selected');
+                }
+                
+                item.dataset.id = sticker.id;
+                item.dataset.title = sticker.title;
+                item.dataset.price = sizeOptions[currentSizeIndex].price;
+                
+                item.innerHTML = `<img src="${sticker.image}?width=600" alt="${sticker.title}">`;
+                
+                if (quantity > 0) {
+                    const btn = document.createElement('button');
+                    btn.className = quantity > 1 ? 'quantity-btn number' : 'quantity-btn';
+                    btn.textContent = quantity > 1 ? quantity.toString() : '+';
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        incrementSticker(sticker.id);
+                    };
+                    item.appendChild(btn);
+                }
+                
+                item.onclick = (e) => {
+                    if (!e.target.classList.contains('quantity-btn')) {
+                        toggleSticker(sticker.id);
+                    }
+                };
+                
+                    grid.appendChild(item);
+                });
+            }
+            
+            updateCart();
+        }
+        
+        // Toggle sticker selection (add first or remove)
+        function toggleSticker(stickerId) {
+            const currentSize = sizeOptions[currentSizeIndex].size;
+            const selections = stickerSelections[currentSize];
+            const item = document.querySelector(`[data-id="${stickerId}"]`);
+            
+            // Don't toggle if it's owned in digital mode
+            if (currentSize === 'digital' && myDigitalCollection[item.dataset.title]) {
+                return;
+            }
+            
+            if (selections[stickerId]) {
+                // Remove from cart
+                delete selections[stickerId];
+                item.classList.remove('selected');
+                item.style.border = '4px solid transparent';
+                // Remove quantity button
+                const btn = item.querySelector('.quantity-btn');
+                if (btn) btn.remove();
+            } else {
+                // Add first item
+                selections[stickerId] = 1;
+                item.classList.add('selected');
+                
+                // Set border color based on mode
+                if (currentSize === 'digital') {
+                    item.style.border = '4px solid #FFD700';
+                }
+                
+                // Add quantity button with +
+                const btn = document.createElement('button');
+                btn.className = 'quantity-btn';
+                if (currentSize === 'digital') {
+                    btn.style.background = '#FFD700';
+                }
+                btn.textContent = '+';
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    incrementSticker(stickerId);
+                };
+                item.appendChild(btn);
+            }
+            
+            updateCart();
+            saveCart();
+        }
+        
+        // Increment sticker quantity
+        function incrementSticker(stickerId) {
+            const currentSize = sizeOptions[currentSizeIndex].size;
+            const selections = stickerSelections[currentSize];
+            const item = document.querySelector(`[data-id="${stickerId}"]`);
+            const btn = item.querySelector('.quantity-btn');
+            
+            if (!selections[stickerId]) {
+                selections[stickerId] = 1;
+            } else {
+                selections[stickerId]++;
+            }
+            
+            // Update button to show number
+            btn.textContent = selections[stickerId].toString();
+            if (selections[stickerId] > 1) {
+                btn.classList.add('number');
+            }
+            
+            updateCart();
+            saveCart();
+        }
+        
+        // No cycling needed - always Eurogrid
+        function cycleSize() {
+            // Do nothing - we're always in Eurogrid mode
+            return;
+        }
+        
+        // Update cart display
+        function updateCart() {
+            // Calculate total across all sizes
+            let totalCount = 0;
+            let totalAmount = 0;
+            
+            sizeOptions.forEach((option) => {
+                const selections = stickerSelections[option.size];
+                if (selections && typeof selections === 'object') {
+                    Object.values(selections).forEach(quantity => {
+                        if (typeof quantity === 'number') {
+                            totalCount += quantity;
+                            totalAmount += quantity * option.price;
+                        }
+                    });
+                }
+            });
+            
+            // Add digital items
+            const digitalSelections = stickerSelections['digital'];
+            if (digitalSelections && typeof digitalSelections === 'object') {
+                Object.values(digitalSelections).forEach(quantity => {
+                    if (typeof quantity === 'number') {
+                        totalCount += quantity;
+                        totalAmount += quantity * 2; // $2 each for digital
+                    }
+                });
+            }
+            
+            document.getElementById('cart-count').textContent = totalCount.toString();
+            document.getElementById('total-amount').textContent = totalAmount.toString();
+            
+            const counter = document.getElementById('cart-counter');
+            if (totalCount > 0) {
+                counter.classList.add('has-items');
+            } else {
+                counter.classList.remove('has-items');
+            }
+        }
+        
+        // Save cart  
+        function saveCart() {
+            // Save selections for all sizes (already objects with quantities)
+            localStorage.setItem('sticker-selections', JSON.stringify(stickerSelections));
+            localStorage.setItem('sticker-size', currentSizeIndex.toString());
+        }
+        
+        // Load cart from storage
+        function loadCartFromStorage() {
+            // Load selected size
+            const savedSize = localStorage.getItem('sticker-size');
+            if (savedSize) {
+                currentSizeIndex = parseInt(savedSize);
+                // Make sure index is valid with new digital option
+                if (currentSizeIndex >= sizeOptions.length) {
+                    currentSizeIndex = 2; // Default to 4x4 so next click shows DIGITAL
+                }
+                const currentSize = sizeOptions[currentSizeIndex];
+                const sizeBtn = document.getElementById('size-btn');
+                sizeBtn.textContent = currentSize.display;
+                sizeBtn.className = `size-btn size-${currentSize.size}`;
+                document.getElementById('size-price').textContent = `$${currentSize.price} each`;
+                document.getElementById('price-subtitle').textContent = `$${currentSize.price} EACH`;
+                // Update grid class
+                document.getElementById('sticker-grid').className = `sticker-grid size-${currentSize.size}`;
+                
+                // Update description for digital mode
+                if (currentSize.size === 'digital') {
+                    document.querySelector('.description').textContent = 'Add modules to your Eurogrid collection';
+                } else {
+                    document.querySelector('.description').textContent = 'Physical purchases unlock digital version';
+                }
+            }
+            
+            // Load selections for all sizes
+            const saved = localStorage.getItem('sticker-selections');
+            if (saved) {
+                const allSelections = JSON.parse(saved);
+                // Direct assignment since they're already objects with quantities
+                Object.keys(allSelections).forEach(size => {
+                    if (allSelections[size]) {
+                        stickerSelections[size] = allSelections[size];
+                    }
+                });
+                updateCart();
+            }
+        }
+        
+        // Checkout
+        function checkout() {
+            // Check if any stickers selected across all sizes
+            let hasItems = false;
+            Object.values(stickerSelections).forEach(selections => {
+                if (Object.keys(selections).length > 0) hasItems = true;
+            });
+            
+            if (!hasItems) {
+                alert('Please select some stickers first');
+                return;
+            }
+            
+            // Combine all selections into cart with quantities
+            const cartItems = [];
+            
+            // Add digital items to cart
+            const digitalSelections = stickerSelections['digital'];
+            Object.entries(digitalSelections).forEach(([stickerId, quantity]) => {
+                const sticker = printifyProducts.find(p => p.id === stickerId);
+                if (sticker && quantity > 0) {
+                    cartItems.push({
+                        productId: stickerId,
+                        title: `${sticker.title} (DIGITAL)`,
+                        price: 2,
+                        image: sticker.image,
+                        quantity: quantity,
+                        category: 'digital-stickers',
+                        isDigital: true
+                    });
+                }
+            });
+            
+            sizeOptions.forEach((option) => {
+                const selections = stickerSelections[option.size];
+                
+                Object.entries(selections).forEach(([stickerId, quantity]) => {
+                    const sticker = printifyProducts.find(p => p.id === stickerId);
+                    if (sticker && quantity > 0) {
+                        // Find the correct variant for this size
+                        // Look for variants with matching size in name (e.g., "2x2", "3x3", "4x4")
+                        let variant = sticker.variants.find(v => {
+                            const variantName = v.name.toLowerCase();
+                            // Check for size patterns like "2x2", "2 x 2", "2\"x2\"", etc.
+                            return variantName.includes(option.size) || 
+                                   variantName.includes(option.size.replace('x', ' x ')) ||
+                                   variantName.includes(option.size.replace('x', '"x')) ||
+                                   variantName.includes(option.size.charAt(0) + '"');
+                        });
+                        
+                        // Fallback to first variant if no match found
+                        if (!variant && sticker.variants.length > 0) {
+                            variant = sticker.variants[0];
+                        }
+                        
+                        cartItems.push({
+                            productId: stickerId,
+                            title: `${sticker.title} (${option.size})`,
+                            price: option.price,
+                            image: sticker.image,
+                            quantity: quantity,
+                            category: 'stickers',
+                            size: option.size,
+                            variantId: variant?.id,
+                            variantName: variant?.name
+                        });
+                    }
+                });
+            });
+            
+            localStorage.setItem('cart', JSON.stringify(cartItems));
+            window.location.href = 'checkout.html';
+        }
+        
+        // Toggle cart sidebar
+        function toggleCart() {
+            const sideCart = document.getElementById('side-cart');
+            const overlay = document.getElementById('cart-overlay');
+            
+            if (sideCart.classList.contains('open')) {
+                sideCart.classList.remove('open');
+                overlay.classList.remove('open');
+            } else {
+                sideCart.classList.add('open');
+                overlay.classList.add('open');
+                updateSideCart();
+            }
+        }
+        
+        // Update side cart display
+        function updateSideCart() {
+            const cartItemsDiv = document.getElementById('side-cart-items');
+            cartItemsDiv.innerHTML = '';
+            
+            let hasItems = false;
+            let total = 0;
+            
+            sizeOptions.forEach(option => {
+                const selections = stickerSelections[option.size];
+                Object.entries(selections).forEach(([stickerId, quantity]) => {
+                    if (quantity > 0) {
+                        hasItems = true;
+                        const sticker = printifyProducts.find(p => p.id === stickerId);
+                        if (sticker) {
+                            total += quantity * option.price;
+                            
+                            const itemDiv = document.createElement('div');
+                            itemDiv.className = 'cart-item';
+                            itemDiv.innerHTML = `
+                                <img src="${sticker.image}?width=120" alt="${sticker.title}">
+                                <div class="cart-item-info">
+                                    <div class="cart-item-title">${sticker.title} (${option.size})</div>
+                                    <div class="cart-item-price">$${option.price} x ${quantity}</div>
+                                </div>
+                                <div class="cart-item-quantity">
+                                    <span>Qty: ${quantity}</span>
+                                </div>
+                                <span class="cart-item-remove" onclick="removeFromCart('${stickerId}', '${option.size}')">X</span>
+                            `;
+                            cartItemsDiv.appendChild(itemDiv);
+                        }
+                    }
+                });
+            });
+            
+            if (!hasItems) {
+                cartItemsDiv.innerHTML = '<p style="text-align: center; color: #999;">Your cart is empty</p>';
+            }
+            
+            document.getElementById('side-cart-total').textContent = `$${total}`;
+        }
+        
+        // Remove item from cart
+        function removeFromCart(stickerId, size) {
+            delete stickerSelections[size][stickerId];
+            
+            // Update the main grid if we're on that size
+            if (sizeOptions[currentSizeIndex].size === size) {
+                const item = document.querySelector(`[data-id="${stickerId}"]`);
+                if (item) {
+                    item.classList.remove('selected');
+                    const btn = item.querySelector('.quantity-btn');
+                    if (btn) btn.remove();
+                }
+            }
+            
+            updateCart();
+            updateSideCart();
+            saveCart();
+        }
+    </script>
+    
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+    
+    <!-- Side Cart -->
+    <div class="side-cart" id="side-cart">
+        <div class="side-cart-header">
+            <h2>Your Cart</h2>
+            <button class="side-cart-close" onclick="toggleCart()">X</button>
+        </div>
+        <div class="side-cart-items" id="side-cart-items">
+            <!-- Cart items will be added here -->
+        </div>
+        <div class="side-cart-footer">
+            <div class="side-cart-total">
+                <span>Total:</span>
+                <span id="side-cart-total">$0</span>
+            </div>
+            <button class="side-cart-checkout" onclick="checkout(); toggleCart();">CHECKOUT</button>
+        </div>
+    </div>
+</body>
+</html>

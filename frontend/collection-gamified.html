@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>eurorack.store - Digital Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            overflow-x: hidden;
+        }
+        
+        /* Fixed Header Bar */
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+        }
+        
+        /* Coin Balance Display */
+        .coin-balance {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            padding: 8px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 10px rgba(255,215,0,0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+        }
+        
+        .coin-icon {
+            font-size: 1.5rem;
+            animation: spin 3s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .coin-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .buy-coins-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: 2px solid #000;
+            padding: 5px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            animation: shine 2s linear infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes shine {
+            0% { background-position: -100px; }
+            100% { background-position: 200px; }
+        }
+        
+        .buy-coins-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255,215,0,0.6);
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .cart-counter.has-items {
+            background: #FFB6C1;
+        }
+        
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .checkout-btn {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .checkout-btn:hover {
+            background: #333;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 100px;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+        
+        /* Coin Packages Modal */
+        .coin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .coin-modal.open {
+            display: flex;
+        }
+        
+        .coin-packages {
+            background: white;
+            padding: 40px;
+            border: 4px solid #000;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .packages-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+        
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .coin-package {
+            border: 3px solid #FFD700;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            background: linear-gradient(135deg, #fff 0%, #fffacd 100%);
+        }
+        
+        .coin-package:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+            border-color: #FFA500;
+        }
+        
+        .coin-package.popular {
+            border-color: #FF1493;
+            background: linear-gradient(135deg, #FFE4E1 0%, #FFB6C1 100%);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background: #FF1493;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .package-coins {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .package-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .package-bonus {
+            color: #00C851;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .close-modal {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 30px;
+            background: #000;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        
+        .progress-bar {
+            background: #f0f0f0;
+            height: 30px;
+            border: 2px solid #000;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #FFB6C1, #C8B6DB, #87CEEB);
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: #000;
+            color: white;
+        }
+        
+        /* Sticker Grid */
+        .sticker-grid {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            line-height: 0;
+            margin: 0 auto;
+            padding: 0;
+            justify-content: center;
+        }
+        
+        .sticker-item {
+            width: calc(100vw / 6);
+            max-width: 250px;
+            height: calc(100vw / 6);
+            max-height: 250px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            line-height: 0;
+            border: 4px solid transparent;
+            flex-shrink: 0;
+        }
+        
+        .sticker-item img {
+            width: 120%;
+            height: 120%;
+            object-fit: cover;
+            display: block;
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            transition: all 0.3s;
+        }
+        
+        /* Unowned state - grayed out */
+        .sticker-item.locked img {
+            filter: grayscale(1) brightness(0.4);
+            opacity: 0.5;
+        }
+        
+        .sticker-item.locked:hover img {
+            filter: grayscale(0.5) brightness(0.6);
+            opacity: 0.7;
+        }
+        
+        /* Owned state */
+        .sticker-item.owned {
+            border-color: #00ff88;
+        }
+        
+        .sticker-item.owned img {
+            filter: none;
+            opacity: 1;
+        }
+        
+        /* Instant unlock button */
+        .instant-unlock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: 3px solid #000;
+            padding: 15px 25px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+        }
+        
+        .sticker-item.locked:hover .instant-unlock {
+            opacity: 1;
+            animation: pulse-unlock 1s infinite;
+        }
+        
+        @keyframes pulse-unlock {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        .coin-cost {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        /* Purchase options menu */
+        .purchase-options {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            padding: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .sticker-item.locked:hover .purchase-options {
+            opacity: 1;
+        }
+        
+        .purchase-btn {
+            background: white;
+            color: black;
+            border: none;
+            padding: 6px 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .purchase-btn:hover {
+            background: #FFB6C1;
+            transform: scale(1.05);
+        }
+        
+        /* Unlock animation */
+        @keyframes unlock-animation {
+            0% {
+                transform: scale(1) rotate(0deg);
+                filter: grayscale(1) brightness(0.4);
+            }
+            50% {
+                transform: scale(1.2) rotate(180deg);
+                filter: grayscale(0.5) brightness(1);
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+                filter: none;
+            }
+        }
+        
+        .unlocking img {
+            animation: unlock-animation 1s ease-out;
+        }
+        
+        /* Floating +coins animation */
+        .coin-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            pointer-events: none;
+            animation: float-up 2s ease-out forwards;
+            z-index: 100;
+        }
+        
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -200%);
+            }
+        }
+        
+        /* Daily rewards banner */
+        .daily-rewards {
+            background: linear-gradient(90deg, #FF6B6B, #FFD93D, #6BCF7F, #4ECDC4);
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            animation: rainbow 5s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes rainbow {
+            0%, 100% { background-position: 0%; }
+            50% { background-position: 100%; }
+        }
+        
+        .rewards-text {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 1.1rem;
+        }
+        
+        .claim-daily-btn {
+            background: white;
+            color: #000;
+            border: none;
+            padding: 8px 20px;
+            margin-left: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 20px;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+            50% { box-shadow: 0 0 20px rgba(255,255,255,0.8); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='stickers.html'">EURORACK.STORE</div>
+        
+        <!-- Coin Balance Display -->
+        <div class="coin-balance">
+            <span class="coin-icon">🪙</span>
+            <span class="coin-amount" id="coin-amount">100</span>
+            <button class="buy-coins-btn" onclick="openCoinShop()">BUY COINS</button>
+        </div>
+        
+        <div class="cart-area">
+            <div class="cart-total">$<span id="total-amount">0</span></div>
+            <div class="cart-counter" id="cart-counter" onclick="window.location.href='stickers.html'">
+                CART (<span id="cart-count">0</span>)
+            </div>
+            <button class="checkout-btn" onclick="window.location.href='checkout.html'">CHECKOUT</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Daily Rewards Banner -->
+        <div class="daily-rewards" id="daily-rewards" style="display: none;">
+            <span class="rewards-text">🎁 DAILY REWARD AVAILABLE! GET 50 FREE COINS!</span>
+            <button class="claim-daily-btn" onclick="claimDailyReward()">CLAIM NOW</button>
+        </div>
+        
+        <div class="title-section">
+            <h1 class="page-title">MY COLLECTION</h1>
+            <div class="subtitle">Unlock instantly with RACK COINS or buy physical</div>
+            <div class="description">100 coins = 1 sticker unlock • Earn coins daily!</div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill">0%</div>
+                </div>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-btn active" onclick="filterStickers('all')">ALL</button>
+                <button class="filter-btn" onclick="filterStickers('owned')">OWNED</button>
+                <button class="filter-btn" onclick="filterStickers('locked')">LOCKED</button>
+            </div>
+        </div>
+
+        <!-- Sticker Grid -->
+        <div class="sticker-grid" id="sticker-grid"></div>
+    </div>
+    
+    <!-- Coin Shop Modal -->
+    <div class="coin-modal" id="coin-modal">
+        <div class="coin-packages">
+            <h2 class="packages-title">RACK COIN SHOP</h2>
+            <div class="packages-grid">
+                <div class="coin-package" onclick="buyCoins(100, 1)">
+                    <div class="package-coins">100</div>
+                    <div class="package-price">$1</div>
+                    <div class="package-bonus">1 Sticker</div>
+                </div>
+                
+                <div class="coin-package popular" onclick="buyCoins(500, 4)">
+                    <span class="popular-badge">BEST VALUE</span>
+                    <div class="package-coins">500</div>
+                    <div class="package-price">$4</div>
+                    <div class="package-bonus">5 Stickers + SAVE 20%</div>
+                </div>
+                
+                <div class="coin-package" onclick="buyCoins(1000, 7)">
+                    <div class="package-coins">1,000</div>
+                    <div class="package-price">$7</div>
+                    <div class="package-bonus">10 Stickers + SAVE 30%</div>
+                </div>
+                
+                <div class="coin-package" onclick="buyCoins(2500, 15)">
+                    <div class="package-coins">2,500</div>
+                    <div class="package-price">$15</div>
+                    <div class="package-bonus">25 Stickers + SAVE 40%</div>
+                </div>
+            </div>
+            <button class="close-modal" onclick="closeCoinShop()">CLOSE</button>
+        </div>
+    </div>
+
+    <script src="printify-products.js"></script>
+    <script>
+        // Game state
+        let myCollection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+        let rackCoins = parseInt(localStorage.getItem('rack-coins') || '100');
+        let lastDailyReward = localStorage.getItem('last-daily-reward');
+        let currentFilter = 'all';
+        const COIN_COST = 100; // Cost to unlock one sticker
+        
+        // Initialize coins display
+        function updateCoinDisplay() {
+            document.getElementById('coin-amount').textContent = rackCoins.toLocaleString();
+            localStorage.setItem('rack-coins', rackCoins.toString());
+        }
+        
+        // Check daily reward availability
+        function checkDailyReward() {
+            const now = new Date();
+            const today = now.toDateString();
+            
+            if (lastDailyReward !== today) {
+                document.getElementById('daily-rewards').style.display = 'block';
+            }
+        }
+        
+        // Claim daily reward
+        function claimDailyReward() {
+            const now = new Date();
+            const today = now.toDateString();
+            
+            if (lastDailyReward !== today) {
+                rackCoins += 50;
+                lastDailyReward = today;
+                localStorage.setItem('last-daily-reward', today);
+                document.getElementById('daily-rewards').style.display = 'none';
+                updateCoinDisplay();
+                
+                // Show floating animation
+                showCoinAnimation(null, '+50 DAILY BONUS!');
+            }
+        }
+        
+        // Open coin shop
+        function openCoinShop() {
+            document.getElementById('coin-modal').classList.add('open');
+        }
+        
+        // Close coin shop
+        function closeCoinShop() {
+            document.getElementById('coin-modal').classList.remove('open');
+        }
+        
+        // Buy coins (simplified - in production would process payment)
+        function buyCoins(amount, price) {
+            if (confirm(`Purchase ${amount.toLocaleString()} RACK COINS for $${price}?\n\nUnlock ${Math.floor(amount/100)} stickers instantly!`)) {
+                rackCoins += amount;
+                updateCoinDisplay();
+                closeCoinShop();
+                showCoinAnimation(null, `+${amount} COINS!`);
+                
+                // In production, process payment here
+                alert(`Success! You now have ${rackCoins} RACK COINS!`);
+            }
+        }
+        
+        // Show coin animation
+        function showCoinAnimation(element, text) {
+            const popup = document.createElement('div');
+            popup.className = 'coin-popup';
+            popup.textContent = text;
+            
+            if (element) {
+                element.appendChild(popup);
+            } else {
+                document.body.appendChild(popup);
+            }
+            
+            setTimeout(() => popup.remove(), 2000);
+        }
+        
+        // Instant unlock with coins
+        function unlockWithCoins(stickerId, stickerTitle, element) {
+            if (rackCoins >= COIN_COST) {
+                // Deduct coins
+                rackCoins -= COIN_COST;
+                updateCoinDisplay();
+                
+                // Add to collection
+                myCollection[stickerTitle] = {
+                    unlockedDate: new Date().toISOString(),
+                    points: 100,
+                    unlockedWithCoins: true
+                };
+                localStorage.setItem('digital-collection', JSON.stringify(myCollection));
+                
+                // Animate unlock
+                element.classList.add('unlocking');
+                element.classList.remove('locked');
+                element.classList.add('owned');
+                
+                // Show coin animation
+                showCoinAnimation(element, '-100 🪙');
+                
+                // Reload after animation
+                setTimeout(() => {
+                    loadStickers();
+                }, 1000);
+            } else {
+                // Not enough coins - prompt to buy
+                if (confirm(`Not enough RACK COINS!\n\nYou need ${COIN_COST} coins\nYou have ${rackCoins} coins\n\nBuy more coins?`)) {
+                    openCoinShop();
+                }
+            }
+        }
+        
+        function loadStickers() {
+            const grid = document.getElementById('sticker-grid');
+            grid.innerHTML = '';
+            
+            let stickers = printifyProducts.filter(p => p.category === 'stickers');
+            
+            // Sort stickers by title (Mod-01, Mod-02, etc.)
+            stickers.sort((a, b) => {
+                const getNumber = (title) => {
+                    const match = title.match(/Mod-(\d+)/);
+                    return match ? parseInt(match[1]) : 999;
+                };
+                return getNumber(a.title) - getNumber(b.title);
+            });
+            
+            // Apply filter
+            if (currentFilter === 'owned') {
+                stickers = stickers.filter(s => myCollection[s.title]);
+            } else if (currentFilter === 'locked') {
+                stickers = stickers.filter(s => !myCollection[s.title]);
+            }
+            
+            stickers.forEach(sticker => {
+                const isOwned = myCollection[sticker.title];
+                const item = document.createElement('div');
+                item.className = `sticker-item ${isOwned ? 'owned' : 'locked'}`;
+                
+                item.innerHTML = `
+                    <img src="${sticker.image}?width=600" alt="${sticker.title}">
+                    ${!isOwned ? `
+                        <button class="instant-unlock" onclick="event.stopPropagation(); unlockWithCoins('${sticker.id}', '${sticker.title}', this.parentElement)">
+                            <div class="coin-cost">
+                                <span>UNLOCK</span>
+                                <span>100 🪙</span>
+                            </div>
+                        </button>
+                        <div class="purchase-options">
+                            <button class="purchase-btn" onclick="event.stopPropagation(); purchaseSize('${sticker.id}', '${sticker.title}', '2x2', 5)">
+                                <span>2x2 PHYSICAL</span><span>$5</span>
+                            </button>
+                            <button class="purchase-btn" onclick="event.stopPropagation(); purchaseSize('${sticker.id}', '${sticker.title}', '3x3', 7)">
+                                <span>3x3 PHYSICAL</span><span>$7</span>
+                            </button>
+                            <button class="purchase-btn" onclick="event.stopPropagation(); purchaseSize('${sticker.id}', '${sticker.title}', '4x4', 10)">
+                                <span>4x4 PHYSICAL</span><span>$10</span>
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+                
+                grid.appendChild(item);
+            });
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            const total = printifyProducts.filter(p => p.category === 'stickers').length;
+            const owned = Object.keys(myCollection).length;
+            const percentage = Math.round((owned / total) * 100);
+            
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-fill').textContent = percentage + '%';
+            
+            updateCart();
+        }
+        
+        function updateCart() {
+            // Calculate total across all sizes
+            let totalCount = 0;
+            let totalAmount = 0;
+            
+            const cartSelections = JSON.parse(localStorage.getItem('sticker-selections') || '{"2x2":{},"3x3":{},"4x4":{}}');
+            const prices = {'2x2': 5, '3x3': 7, '4x4': 10};
+            
+            Object.entries(cartSelections).forEach(([size, items]) => {
+                Object.values(items).forEach(quantity => {
+                    if (typeof quantity === 'number') {
+                        totalCount += quantity;
+                        totalAmount += quantity * (prices[size] || 5);
+                    }
+                });
+            });
+            
+            document.getElementById('cart-count').textContent = totalCount.toString();
+            document.getElementById('total-amount').textContent = totalAmount.toString();
+            
+            const counter = document.getElementById('cart-counter');
+            if (totalCount > 0) {
+                counter.classList.add('has-items');
+            } else {
+                counter.classList.remove('has-items');
+            }
+        }
+        
+        function filterStickers(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadStickers();
+        }
+        
+        function purchaseSize(stickerId, stickerTitle, size, price) {
+            const sizeKey = size.replace('x', 'x');
+            const cart = JSON.parse(localStorage.getItem('sticker-selections') || '{"2x2":{},"3x3":{},"4x4":{}}');
+            
+            if (!cart[sizeKey]) cart[sizeKey] = {};
+            
+            if (cart[sizeKey][stickerId]) {
+                cart[sizeKey][stickerId]++;
+            } else {
+                cart[sizeKey][stickerId] = 1;
+            }
+            
+            localStorage.setItem('sticker-selections', JSON.stringify(cart));
+            
+            const sizeIndex = size === '2x2' ? 0 : size === '3x3' ? 1 : 2;
+            localStorage.setItem('sticker-size', sizeIndex.toString());
+            
+            updateCart();
+        }
+        
+        // Initialize
+        updateCoinDisplay();
+        checkDailyReward();
+        loadStickers();
+        
+        // Give bonus coins for first time visitors
+        if (!localStorage.getItem('first-visit-bonus')) {
+            rackCoins += 200;
+            localStorage.setItem('first-visit-bonus', 'true');
+            updateCoinDisplay();
+            setTimeout(() => {
+                alert('🎉 WELCOME BONUS! You received 200 FREE RACK COINS!');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

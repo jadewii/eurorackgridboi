@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>EUROGRID - Starters v1755030382</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid #000;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .jacknut-ring {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 130px;
+            padding: 40px 0 0 0;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 10px;
+            letter-spacing: 5px;
+        }
+        
+        .page-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tab {
+            padding: 10px 25px;
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .filter-tab:hover {
+            background: #f0f0f0;
+        }
+        
+        .filter-tab.active {
+            background: #000;
+            color: white;
+        }
+        
+        /* Cases Grid */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 30px;
+            padding: 0 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .case-card {
+            background: white;
+            border: 3px solid #000;
+            overflow: hidden;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .rack-with-accessories {
+            background: #f5f5f5;
+            padding: 40px;
+            position: relative;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .rack-with-accessories.special-fill {
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 4px;
+            aspect-ratio: 1.5;
+            min-height: auto;
+        }
+        
+        .rack-with-accessories.special-fill .rack-display {
+            display: contents;
+            border: none;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .rack-with-accessories.special-fill::before,
+        .rack-with-accessories.special-fill::after {
+            content: '';
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            height: 2px;
+            background: #444;
+        }
+        
+        .rack-with-accessories.special-fill::before { top: 5px; }
+        .rack-with-accessories.special-fill::after { bottom: 5px; }
+        
+        .accessory-decoration {
+            position: absolute;
+            z-index: 5;
+            width: 80px;
+            height: 100px;
+            cursor: move;
+            transition: opacity 0.2s;
+        }
+        
+        .accessory-decoration.dragging {
+            opacity: 0.7;
+            z-index: 100;
+        }
+        
+        .accessory-decoration img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .accessory-decoration.plant-1 {
+            bottom: -20px;
+            left: -60px;
+        }
+        
+        .accessory-decoration.plant-2 {
+            bottom: -20px;
+            right: -60px;
+        }
+        
+        .accessory-decoration.plant-3 {
+            top: -30px;
+            left: 50px;
+        }
+        
+        .accessory-decoration.plant-4 {
+            top: -30px;
+            right: 50px;
+        }
+        
+        /* Rack Display */
+        .rack-display {
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 4px;
+            width: 400px;
+            aspect-ratio: 1;
+            margin: 0 auto;
+            border: 3px solid #000;
+            position: relative;
+        }
+        
+        .rack-display.extended-kit {
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            width: 1050px;
+            height: 370px;
+            padding: 10px 0;
+            box-sizing: border-box;
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 3px solid #000;
+        }
+        
+        .rack-display::before,
+        .rack-display::after {
+            content: '';
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            height: 2px;
+            background: #444;
+        }
+        
+        .rack-display::before { top: 5px; }
+        .rack-display::after { bottom: 5px; }
+        
+        .module-slot {
+            background: #3a3a3a;
+            border: 1px solid #555;
+            aspect-ratio: 1;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-slot.powered {
+            /* Glow only appears after video loads */
+        }
+        
+        .module-slot.powered.video-loaded {
+            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Video module styles */
+        .module-video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .module-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        /* Blur preview while loading */
+        .module-video-container.loading {
+            filter: blur(8px);
+            transform: scale(1.1);
+        }
+        
+        /* Pause videos when dragging for smooth performance */
+        body.dragging .module-video {
+            display: none;
+        }
+        
+        .case-info {
+            padding: 20px;
+            background: white;
+        }
+        
+        .case-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .case-genre {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #f0f0f0;
+            border: 2px solid #000;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .case-genre.techno { background: #FF1493; color: white; }
+        .case-genre.ambient { background: #87CEEB; }
+        .case-genre.experimental { background: #FFD700; }
+        .case-genre.classic { background: #90EE90; }
+        
+        .case-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .case-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .buy-button {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #000;
+            border: 3px solid #000;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .buy-button:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .buy-button.powered {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+        
+        .buy-button.powered:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .jacknut-icon {
+            width: 25px;
+            height: 25px;
+        }
+        
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background: #FF1493;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: 2px solid #000;
+            z-index: 10;
+            text-transform: uppercase;
+        }
+        
+        .badge.bestseller { background: #00FF00; color: #000; }
+        .badge.new { background: #00CED1; }
+        .badge.limited { background: #FF4500; }
+        
+        .best-value {
+            border-color: #FFD700;
+            border-width: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
+        <div class="cart-area">
+            <div class="profile-avatar-wrapper" onclick="window.location.href='profile.html'">
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-ring" alt="ring">
+                <div class="profile-avatar">J</div>
+            </div>
+            <button class="cart-counter" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px;">
+                <span id="credits">100</span>
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 35px; height: 35px;" alt="HP">
+            </button>
+            <button class="cart-counter" onclick="window.location.href='collection.html'">MODULES</button>
+            <button class="cart-counter" onclick="window.location.href='rack-shop.html'">RACK SHOP</button>
+            <button class="cart-counter" onclick="window.location.href='module-packs.html'">MODULE PACKS</button>
+            <button class="cart-counter" onclick="window.location.href='vibe-shop.html'">VIBE SHOP</button>
+            <button class="cart-counter" onclick="window.location.href='starter-kits.html'">STARTER KITS</button>
+            <button class="cart-counter" onclick="window.location.href='prebuilt-cases.html'">SYSTEMS</button>
+            <button class="cart-counter" onclick="window.location.href='starters.html'" style="background: #000; color: white;">STARTERS</button>
+            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
+                BUY <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 20px; height: 20px; vertical-align: middle;" alt="HP">
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1 class="page-title">STARTERS</h1>
+        <p class="page-subtitle">Pre-configured racks with room to grow - perfect for beginners!</p>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <div class="filter-tab active" onclick="filterCases('all')">ALL CASES</div>
+            
+            <!-- Case Size Filters -->
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="font-weight: bold; text-transform: uppercase;">Size:</span>
+                <div class="filter-tab" onclick="filterBySize('3U')">3U</div>
+                <div class="filter-tab" onclick="filterBySize('6U')">6U</div>
+                <div class="filter-tab" onclick="filterBySize('9U')">9U</div>
+                <div class="filter-tab" onclick="filterBySize('12U')">12U</div>
+            </div>
+            
+            <!-- Case Length Filters -->
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="font-weight: bold; text-transform: uppercase;">Length:</span>
+                <div class="filter-tab" onclick="filterByLength('60HP')">60HP</div>
+                <div class="filter-tab" onclick="filterByLength('90HP')">90HP</div>
+                <div class="filter-tab" onclick="filterByLength('120HP')">120HP</div>
+                <div class="filter-tab" onclick="filterByLength('150HP')">150HP</div>
+                <div class="filter-tab" onclick="filterByLength('180HP')">180HP</div>
+            </div>
+            
+            <!-- Style Filters -->
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="font-weight: bold; text-transform: uppercase;">Style:</span>
+                <div class="filter-tab" onclick="filterByStyle('classic')">CLASSIC</div>
+                <div class="filter-tab" onclick="filterByStyle('modern')">MODERN</div>
+                <div class="filter-tab" onclick="filterByStyle('thinline')">THINLINE</div>
+                <div class="filter-tab" onclick="filterByStyle('wood')">WOOD</div>
+            </div>
+        </div>
+        
+        <!-- Cases Grid -->
+        <div class="cases-grid">
+            
+            <!-- 30HP 3U Pod -->
+            <div class="case-card" data-genre="techno" data-style="modern" data-size="3U" data-length="30HP">
+                <div class="badge">POD</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="display: grid; grid-template-rows: 1fr; grid-template-columns: 1fr; padding: 15px 0; width: 200px; height: 230px; box-sizing: border-box; background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%); border: 3px solid #000;">
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/01.png'); background-size: cover; background-position: center;">
+                        </div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">30HP 3U <div class="color-swatches" data-case="30hp-3u-modern" style="display: flex; gap: 2px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #C0C0C0; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#C0C0C0')"></span></div></div>
+                    <div class="case-genre techno">POD</div>
+                    <div class="case-description">
+                        Ultra-compact single module pod. Perfect for testing or minimal setups!
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 1 Powered Module</div>
+                        <div class="stat-item">⚡ Fully Powered</div>
+                        <div class="stat-item">🎛️ 30HP 3U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('pod-mini', 15)">
+                        15 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- LVL. 0 (1x2) -->
+            <div class="case-card" data-genre="techno" data-modules="2" data-style="modern" data-size="3U" data-length="60HP">
+                <div class="badge">STARTER</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: 1fr; grid-template-columns: repeat(2, 1fr); padding: 15px 0; width: 400px; height: 230px; box-sizing: border-box;">
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">60HP 3U <div class="color-swatches" data-case="60hp-3u-modern" style="display: flex; gap: 2px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #C0C0C0; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#C0C0C0')"></span></div></div>
+                    <div class="case-genre techno">STARTER</div>
+                    <div class="case-description">
+                        Compact single row starter case.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 0 Powered Modules</div>
+                        <div class="stat-item">⚡ 2 Static Modules</div>
+                        <div class="stat-item">🎛️ 60HP 3U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('lvl-0', 15)">
+                        15 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- LVL. 0 Full (2x2 with padding) -->
+            <div class="case-card" data-genre="techno" data-modules="4" data-style="modern" data-size="6U" data-length="60HP">
+                <div class="badge">STARTER</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); padding: 10px 0; width: 350px; height: 370px; box-sizing: border-box;">
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">60HP 6U <div class="color-swatches" data-case="60hp-6u-modern" style="display: flex; gap: 2px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #C0C0C0; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#C0C0C0')"></span></div></div>
+                    <div class="case-genre techno">STARTER</div>
+                    <div class="case-description">
+                        Two-row starter with horizontal rails.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 0 Powered Modules</div>
+                        <div class="stat-item">⚡ 4 Static Modules</div>
+                        <div class="stat-item">🎛️ 60HP 6U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('lvl-0-5', 20)">
+                        20 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 60HP 6U Wood (Exact duplicate of second item with wood) -->
+            <div class="case-card" data-genre="techno" data-modules="4" data-style="wood" data-size="6U" data-length="60HP" style="display:none">
+                <div class="badge">WOOD</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); padding: 10px 0; width: 380px; height: 370px; box-sizing: border-box; background: #000; position: relative;">
+                        <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 15px; background: #8B6F47; z-index: 1;"></div>
+                        <div style="position: absolute; right: 0; top: 0; bottom: 0; width: 15px; background: #8B6F47; z-index: 1;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">60HP 6U Wood <div class="color-swatches" data-case="60hp-6u-wood" style="display: flex; gap: 2px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #8B6F47; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#8B6F47')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #6B5637; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#6B5637')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #A0522D; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#A0522D')"></span></div></div>
+                    <div class="case-genre techno">BOUTIQUE</div>
+                    <div class="case-description">
+                        Two-row starter with wood rails.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 0 Powered Modules</div>
+                        <div class="stat-item">⚡ 4 Static Modules</div>
+                        <div class="stat-item">🎛️ 60HP 6U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('60hp-6u-wood', 25)">
+                        25 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 60HP 6U Thinline (duplicate of 60HP 6U) -->
+            <div class="case-card" data-genre="techno" data-modules="4" data-style="thinline" data-size="6U" data-length="60HP" style="display:none">
+                <div class="badge">THINLINE</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); padding: 5px 0; width: 350px; height: 360px; box-sizing: border-box; border: 1px solid #666;">
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">60HP 6U Thinline <div class="color-swatches" data-case="60hp-6u-thinline" style="display: flex; gap: 2px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #999; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#999')"></span></div></div>
+                    <div class="case-genre techno">THINLINE</div>
+                    <div class="case-description">
+                        Ultra-thin minimal design.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 0 Powered Modules</div>
+                        <div class="stat-item">⚡ 4 Static Modules</div>
+                        <div class="stat-item">🎛️ 60HP 6U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('60hp-6u-thinline', 18)">
+                        18 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 60HP 6U Thin Border -->
+            <div class="case-card" data-genre="techno" data-modules="4" data-style="classic" data-size="6U" data-length="60HP" style="display:none">
+                <div class="badge">SLIM</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); width: 400px; height: 400px; box-shadow: inset 0 0 0 8px #333; background: #333;">
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">60HP 6U Slim <div class="color-swatches" data-case="60hp-6u-slim" style="display: flex; gap: 2px; flex-wrap: wrap; max-width: 100px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #FF1493; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF1493')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00FF00; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00FF00')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00CED1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00CED1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF4500; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF4500')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFD700; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFD700')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #9370DB; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#9370DB')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF69B4; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF69B4')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #4169E1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#4169E1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #DC143C; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#DC143C')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #32CD32; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#32CD32')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFF; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFFFFF')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #888; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#888888')"></span></div></div>
+                    <div class="case-genre techno">MODERN</div>
+                    <div class="case-description">
+                        Ultra-thin modern design.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 0 Powered Modules</div>
+                        <div class="stat-item">⚡ 4 Static Modules</div>
+                        <div class="stat-item">🎛️ 60HP 6U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('60hp-6u-slim', 22)">
+                        22 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- LVL. 1 (2x2) -->
+            <div class="case-card" data-genre="techno" data-modules="4" data-style="classic" data-size="6U" data-length="60HP" style="display:none">
+                <div class="badge">STARTER</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); width: 400px; height: 400px;">
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">60HP 6U Classic <div class="color-swatches" data-case="60hp-6u-classic" style="display: flex; gap: 2px; flex-wrap: wrap; max-width: 100px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #FF1493; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF1493')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00FF00; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00FF00')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00CED1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00CED1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF4500; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF4500')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFD700; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFD700')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #9370DB; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#9370DB')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF69B4; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF69B4')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #4169E1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#4169E1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #DC143C; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#DC143C')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #32CD32; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#32CD32')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFF; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFFFFF')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #888; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#888888')"></span></div></div>
+                    <div class="case-genre techno">STARTER</div>
+                    <div class="case-description">
+                        Classic two-row starter case.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 0 Powered Modules</div>
+                        <div class="stat-item">⚡ 4 Static Modules</div>
+                        <div class="stat-item">🎛️ 60HP 6U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('lvl-1', 25)">
+                        25 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- LVL. 2 (2x3) -->
+            <div class="case-card" data-genre="techno" data-modules="6" data-style="classic" data-size="6U" data-length="90HP">
+                <div class="badge limited">LIMITED</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(3, 1fr); width: 525px; height: 370px; padding: 10px 0; box-sizing: border-box; background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%); border: 3px solid #000;">
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">90HP 6U <div class="color-swatches" data-case="84hp-6u" style="display: flex; gap: 2px; flex-wrap: wrap; max-width: 100px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #FF1493; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF1493')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00FF00; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00FF00')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00CED1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00CED1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF4500; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF4500')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFD700; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFD700')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #9370DB; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#9370DB')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF69B4; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF69B4')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #4169E1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#4169E1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #DC143C; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#DC143C')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #32CD32; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#32CD32')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFF; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFFFFF')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #888; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#888888')"></span></div></div>
+                    <div class="case-genre techno">STARTER</div>
+                    <div class="case-description">
+                        Standard two-row case with more space.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 3 Powered Modules</div>
+                        <div class="stat-item">⚡ 3 Static Modules</div>
+                        <div class="stat-item">🎛️ 84HP 6U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('lvl-2', 45)">
+                        45 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 84HP 3U Modern -->
+            <div class="case-card" data-genre="techno" data-modules="3" data-style="modern" data-size="3U" data-length="90HP">
+                <div class="badge">MODERN</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: 1fr; grid-template-columns: repeat(3, 1fr); width: 525px; height: 185px; padding: 5px 0; box-sizing: border-box; background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%); border: 3px solid #000;">
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">90HP 3U <div class="color-swatches" data-case="84hp-3u-modern" style="display: flex; gap: 2px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #C0C0C0; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#C0C0C0')"></span></div></div>
+                    <div class="case-genre techno">MODERN</div>
+                    <div class="case-description">
+                        Wide single row modern case.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 1 Powered Module</div>
+                        <div class="stat-item">⚡ 2 Static Modules</div>
+                        <div class="stat-item">🎛️ 84HP 3U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('84hp-3u-modern', 28)">
+                        28 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Minimal Kit Card -->
+            <!-- Acid Box Card -->
+            <div class="case-card" data-genre="techno" data-modules="9" data-style="classic" data-size="9U" data-length="90HP">
+                <div class="badge limited">LIMITED</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(3, 1fr); grid-template-columns: repeat(3, 1fr); aspect-ratio: 1; background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%); border: 3px solid #000;">
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">90HP 9U <div class="color-swatches" style="display: flex; gap: 2px; flex-wrap: wrap; max-width: 100px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #FF1493; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF1493')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00FF00; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00FF00')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00CED1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00CED1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF4500; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF4500')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFD700; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFD700')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #9370DB; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#9370DB')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF69B4; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF69B4')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #4169E1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#4169E1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #DC143C; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#DC143C')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #32CD32; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#32CD32')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFF; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFFFFF')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #888; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#888888')"></span></div></div>
+                    <div class="case-genre techno">ACID</div>
+                    <div class="case-description">
+                        Classic 303-style acid basslines and squelchy filters. Limited edition colorway!
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 3 Powered Modules</div>
+                        <div class="stat-item">⚡ 4 Static Modules</div>
+                        <div class="stat-item">🎛️ 84HP 9U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('acid-box', 55)">
+                        55 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Acid Box Wide (3x4) -->
+            <div class="case-card" data-genre="techno" data-style="classic" data-size="9U" data-length="120HP">
+                <div class="badge limited">LIMITED</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(3, 1fr); grid-template-columns: repeat(4, 1fr); aspect-ratio: 1.333; width: 700px; background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%); border: 3px solid #000;">
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/35.png');"></div>
+                        
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/36.png');"></div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/37.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">120HP 9U <div class="color-swatches" style="display: flex; gap: 2px; flex-wrap: wrap; max-width: 100px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #FF1493; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF1493')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00FF00; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00FF00')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00CED1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00CED1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF4500; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF4500')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFD700; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFD700')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #9370DB; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#9370DB')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF69B4; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF69B4')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #4169E1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#4169E1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #DC143C; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#DC143C')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #32CD32; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#32CD32')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFF; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFFFFF')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #888; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#888888')"></span></div></div>
+                    <div class="case-genre techno">ACID</div>
+                    <div class="case-description">
+                        Classic 303-style acid basslines and squelchy filters. Limited edition colorway!
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 3 Powered Modules</div>
+                        <div class="stat-item">⚡ 7 Static Modules</div>
+                        <div class="stat-item">🎛️ 120HP 9U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('acid-box-wide', 65)">
+                        65 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 120HP 12U Compact (4x3) -->
+            <div class="case-card" data-genre="techno" data-style="classic" data-size="12U" data-length="120HP">
+                <div class="badge limited">COMPACT</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(4, 1fr); grid-template-columns: repeat(3, 1fr); aspect-ratio: 0.75; width: 400px; background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%); border: 3px solid #000;">
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/39.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/40.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">120HP 12U <div class="color-swatches" style="display: flex; gap: 2px; flex-wrap: wrap; width: 176px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #FF1493; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF1493')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00FF00; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00FF00')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00CED1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00CED1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF4500; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF4500')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFD700; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFD700')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #9370DB; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#9370DB')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF69B4; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF69B4')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #4169E1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#4169E1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #DC143C; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#DC143C')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #32CD32; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#32CD32')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFF; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFFFFF')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #888; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#888888')"></span></div></div>
+                    <div class="case-genre techno">COMPACT</div>
+                    <div class="case-description">
+                        Compact 4x3 grid. Perfect balance of power and portability!
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 4 Powered Modules</div>
+                        <div class="stat-item">⚡ 8 Static Modules</div>
+                        <div class="stat-item">🎛️ 120HP 12U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('compact-12u', 75)">
+                        75 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 120HP 6U Modern -->
+            <div class="case-card" data-genre="techno" data-style="modern" data-size="6U" data-length="120HP">
+                <div class="badge">MODERN</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(2, 1fr); grid-template-columns: repeat(4, 1fr); aspect-ratio: 2; width: 700px; background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%); border: 3px solid #000;">
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/36.png');"></div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/37.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">120HP 6U Modern <div class="color-swatches" data-case="120hp-6u-modern" style="display: flex; gap: 2px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #C0C0C0; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#C0C0C0')"></span></div></div>
+                    <div class="case-genre techno">MODERN</div>
+                    <div class="case-description">
+                        Wide modern two-row case.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 3 Powered Modules</div>
+                        <div class="stat-item">⚡ 5 Static Modules</div>
+                        <div class="stat-item">🎛️ 120HP 6U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('120hp-6u-modern', 52)">
+                        52 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Acid Box Large (4x5) -->
+            <div class="case-card" data-genre="techno" data-style="classic" data-size="12U" data-length="180HP">
+                <div class="badge limited">LIMITED</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(4, 1fr); grid-template-columns: repeat(5, 1fr); aspect-ratio: 1.25; width: 666px;">
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/35.png');"></div>
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/36.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.mp4">
+                            </div>
+                        </div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/37.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/38.png');"></div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/39.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/40.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/41.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/42.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">180HP 12U <div class="color-swatches" style="display: flex; gap: 2px; flex-wrap: wrap; max-width: 100px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #FF1493; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF1493')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00FF00; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00FF00')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00CED1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00CED1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF4500; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF4500')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFD700; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFD700')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #9370DB; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#9370DB')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF69B4; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF69B4')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #4169E1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#4169E1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #DC143C; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#DC143C')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #32CD32; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#32CD32')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFF; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFFFFF')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #888; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#888888')"></span></div></div>
+                    <div class="case-genre techno">ACID</div>
+                    <div class="case-description">
+                        Classic 303-style acid basslines and squelchy filters. Limited edition colorway!
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 5 Powered Modules</div>
+                        <div class="stat-item">⚡ 12 Static Modules</div>
+                        <div class="stat-item">🎛️ 168HP 12U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('acid-box-large', 95)">
+                        95 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            <!-- 180HP 12U #1 -->
+            <div class="case-card" data-genre="techno" data-style="classic" data-size="12U" data-length="180HP">
+                <div class="badge">1</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(4, 1fr); grid-template-columns: repeat(5, 1fr); aspect-ratio: 1.25; width: 666px;">
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/35.png');"></div>
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/36.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.mp4">
+                            </div>
+                        </div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/37.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/38.png');"></div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/39.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/40.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/41.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/42.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">180HP 12U #1 <div class="color-swatches" style="display: flex; gap: 2px; flex-wrap: wrap; max-width: 100px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #FF1493; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF1493')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00FF00; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00FF00')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00CED1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00CED1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF4500; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF4500')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFD700; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFD700')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #9370DB; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#9370DB')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF69B4; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF69B4')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #4169E1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#4169E1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #DC143C; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#DC143C')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #32CD32; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#32CD32')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFF; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFFFFF')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #888; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#888888')"></span></div></div>
+                    <div class="case-genre techno">1</div>
+                    <div class="case-description">
+                        Large setup #1 - Wide configuration for maximum patching flexibility.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 5 Powered Modules</div>
+                        <div class="stat-item">⚡ 15 Static Modules</div>
+                        <div class="stat-item">🎛️ 180HP 12U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('180hp-12u-1', 95)">
+                        95 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            <!-- 180HP 12U #2 -->
+            <div class="case-card" data-genre="techno" data-style="classic" data-size="12U" data-length="180HP">
+                <div class="badge">2</div>
+                <div class="rack-with-accessories">
+                    <div class="rack-display" style="grid-template-rows: repeat(4, 1fr); grid-template-columns: repeat(5, 1fr); aspect-ratio: 1.25; width: 666px;">
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/35.png');"></div>
+                        <div class="module-slot" style="background: #000; opacity: 0.8;"></div>
+                        
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/26.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/36.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.mp4">
+                            </div>
+                        </div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/27.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/28.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/37.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/38.png');"></div>
+                        
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/39.png');"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/40.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/41.png');"></div>
+                        <div class="module-slot" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/42.png');"></div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <div class="case-name" style="display: flex; justify-content: space-between; align-items: center; position: relative;">180HP 12U #2 <div class="color-swatches" style="display: flex; gap: 2px; flex-wrap: wrap; max-width: 100px; position: absolute; right: 0; top: -2px;"><span style="display: inline-block; width: 20px; height: 20px; background: #FF1493; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF1493')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00FF00; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00FF00')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #00CED1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#00CED1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF4500; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF4500')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFD700; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFD700')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #9370DB; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#9370DB')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FF69B4; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FF69B4')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #4169E1; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#4169E1')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #DC143C; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#DC143C')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #32CD32; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#32CD32')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #000; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#000000')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #FFF; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#FFFFFF')"></span><span style="display: inline-block; width: 20px; height: 20px; background: #888; border: 1px solid #333; cursor: pointer;" onclick="changeCaseColor(this, '#888888')"></span></div></div>
+                    <div class="case-genre techno">2</div>
+                    <div class="case-description">
+                        Large setup #2 - Wide configuration for maximum patching flexibility.
+                    </div>
+                    <div class="case-stats">
+                        <div class="stat-item">📦 5 Powered Modules</div>
+                        <div class="stat-item">⚡ 15 Static Modules</div>
+                        <div class="stat-item">🎛️ 180HP 12U</div>
+                    </div>
+                    <button class="buy-button powered" onclick="buyPrebuilt('180hp-12u-2', 95)">
+                        95 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Acid Box Wide Compact (2x4) -->
+                        50 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            
+            
+        </div>
+    </div>
+    
+    
+    <script>
+        // Force cache refresh
+        if (window.performance && performance.navigation.type == 1) {
+            // Page was reloaded
+            if (!window.location.href.includes('v=1755030382')) {
+                window.location.href = window.location.href.split('?')[0] + '?v=1755030382';
+            }
+        }
+        
+        // Filter cases by genre
+        function filterCases(genre) {
+            const cases = document.querySelectorAll('.case-card');
+            const tabs = document.querySelectorAll('.filter-tab');
+            
+            // Reset all filters
+            activeFilters = {
+                size: null,
+                length: null,
+                style: null
+            };
+            
+            // Update active tab
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent === 'ALL CASES') {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // For "ALL CASES", show only one variant per size combination
+            if (genre === 'all') {
+                const shownSizes = new Set();
+                
+                cases.forEach(caseCard => {
+                    const sizeKey = `${caseCard.dataset.length}-${caseCard.dataset.size}`;
+                    if (!shownSizes.has(sizeKey)) {
+                        caseCard.style.display = 'block';
+                        shownSizes.add(sizeKey);
+                    } else {
+                        caseCard.style.display = 'none';
+                    }
+                });
+            } else {
+                // Show all cases for other filters
+                cases.forEach(caseCard => {
+                    caseCard.style.display = 'block';
+                });
+            }
+        }
+        
+        // Track active filters
+        let activeFilters = {
+            size: null,
+            length: null,
+            style: null
+        };
+        
+        function applyFilters() {
+            const cases = document.querySelectorAll('.case-card');
+            
+            cases.forEach(caseCard => {
+                let show = true;
+                
+                // Check size filter
+                if (activeFilters.size && caseCard.dataset.size !== activeFilters.size) {
+                    show = false;
+                }
+                
+                // Check length filter
+                if (activeFilters.length && caseCard.dataset.length !== activeFilters.length) {
+                    show = false;
+                }
+                
+                // Check style filter
+                if (activeFilters.style && caseCard.dataset.style !== activeFilters.style) {
+                    show = false;
+                }
+                
+                caseCard.style.display = show ? 'block' : 'none';
+            });
+        }
+        
+        function filterBySize(size) {
+            const tabs = document.querySelectorAll('.filter-tab');
+            
+            // Toggle filter
+            if (activeFilters.size === size) {
+                activeFilters.size = null;
+                // Remove active class
+                tabs.forEach(tab => {
+                    if (tab.getAttribute('onclick') && tab.getAttribute('onclick').includes("'" + size + "'")) {
+                        tab.classList.remove('active');
+                    }
+                });
+            } else {
+                activeFilters.size = size;
+                // Update active tab
+                tabs.forEach(tab => {
+                    if (tab.getAttribute('onclick') && tab.getAttribute('onclick').includes('filterBySize')) {
+                        if (tab.getAttribute('onclick').includes("'" + size + "'")) {
+                            tab.classList.add('active');
+                        } else {
+                            tab.classList.remove('active');
+                        }
+                    }
+                });
+            }
+            
+            applyFilters();
+        }
+        
+        function filterByLength(length) {
+            const tabs = document.querySelectorAll('.filter-tab');
+            
+            // Toggle filter
+            if (activeFilters.length === length) {
+                activeFilters.length = null;
+                // Remove active class
+                tabs.forEach(tab => {
+                    if (tab.getAttribute('onclick') && tab.getAttribute('onclick').includes("'" + length + "'")) {
+                        tab.classList.remove('active');
+                    }
+                });
+            } else {
+                activeFilters.length = length;
+                // Update active tab
+                tabs.forEach(tab => {
+                    if (tab.getAttribute('onclick') && tab.getAttribute('onclick').includes('filterByLength')) {
+                        if (tab.getAttribute('onclick').includes("'" + length + "'")) {
+                            tab.classList.add('active');
+                        } else {
+                            tab.classList.remove('active');
+                        }
+                    }
+                });
+            }
+            
+            applyFilters();
+        }
+        
+        function filterByStyle(style) {
+            const tabs = document.querySelectorAll('.filter-tab');
+            
+            // Toggle filter
+            if (activeFilters.style === style) {
+                activeFilters.style = null;
+                // Remove active class
+                tabs.forEach(tab => {
+                    if (tab.textContent.toLowerCase() === style.toLowerCase()) {
+                        tab.classList.remove('active');
+                    }
+                });
+            } else {
+                activeFilters.style = style;
+                // Update active tab
+                tabs.forEach(tab => {
+                    if (tab.getAttribute('onclick') && tab.getAttribute('onclick').includes('filterByStyle')) {
+                        if (tab.textContent.toLowerCase() === style.toLowerCase()) {
+                            tab.classList.add('active');
+                        } else {
+                            tab.classList.remove('active');
+                        }
+                    }
+                });
+            }
+            
+            applyFilters();
+        }
+        
+        // Change case color function
+        function changeCaseColor(element, color) {
+            // Find the rack-display element
+            const caseCard = element.closest('.case-card');
+            const rackDisplay = caseCard.querySelector('.rack-display');
+            
+            // Check if it's a wood case with side panels
+            const woodPanels = rackDisplay.querySelectorAll('div[style*="position: absolute"]');
+            if (woodPanels.length > 0) {
+                // Change wood panel colors
+                woodPanels.forEach(panel => {
+                    if (panel.style.left === '0px' || panel.style.right === '0px') {
+                        panel.style.background = color;
+                    }
+                });
+            } else {
+                // Create darker shade for borders
+                const r = parseInt(color.slice(1,3), 16);
+                const g = parseInt(color.slice(3,5), 16); 
+                const b = parseInt(color.slice(5,7), 16);
+                const darkColor = '#' + Math.floor(r*0.6).toString(16).padStart(2,'0') + 
+                                       Math.floor(g*0.6).toString(16).padStart(2,'0') + 
+                                       Math.floor(b*0.6).toString(16).padStart(2,'0');
+                
+                // Change background for regular cases
+                const currentBg = rackDisplay.style.background;
+                if (currentBg.includes('linear-gradient')) {
+                    // Preserve gradient structure but change color
+                    rackDisplay.style.background = currentBg.replace(/#[0-9A-Fa-f]{3,6}/g, color);
+                } else {
+                    rackDisplay.style.background = color;
+                }
+                
+                // Handle box-shadow for slim case
+                if (rackDisplay.style.boxShadow && rackDisplay.style.boxShadow.includes('inset')) {
+                    rackDisplay.style.boxShadow = `inset 0 0 0 8px ${darkColor}`;
+                }
+                
+                // Handle border for other cases
+                if (rackDisplay.style.border && rackDisplay.style.border.includes('solid')) {
+                    rackDisplay.style.borderColor = darkColor;
+                }
+            }
+        }
+        
+        // Buy pre-built case function
+        function buyPrebuilt(caseName, price) {
+            const credits = parseInt(document.getElementById('credits').textContent);
+            
+            if (credits >= price) {
+                const displayName = caseName.replace('-', ' ').toUpperCase();
+                if (confirm(`Purchase ${displayName} STUDIO EDITION for ${price} jacknuts?`)) {
+                    // Update credits
+                    const newCredits = credits - price;
+                    document.getElementById('credits').textContent = newCredits;
+                    localStorage.setItem('rack-credits', newCredits);
+                    
+                    alert(`🎉 ${displayName} STUDIO EDITION purchased!`);
+                }
+            } else {
+                alert(`Insufficient jacknuts! You need ${price} but only have ${credits}.`);
+            }
+        }
+        
+        // Load credits
+        const savedCredits = localStorage.getItem('rack-credits') || '100';
+        document.getElementById('credits').textContent = savedCredits;
+        
+        // Position Editor Mode
+        let editMode = false;
+        let draggedElement = null;
+        let dragOffset = { x: 0, y: 0 };
+        
+        const editorBtn = document.getElementById('position-editor-btn');
+        editorBtn.onclick = toggleEditMode;
+        
+        function toggleEditMode() {
+            editMode = !editMode;
+            editorBtn.textContent = editMode ? '💾 SAVE POSITIONS' : '🎯 POSITION EDITOR';
+            editorBtn.style.background = editMode ? '#00FF00' : '#FFD700';
+            
+            const decorations = document.querySelectorAll('.accessory-decoration');
+            decorations.forEach(el => {
+                el.style.outline = editMode ? '2px dashed #FFD700' : 'none';
+            });
+            
+            if (!editMode) {
+                savePositions();
+            }
+        }
+        
+        function savePositions() {
+            const positions = {};
+            document.querySelectorAll('.case-card').forEach(card => {
+                const caseName = card.querySelector('.case-name').textContent;
+                positions[caseName] = {};
+                
+                card.querySelectorAll('.accessory-decoration').forEach(el => {
+                    const classList = Array.from(el.classList).join(' ');
+                    positions[caseName][classList] = {
+                        left: el.style.left || 'auto',
+                        top: el.style.top || 'auto',
+                        right: el.style.right || 'auto',
+                        bottom: el.style.bottom || 'auto'
+                    };
+                });
+            });
+            
+            localStorage.setItem('studio-plant-positions', JSON.stringify(positions));
+            console.log('Positions saved to localStorage:', positions);
+        }
+        
+        function loadPositions() {
+            const saved = localStorage.getItem('studio-plant-positions');
+            if (saved) {
+                const positions = JSON.parse(saved);
+                document.querySelectorAll('.case-card').forEach(card => {
+                    const caseName = card.querySelector('.case-name').textContent;
+                    if (positions[caseName]) {
+                        card.querySelectorAll('.accessory-decoration').forEach(el => {
+                            const classList = Array.from(el.classList).join(' ');
+                            if (positions[caseName][classList]) {
+                                const pos = positions[caseName][classList];
+                                el.style.left = pos.left;
+                                el.style.top = pos.top;
+                                el.style.right = pos.right;
+                                el.style.bottom = pos.bottom;
+                            }
+                        });
+                    }
+                });
+                console.log('Loaded saved positions from localStorage');
+            }
+        }
+        
+        // Load positions when page loads
+        loadPositions();
+        
+        // Make plants draggable
+        document.querySelectorAll('.accessory-decoration').forEach(el => {
+            el.addEventListener('mousedown', startDrag);
+        });
+        
+        function startDrag(e) {
+            if (!editMode) return;
+            
+            draggedElement = e.target.closest('.accessory-decoration');
+            if (!draggedElement) return;
+            
+            draggedElement.classList.add('dragging');
+            const rect = draggedElement.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+            
+            // Pause all videos when dragging starts
+            document.body.classList.add('dragging');
+            document.querySelectorAll('.module-video').forEach(video => {
+                video.dataset.wasPlaying = !video.paused;
+                video.pause();
+            });
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+            e.preventDefault();
+        }
+        
+        function drag(e) {
+            if (!draggedElement) return;
+            
+            const parent = draggedElement.closest('.rack-with-accessories');
+            const parentRect = parent.getBoundingClientRect();
+            
+            let newLeft = e.clientX - parentRect.left - dragOffset.x;
+            let newTop = e.clientY - parentRect.top - dragOffset.y;
+            
+            draggedElement.style.left = newLeft + 'px';
+            draggedElement.style.top = newTop + 'px';
+            draggedElement.style.right = 'auto';
+            draggedElement.style.bottom = 'auto';
+        }
+        
+        function stopDrag() {
+            if (draggedElement) {
+                draggedElement.classList.remove('dragging');
+                draggedElement = null;
+                
+                // Resume videos after dragging
+                document.body.classList.remove('dragging');
+                document.querySelectorAll('.module-video').forEach(video => {
+                    if (video.dataset.wasPlaying === 'true') {
+                        video.play().catch(e => console.log('Resume play failed'));
+                    }
+                });
+            }
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+        
+        // Lazy loading for videos with Intersection Observer
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const container = entry.target;
+                
+                if (entry.isIntersecting) {
+                    // Load and play video when visible
+                    if (!container.querySelector('video')) {
+                        loadVideo(container);
+                    } else {
+                        const video = container.querySelector('video');
+                        if (!document.body.classList.contains('dragging')) {
+                            video.play().catch(e => console.log('Autoplay prevented'));
+                        }
+                    }
+                } else {
+                    // Pause when not visible
+                    const video = container.querySelector('video');
+                    if (video) {
+                        video.pause();
+                    }
+                }
+            });
+        }, {
+            rootMargin: '50px'
+        });
+        
+        function loadVideo(container) {
+            // Show blur preview immediately
+            const blurUrl = container.dataset.blur;
+            container.style.backgroundImage = `url('${blurUrl}')`;
+            
+            // Create video element
+            const video = document.createElement('video');
+            video.className = 'module-video';
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.playsInline = true;
+            
+            // Add sources (WebM first for better browser support)
+            const webmSource = document.createElement('source');
+            webmSource.src = container.dataset.webm;
+            webmSource.type = 'video/webm';
+            
+            const mp4Source = document.createElement('source');
+            mp4Source.src = container.dataset.mp4;
+            mp4Source.type = 'video/mp4';
+            
+            video.appendChild(webmSource);
+            video.appendChild(mp4Source);
+            
+            // Set poster as fallback
+            video.poster = container.dataset.poster;
+            
+            // When video loads, remove blur and add glow
+            video.onloadeddata = () => {
+                container.classList.remove('loading');
+                container.style.backgroundImage = `url('${container.dataset.poster}')`;
+                container.closest('.module-slot').classList.add('video-loaded');
+            };
+            
+            // Fallback to poster if video fails
+            video.onerror = () => {
+                container.style.backgroundImage = `url('${container.dataset.poster}')`;
+                container.classList.remove('loading');
+            };
+            
+            // Add to container
+            container.appendChild(video);
+            
+            // Try to play
+            video.play().catch(e => {
+                console.log('Autoplay prevented, showing poster');
+            });
+        }
+        
+        // Initialize video observers when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Observe all video containers
+            document.querySelectorAll('.module-video-container').forEach(container => {
+                videoObserver.observe(container);
+            });
+            
+            // ALWAYS hide duplicates on page load
+            const cases = document.querySelectorAll('.case-card');
+            const shownSizes = new Set();
+            
+            cases.forEach(caseCard => {
+                const sizeKey = `${caseCard.dataset.length}-${caseCard.dataset.size}`;
+                if (!shownSizes.has(sizeKey)) {
+                    caseCard.style.display = 'block';
+                    shownSizes.add(sizeKey);
+                } else {
+                    caseCard.style.display = 'none';
+                }
+            });
+            
+            // Set ALL CASES as active
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                if (tab.textContent === 'ALL CASES') {
+                    tab.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

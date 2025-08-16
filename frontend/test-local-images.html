@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Module Test - Local Images</title>
+    <style>
+        body {
+            background: #000;
+            color: #FFD700;
+            font-family: monospace;
+            padding: 20px;
+        }
+        .rack {
+            display: grid;
+            grid-template-columns: repeat(4, 150px);
+            gap: 10px;
+            background: #222;
+            padding: 20px;
+            border: 3px solid #666;
+            width: fit-content;
+            margin: 20px auto;
+        }
+        .module {
+            width: 150px;
+            height: 150px;
+            background: #333;
+            border: 1px solid #555;
+        }
+        .module img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        h1 {
+            text-align: center;
+        }
+        .load-status {
+            text-align: center;
+            margin: 20px;
+            padding: 20px;
+            background: #111;
+            border: 1px solid #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎛️ EURORACKGRID - Local Module Test</h1>
+    
+    <div class="load-status">
+        <p>Images loading from: <strong>/frontend/modules/</strong></p>
+        <p>Load time: <span id="loadTime">Calculating...</span></p>
+    </div>
+    
+    <div class="rack">
+        
+        <div class="module">
+            <img src="modules/function-synthesizer.svg" alt="function-synthesizer" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/honduh.svg" alt="honduh" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/andersons.svg" alt="andersons" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/varigated.svg" alt="varigated" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/bai.svg" alt="bai" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/cephalopod-rose.svg" alt="cephalopod-rose" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/physical-modeler.svg" alt="physical-modeler" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/voltaged-gray.svg" alt="voltaged-gray" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/complex-oscillator.svg" alt="complex-oscillator" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/textural-synthesizer.svg" alt="textural-synthesizer" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/mangler-tangler.svg" alt="mangler-tangler" onload="imageLoaded()">
+        </div>
+        <div class="module">
+            <img src="modules/altered-black.svg" alt="altered-black" onload="imageLoaded()">
+        </div>
+    </div>
+    
+    <script>
+        let loadedCount = 0;
+        const startTime = performance.now();
+        const totalImages = 12;
+        
+        function imageLoaded() {
+            loadedCount++;
+            if (loadedCount === totalImages) {
+                const loadTime = performance.now() - startTime;
+                document.getElementById('loadTime').innerHTML = 
+                    '<strong style="color: #00FF00;">' + Math.round(loadTime) + 'ms</strong> - FAST! ⚡';
+            }
+        }
+    </script>
+</body>
+</html>

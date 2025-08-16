@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Vibe Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="purchase-integration-fixed.js" defer></script>
+    <script src="universal-nav.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .main-content {
+            margin-top: 0;
+            padding: 120px 20px 40px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .page-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        /* Rack Preview Section */
+        .rack-preview-section {
+            background: white;
+            border: 3px solid #000;
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .rack-preview-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .rack-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            min-height: 400px;
+            position: relative;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            padding: 40px;
+            border: 2px solid #000;
+        }
+        
+        /* Rack Display */
+        .rack-display {
+            width: 600px;
+            height: 300px;
+            background: #2a2a2a;
+            border: 4px solid #000;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 1px;
+            padding: 10px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .rack-slot {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            position: relative;
+        }
+        
+        /* Vibe Items Positioned Around Rack */
+        .vibe-item-display {
+            position: absolute;
+            cursor: move;
+            transition: transform 0.2s;
+        }
+        
+        .vibe-item-display:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .vibe-item-display.plant {
+            width: 60px;
+            height: 80px;
+        }
+        
+        .vibe-item-display.pet {
+            width: 80px;
+            height: 60px;
+        }
+        
+        .vibe-item-display.accessory {
+            width: 50px;
+            height: 50px;
+        }
+        
+        /* Default positions for demo */
+        #plant-1 { top: 20px; left: 20px; }
+        #plant-2 { top: 20px; right: 20px; }
+        #pet-1 { bottom: 20px; left: 50px; }
+        #accessory-1 { top: 50%; right: 30px; }
+        
+        /* Shop Categories */
+        .shop-section {
+            margin-bottom: 40px;
+        }
+        
+        .category-header {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .vibe-item-card {
+            background: white;
+            border: 3px solid #000;
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .vibe-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .vibe-item-card.owned {
+            border-color: #00ff00;
+            position: relative;
+        }
+        
+        .vibe-item-card.owned::after {
+            content: '✓ OWNED';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #00ff00;
+            color: #000;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: 2px solid #000;
+        }
+        
+        .item-preview {
+            height: 150px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+        
+        .item-info {
+            padding: 15px;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .item-description {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .buy-button {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .buy-button:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .buy-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .jacknut-icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+        
+        /* Tabs for categories */
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #000;
+        }
+        
+        .category-tab {
+            padding: 15px 30px;
+            background: white;
+            border: 3px solid #000;
+            border-bottom: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            position: relative;
+            top: 3px;
+        }
+        
+        .category-tab:hover {
+            background: #f0f0f0;
+        }
+        
+        .category-tab.active {
+            background: #000;
+            color: white;
+        }
+        
+        /* Special Items */
+        .limited-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #FF1493;
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.7rem;
+            border: 2px solid #000;
+            transform: rotate(-5deg);
+        }
+        
+        .rare-glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1 class="page-title">VIBE SHOP</h1>
+        <p class="page-subtitle">Customize your main rack and display it proudly on your profile</p>
+        
+        <!-- Rack Preview -->
+        <div class="rack-preview-section">
+            <h2 class="rack-preview-title">YOUR RACK PREVIEW</h2>
+            <div class="rack-container">
+                <!-- Sample vibe items positioned around rack -->
+                <div id="plant-1" class="vibe-item-display plant">🌵</div>
+                <div id="plant-2" class="vibe-item-display plant">🌿</div>
+                <div id="pet-1" class="vibe-item-display pet">🐈</div>
+                <div id="accessory-1" class="vibe-item-display accessory">☕</div>
+                
+                <!-- Main Rack -->
+                <div class="rack-display">
+                    <!-- Generate rack slots -->
+                    <script>
+                        for(let i = 0; i < 36; i++) {
+                            document.write('<div class="rack-slot"></div>');
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+            <div class="category-tab active" onclick="showCategory('plants')">🌱 PLANTS</div>
+            <div class="category-tab" onclick="showCategory('pets')">🐾 PETS</div>
+            <div class="category-tab" onclick="showCategory('desk')">🖊️ DESK ITEMS</div>
+            <div class="category-tab" onclick="showCategory('collectibles')">🎮 COLLECTIBLES</div>
+            <div class="category-tab" onclick="showCategory('vibes')">✨ VIBES</div>
+        </div>
+        
+        <!-- Plants Section -->
+        <div class="shop-section" id="plants-section">
+            <h2 class="category-header">🌱 PLANTS</h2>
+            <div class="items-grid">
+                <div class="vibe-item-card">
+                    <div class="item-preview">🌵</div>
+                    <div class="item-info">
+                        <div class="item-name">Desert Cactus</div>
+                        <div class="item-description">Low maintenance studio companion</div>
+                        <button class="buy-button" onclick="buyVibeItem('cactus', 5, this)">
+                            5 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🌿</div>
+                    <div class="item-info">
+                        <div class="item-name">Pothos Plant</div>
+                        <div class="item-description">Air purifying hanging plant</div>
+                        <button class="buy-button" onclick="buyVibeItem('pothos', 7, this)">
+                            7 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🌺</div>
+                    <div class="item-info">
+                        <div class="item-name">Orchid</div>
+                        <div class="item-description">Elegant flowering plant</div>
+                        <button class="buy-button" onclick="buyVibeItem('orchid', 10, this)">
+                            10 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🎍</div>
+                    <div class="item-info">
+                        <div class="item-name">Lucky Bamboo</div>
+                        <div class="item-description">Brings good fortune to your sessions</div>
+                        <button class="buy-button" onclick="buyVibeItem('bamboo', 8, this)">
+                            8 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card rare-glow">
+                    <div class="limited-badge">RARE</div>
+                    <div class="item-preview">🌳</div>
+                    <div class="item-info">
+                        <div class="item-name">Bonsai Tree</div>
+                        <div class="item-description">Ancient wisdom for modern beats</div>
+                        <button class="buy-button" onclick="buyVibeItem('bonsai', 25, this)">
+                            25 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pets Section (Initially Hidden) -->
+        <div class="shop-section" id="pets-section" style="display: none;">
+            <h2 class="category-header">🐾 PETS</h2>
+            <div class="items-grid">
+                <div class="vibe-item-card">
+                    <div class="item-preview">🐈</div>
+                    <div class="item-info">
+                        <div class="item-name">Sleepy Cat</div>
+                        <div class="item-description">Always napping near the warm modules</div>
+                        <button class="buy-button" onclick="buyVibeItem('cat', 15, this)">
+                            15 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🦎</div>
+                    <div class="item-info">
+                        <div class="item-name">Studio Iguana</div>
+                        <div class="item-description">Chills on top of your rack</div>
+                        <button class="buy-button" onclick="buyVibeItem('iguana', 20, this)">
+                            20 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🐠</div>
+                    <div class="item-info">
+                        <div class="item-name">Beta Fish Bowl</div>
+                        <div class="item-description">Mesmerizing aquatic companion</div>
+                        <button class="buy-button" onclick="buyVibeItem('fish', 12, this)">
+                            12 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card rare-glow">
+                    <div class="limited-badge">LEGENDARY</div>
+                    <div class="item-preview">🦜</div>
+                    <div class="item-info">
+                        <div class="item-name">Studio Parrot</div>
+                        <div class="item-description">Repeats your beats back to you</div>
+                        <button class="buy-button" onclick="buyVibeItem('parrot', 50, this)">
+                            50 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Desk Items Section (Initially Hidden) -->
+        <div class="shop-section" id="desk-section" style="display: none;">
+            <h2 class="category-header">🖊️ DESK ITEMS</h2>
+            <div class="items-grid">
+                <div class="vibe-item-card">
+                    <div class="item-preview">☕</div>
+                    <div class="item-info">
+                        <div class="item-name">Coffee Mug & Pens</div>
+                        <div class="item-description">Essential studio fuel station</div>
+                        <button class="buy-button" onclick="buyVibeItem('coffee', 3, this)">
+                            3 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🚬</div>
+                    <div class="item-info">
+                        <div class="item-name">Ashtray</div>
+                        <div class="item-description">Classic studio vibes</div>
+                        <button class="buy-button" onclick="buyVibeItem('ashtray', 2, this)">
+                            2 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">📚</div>
+                    <div class="item-info">
+                        <div class="item-name">Synth Manual Stack</div>
+                        <div class="item-description">Knowledge is power</div>
+                        <button class="buy-button" onclick="buyVibeItem('books', 5, this)">
+                            5 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🕯️</div>
+                    <div class="item-info">
+                        <div class="item-name">Mood Candle</div>
+                        <div class="item-description">Set the vibe right</div>
+                        <button class="buy-button" onclick="buyVibeItem('candle', 4, this)">
+                            4 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Collectibles Section (Initially Hidden) -->
+        <div class="shop-section" id="collectibles-section" style="display: none;">
+            <h2 class="category-header">🎮 COLLECTIBLES</h2>
+            <div class="items-grid">
+                <div class="vibe-item-card">
+                    <div class="item-preview">🎮</div>
+                    <div class="item-info">
+                        <div class="item-name">Gameboy Classic</div>
+                        <div class="item-description">Retro beats inspiration</div>
+                        <button class="buy-button" onclick="buyVibeItem('gameboy', 15, this)">
+                            15 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🤖</div>
+                    <div class="item-info">
+                        <div class="item-name">Robot Figure</div>
+                        <div class="item-description">Your production assistant</div>
+                        <button class="buy-button" onclick="buyVibeItem('robot', 10, this)">
+                            10 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🎸</div>
+                    <div class="item-info">
+                        <div class="item-name">Mini Guitar</div>
+                        <div class="item-description">Rock meets synthesis</div>
+                        <button class="buy-button" onclick="buyVibeItem('guitar', 8, this)">
+                            8 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card rare-glow">
+                    <div class="limited-badge">ULTRA RARE</div>
+                    <div class="item-preview">👾</div>
+                    <div class="item-info">
+                        <div class="item-name">Vintage Arcade Cabinet</div>
+                        <div class="item-description">Full-size Space Invaders</div>
+                        <button class="buy-button" onclick="buyVibeItem('arcade', 100, this)">
+                            100 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vibes Section (Initially Hidden) -->
+        <div class="shop-section" id="vibes-section" style="display: none;">
+            <h2 class="category-header">✨ VIBES</h2>
+            <div class="items-grid">
+                <div class="vibe-item-card">
+                    <div class="item-preview">🔮</div>
+                    <div class="item-info">
+                        <div class="item-name">Crystal Ball</div>
+                        <div class="item-description">See the future of your mix</div>
+                        <button class="buy-button" onclick="buyVibeItem('crystal', 12, this)">
+                            12 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">💀</div>
+                    <div class="item-info">
+                        <div class="item-name">Skull Ornament</div>
+                        <div class="item-description">Dark ambient essential</div>
+                        <button class="buy-button" onclick="buyVibeItem('skull', 6, this)">
+                            6 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🌈</div>
+                    <div class="item-info">
+                        <div class="item-name">Prism Light</div>
+                        <div class="item-description">Rainbow ambience</div>
+                        <button class="buy-button" onclick="buyVibeItem('prism', 20, this)">
+                            20 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="vibe-item-card">
+                    <div class="item-preview">🪐</div>
+                    <div class="item-info">
+                        <div class="item-name">Saturn Lamp</div>
+                        <div class="item-description">Cosmic studio lighting</div>
+                        <button class="buy-button" onclick="buyVibeItem('saturn', 30, this)">
+                            30 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Show category function
+        function showCategory(category) {
+            // Hide all sections
+            document.querySelectorAll('.shop-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Remove active from all tabs
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(category + '-section').style.display = 'block';
+            
+            // Mark tab as active
+            event.target.classList.add('active');
+        }
+        
+        // Buy vibe item function
+        function buyVibeItem(itemName, price, button) {
+            const credits = parseInt(document.getElementById('credits').textContent);
+            
+            if (credits >= price) {
+                if (confirm(`Purchase ${itemName.toUpperCase()} for ${price} jacknuts?`)) {
+                    // Update credits
+                    const newCredits = credits - price;
+                    document.getElementById('credits').textContent = newCredits;
+                    localStorage.setItem('rack-credits', newCredits);
+                    
+                    // Save to owned vibe items
+                    let ownedVibes = JSON.parse(localStorage.getItem('owned-vibes') || '[]');
+                    if (!ownedVibes.includes(itemName)) {
+                        ownedVibes.push(itemName);
+                        localStorage.setItem('owned-vibes', JSON.stringify(ownedVibes));
+                    }
+                    
+                    // Update button
+                    button.textContent = 'OWNED';
+                    button.disabled = true;
+                    button.parentElement.parentElement.classList.add('owned');
+                    
+                    // Add to preview
+                    addToPreview(itemName);
+                    
+                    alert(`🎉 ${itemName.toUpperCase()} purchased!\n\nCustomize its position on your profile!`);
+                }
+            } else {
+                alert(`Insufficient jacknuts! You need ${price} but only have ${credits}.`);
+            }
+        }
+        
+        // Add item to preview
+        function addToPreview(itemName) {
+            // This would add the item to the rack preview
+            // For now, just console log
+            console.log('Added to preview:', itemName);
+        }
+        
+        // Load owned items
+        function loadOwnedItems() {
+            const ownedVibes = JSON.parse(localStorage.getItem('owned-vibes') || '[]');
+            
+            // Mark owned items
+            ownedVibes.forEach(itemName => {
+                const buttons = document.querySelectorAll('.buy-button');
+                buttons.forEach(button => {
+                    if (button.onclick && button.onclick.toString().includes(itemName)) {
+                        button.textContent = 'OWNED';
+                        button.disabled = true;
+                        button.parentElement.parentElement.classList.add('owned');
+                    }
+                });
+            });
+        }
+        
+        // Load credits
+        const savedCredits = localStorage.getItem('rack-credits') || '100';
+        document.getElementById('credits').textContent = savedCredits;
+        
+        // Load owned items on page load
+        document.addEventListener('DOMContentLoaded', loadOwnedItems);
+        
+        // Make items draggable in preview
+        document.querySelectorAll('.vibe-item-display').forEach(item => {
+            item.addEventListener('mousedown', function(e) {
+                const startX = e.clientX - item.offsetLeft;
+                const startY = e.clientY - item.offsetTop;
+                
+                function moveItem(e) {
+                    item.style.left = (e.clientX - startX) + 'px';
+                    item.style.top = (e.clientY - startY) + 'px';
+                }
+                
+                function stopMove() {
+                    document.removeEventListener('mousemove', moveItem);
+                    document.removeEventListener('mouseup', stopMove);
+                }
+                
+                document.addEventListener('mousemove', moveItem);
+                document.addEventListener('mouseup', stopMove);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login Flow - EURORACK.GRID</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .test-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button.secondary {
+            background: #666;
+        }
+        
+        button.danger {
+            background: #e74c3c;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .link-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+        
+        .link-list li {
+            margin: 10px 0;
+        }
+        
+        .link-list a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .link-list a:hover {
+            text-decoration: underline;
+        }
+        
+        .arrow {
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        
+        .link-list a:hover .arrow {
+            transform: translateX(3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Login Flow</h1>
+        
+        <div class="test-section">
+            <div class="test-title">📊 Current Session Status</div>
+            <div id="session-status" class="status info">Checking...</div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">🔐 Authentication Actions</div>
+            <div class="button-group">
+                <button onclick="testLogin()">Login as Demo User</button>
+                <button onclick="testGuestLogin()" class="secondary">Login as Guest</button>
+                <button onclick="clearSession()" class="danger">Clear Session</button>
+            </div>
+            <div id="auth-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">🧭 Navigation Test</div>
+            <ul class="link-list">
+                <li>
+                    <a href="/login.html">
+                        <span class="arrow">→</span>
+                        Login Page
+                    </a>
+                </li>
+                <li>
+                    <a href="/my-modules.html">
+                        <span class="arrow">→</span>
+                        My Modules (Protected - requires login)
+                    </a>
+                </li>
+                <li>
+                    <a href="/collection.html">
+                        <span class="arrow">→</span>
+                        Collection (Public)
+                    </a>
+                </li>
+                <li>
+                    <a href="/landing.html">
+                        <span class="arrow">→</span>
+                        Landing Page
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">📦 Test Module Purchase</div>
+            <div class="button-group">
+                <button onclick="addTestModules()">Add 5 Test Modules</button>
+                <button onclick="clearModules()" class="secondary">Clear Modules</button>
+            </div>
+            <div id="modules-status" class="status info">No modules in collection</div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">💾 Local Storage Data</div>
+            <pre id="storage-data" style="background: #f0f0f0; padding: 15px; border-radius: 5px; overflow-x: auto;"></pre>
+        </div>
+    </div>
+    
+    <script>
+        // Check session status
+        function checkSession() {
+            const user = localStorage.getItem('eurogrid_user');
+            const statusEl = document.getElementById('session-status');
+            
+            if (user) {
+                try {
+                    const userData = JSON.parse(user);
+                    statusEl.className = 'status success';
+                    statusEl.innerHTML = `
+                        ✅ Logged in as: <strong>${userData.name}</strong><br>
+                        Email: ${userData.email}<br>
+                        Login time: ${new Date(userData.loginTime).toLocaleString()}<br>
+                        Modules owned: ${userData.modules ? userData.modules.length : 0}
+                    `;
+                } catch (e) {
+                    statusEl.className = 'status warning';
+                    statusEl.textContent = '⚠️ Invalid session data';
+                }
+            } else {
+                statusEl.className = 'status info';
+                statusEl.textContent = '📭 Not logged in';
+            }
+            
+            updateStorageDisplay();
+            updateModulesStatus();
+        }
+        
+        // Test login
+        function testLogin() {
+            const userData = {
+                email: 'demo@eurorack.grid',
+                name: 'Demo User',
+                loginTime: new Date().toISOString(),
+                modules: []
+            };
+            
+            localStorage.setItem('eurogrid_user', JSON.stringify(userData));
+            
+            const resultEl = document.getElementById('auth-result');
+            resultEl.className = 'status success';
+            resultEl.textContent = '✅ Logged in as Demo User';
+            
+            checkSession();
+        }
+        
+        // Test guest login
+        function testGuestLogin() {
+            const userData = {
+                email: 'guest@eurorack.grid',
+                name: 'Guest',
+                isGuest: true,
+                loginTime: new Date().toISOString(),
+                modules: []
+            };
+            
+            localStorage.setItem('eurogrid_user', JSON.stringify(userData));
+            
+            const resultEl = document.getElementById('auth-result');
+            resultEl.className = 'status success';
+            resultEl.textContent = '✅ Logged in as Guest';
+            
+            checkSession();
+        }
+        
+        // Clear session
+        function clearSession() {
+            localStorage.removeItem('eurogrid_user');
+            localStorage.removeItem('eurogrid_cart');
+            localStorage.removeItem('purchased_modules');
+            
+            const resultEl = document.getElementById('auth-result');
+            resultEl.className = 'status warning';
+            resultEl.textContent = '🗑️ Session cleared';
+            
+            checkSession();
+        }
+        
+        // Add test modules
+        function addTestModules() {
+            const user = localStorage.getItem('eurogrid_user');
+            if (!user) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const userData = JSON.parse(user);
+            const testModules = ['module-1', 'module-2', 'module-3', 'module-4', 'module-5'];
+            
+            if (!userData.modules) {
+                userData.modules = [];
+            }
+            
+            testModules.forEach(m => {
+                if (!userData.modules.includes(m)) {
+                    userData.modules.push(m);
+                }
+            });
+            
+            localStorage.setItem('eurogrid_user', JSON.stringify(userData));
+            localStorage.setItem('purchased_modules', JSON.stringify(testModules));
+            
+            checkSession();
+        }
+        
+        // Clear modules
+        function clearModules() {
+            const user = localStorage.getItem('eurogrid_user');
+            if (user) {
+                const userData = JSON.parse(user);
+                userData.modules = [];
+                localStorage.setItem('eurogrid_user', JSON.stringify(userData));
+            }
+            localStorage.removeItem('purchased_modules');
+            
+            checkSession();
+        }
+        
+        // Update modules status
+        function updateModulesStatus() {
+            const user = localStorage.getItem('eurogrid_user');
+            const statusEl = document.getElementById('modules-status');
+            
+            if (user) {
+                const userData = JSON.parse(user);
+                const count = userData.modules ? userData.modules.length : 0;
+                
+                if (count > 0) {
+                    statusEl.className = 'status success';
+                    statusEl.innerHTML = `📦 ${count} modules in collection:<br>${userData.modules.join(', ')}`;
+                } else {
+                    statusEl.className = 'status info';
+                    statusEl.textContent = '📭 No modules in collection';
+                }
+            } else {
+                statusEl.className = 'status warning';
+                statusEl.textContent = '⚠️ Not logged in';
+            }
+        }
+        
+        // Update storage display
+        function updateStorageDisplay() {
+            const data = {
+                eurogrid_user: localStorage.getItem('eurogrid_user') ? 
+                    JSON.parse(localStorage.getItem('eurogrid_user')) : null,
+                purchased_modules: localStorage.getItem('purchased_modules') ? 
+                    JSON.parse(localStorage.getItem('purchased_modules')) : null,
+                eurogrid_cart: localStorage.getItem('eurogrid_cart') ? 
+                    JSON.parse(localStorage.getItem('eurogrid_cart')) : null
+            };
+            
+            document.getElementById('storage-data').textContent = JSON.stringify(data, null, 2);
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', checkSession);
+    </script>
+</body>
+</html>

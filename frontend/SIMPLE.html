@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>eurorack.store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans Mono', monospace; }
+        .header { background: #000; color: #fff; padding: 40px 20px; text-align: center; }
+        .header h1 { font-size: 5rem; letter-spacing: 10px; }
+        .container { max-width: 90%; margin: 0 auto; padding: 20px; }
+        .filters { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; justify-content: center; }
+        .filter-btn { padding: 10px 20px; border: 1px solid #000; background: #fff; cursor: pointer; }
+        .filter-btn.active { background: #000; color: #fff; }
+        .product-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; }
+        .product-card { 
+            border: 1px solid #e5e5e5;
+            background: #fff;
+            overflow: hidden;
+            cursor: default;
+        }
+        .product-card:hover { 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .product-image-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            overflow: hidden;
+            background: #f5f5f5;
+            pointer-events: none;
+        }
+        .product-image { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover;
+        }
+        .product-info { 
+            padding: 15px;
+        }
+        .product-title { 
+            font-size: 0.85rem; 
+            margin-bottom: 8px;
+            min-height: 35px;
+            line-height: 1.3;
+        }
+        .product-price { 
+            font-weight: bold; 
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        .product-variants {
+            margin-bottom: 15px;
+        }
+        .variant-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #000;
+            background: #fff;
+            color: #000;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Noto Sans Mono', monospace;
+            text-align: center;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"%3e%3cpath fill="%23000" d="M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z"/%3e%3c/svg%3e');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 35px;
+        }
+        .variant-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+        }
+        .add-cart-btn { 
+            width: 100%; 
+            padding: 10px; 
+            background: #fff; 
+            color: #000; 
+            border: 2px solid #000; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .add-cart-btn:hover { 
+            background: #000;
+            color: #fff; 
+        }
+        
+        /* Cart Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal.show {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #fff;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            background: #fff;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover { background: #000; color: #fff; }
+        
+        .notification { 
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            background: #000; 
+            color: #fff; 
+            padding: 15px 20px; 
+            z-index: 3000; 
+            animation: slideIn 0.3s; 
+        }
+        @keyframes slideIn { 
+            from { transform: translateX(100%); } 
+            to { transform: translateX(0); } 
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="position: relative; max-width: 1400px; margin: 0 auto;">
+            <h1>EURORACK</h1>
+            <p>eurorack.store</p>
+            <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; border: 2px solid #fff; padding: 10px 20px;" onclick="toggleCart()">
+                + cart (<span id="cart-count">0</span>)
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterCat('all', this)">All (350)</button>
+            <button class="filter-btn" onclick="filterCat('shirts', this)">T-Shirts (13)</button>
+            <button class="filter-btn" onclick="filterCat('hoodies', this)">Hoodies (1)</button>
+            <button class="filter-btn" onclick="filterCat('accessories', this)">Accessories (168)</button>
+            <button class="filter-btn" onclick="filterCat('prints', this)">Art Prints (53)</button>
+            <button class="filter-btn" onclick="filterCat('stickers', this)">Stickers (59)</button>
+            <button class="filter-btn" onclick="filterCat('home', this)">Home (67)</button>
+        </div>
+        
+        <div id="grid" class="product-grid"></div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCartModal()">&times;</span>
+            <div style="padding: 40px;">
+                <h2 style="font-size: 2rem; margin-bottom: 30px;">CHECKOUT</h2>
+                <div id="cart-items" style="margin-bottom: 30px;"></div>
+                <div style="border-top: 2px solid #000; padding-top: 20px; margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold;">
+                        <span>TOTAL:</span>
+                        <span id="cart-total">$0.00</span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <input type="email" id="checkout-email" placeholder="Email" style="width: 100%; padding: 15px; border: 2px solid #000; margin-bottom: 15px; font-size: 1rem; font-family: 'Noto Sans Mono', monospace;">
+                    <input type="text" id="checkout-name" placeholder="Full Name" style="width: 100%; padding: 15px; border: 2px solid #000; margin-bottom: 15px; font-size: 1rem; font-family: 'Noto Sans Mono', monospace;">
+                    <input type="text" id="checkout-address" placeholder="Shipping Address" style="width: 100%; padding: 15px; border: 2px solid #000; margin-bottom: 15px; font-size: 1rem; font-family: 'Noto Sans Mono', monospace;">
+                    <input type="text" id="checkout-city" placeholder="City, State ZIP" style="width: 100%; padding: 15px; border: 2px solid #000; margin-bottom: 15px; font-size: 1rem; font-family: 'Noto Sans Mono', monospace;">
+                </div>
+                <div style="margin-bottom: 20px; padding: 20px; background: #f5f5f5; border: 2px solid #000;">
+                    <h3 style="margin-bottom: 15px; font-size: 1.2rem;">PAYMENT</h3>
+                    <div id="card-element" style="padding: 15px; background: #fff; border: 2px solid #000; margin-bottom: 15px;"></div>
+                    <div id="card-errors" style="color: red; margin-top: 10px;"></div>
+                </div>
+                <button onclick="processCheckout()" style="width: 100%; padding: 20px; background: #000; color: #fff; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">PLACE ORDER</button>
+                <div style="margin-top: 20px; padding: 15px; background: #fffbf0; border: 1px solid #ffc107;">
+                    <p style="font-size: 0.9rem; color: #666; text-align: center;">💡 <strong>Note:</strong> You need Stripe for custom stores. Or use Printify's Pop-Up Store for built-in payments.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load products directly -->
+    <script src="printify-products.js"></script>
+    <script>
+        // Global state
+        let currentFilteredProducts = [];
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        // Initialize Stripe (you'll need your own key)
+        const stripe = Stripe('pk_test_51234567890abcdefghijklmnop'); // REPLACE WITH YOUR KEY
+        let elements = null;
+        let cardElement = null;
+        
+        // Check if products loaded
+        if (typeof printifyProducts === 'undefined') {
+            console.error('printifyProducts is undefined!');
+        } else {
+            console.log('✅ Products loaded:', printifyProducts.length);
+            showAll();
+            updateCartCount();
+        }
+        
+        function showAll() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            currentFilteredProducts = printifyProducts;
+            
+            // Show only 20 products to fit on screen
+            printifyProducts.slice(0, 20).forEach(p => {
+                const card = createProductCard(p);
+                grid.appendChild(card);
+            });
+        }
+        
+        function createProductCard(p) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            let variantHtml = '';
+            if (p.variants && p.variants.length > 0) {
+                variantHtml = '<div class="product-variants">' +
+                    '<select class="variant-select" id="variant-' + p.id + '" onchange="updatePrice(\'' + p.id + '\')">';
+                p.variants.forEach(v => {
+                    // Clean up variant names
+                    let cleanName = v.name
+                        .replace(/["\u201c\u201d]/g, '')
+                        .replace(/\s*×\s*/g, 'x')
+                        .replace(/\s*\/\s*White/g, '')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+                    variantHtml += '<option value="' + v.id + '" data-price="' + v.price + '">' + cleanName + '</option>';
+                });
+                variantHtml += '</select></div>';
+            }
+            
+            // Use smaller image size for grid
+            const smallImage = p.image.includes('?') ? p.image + '&width=400' : p.image + '?width=400';
+            card.innerHTML = '<div class="product-image-container">' +
+                '<img src="' + smallImage + '" alt="' + p.title + '" class="product-image" loading="lazy">' +
+                '</div>' +
+                '<div class="product-info">' +
+                '<div class="product-title">' + p.title + '</div>' +
+                '<div class="product-price" id="price-' + p.id + '">$' + p.price.toFixed(2) + '</div>' +
+                variantHtml +
+                '<button class="add-cart-btn" onclick="quickAddToCart(\'' + p.id + '\')">+ CART</button>' +
+                '</div>';
+            
+            return card;
+        }
+        
+        function filterCat(cat, btn) {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            const filtered = cat === 'all' ? printifyProducts : printifyProducts.filter(p => p.category === cat);
+            currentFilteredProducts = filtered;
+            
+            // Show only 20 products to fit on screen
+            filtered.slice(0, 20).forEach(p => {
+                const card = createProductCard(p);
+                grid.appendChild(card);
+            });
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        
+        function updatePrice(productId) {
+            const select = document.getElementById('variant-' + productId);
+            const priceEl = document.getElementById('price-' + productId);
+            if (select && priceEl) {
+                const selected = select.options[select.selectedIndex];
+                const price = selected.getAttribute('data-price');
+                if (price) {
+                    priceEl.textContent = '$' + parseFloat(price).toFixed(2);
+                }
+            }
+        }
+        
+        function quickAddToCart(productId) {
+            const product = printifyProducts.find(p => p.id === productId);
+            if (product) {
+                const variantSelect = document.getElementById('variant-' + productId);
+                const variantId = variantSelect ? variantSelect.value : (product.variants && product.variants[0].id);
+                
+                // Get selected variant for correct price
+                const variant = product.variants && product.variants.find(v => v.id === variantId);
+                const price = variant ? variant.price : product.price;
+                
+                const existing = cart.find(item => item.productId === product.id && item.variantId === variantId);
+                
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    cart.push({
+                        productId: product.id,
+                        title: product.title,
+                        price: price,
+                        image: product.image,
+                        variantId: variantId,
+                        variantName: variant ? variant.name : 'Default',
+                        quantity: 1
+                    });
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                showNotification('Added to cart!');
+            }
+        }
+        
+        function updateCartCount() {
+            const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const countEl = document.getElementById('cart-count');
+            if (countEl) countEl.textContent = total;
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+        
+        function toggleCart() {
+            openCartModal();
+        }
+        
+        function openCartModal() {
+            const cartModal = document.getElementById('cart-modal');
+            
+            // Update cart items
+            const cartItemsDiv = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p style="text-align: center; color: #999;">Your cart is empty</p>';
+            } else {
+                cartItemsDiv.innerHTML = cart.map(item => `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e5e5;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold;">${item.title}</div>
+                            <div style="color: #666; font-size: 0.9rem;">${item.variantName}</div>
+                            <div style="margin-top: 5px;">Qty: ${item.quantity}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: bold;">$${(item.price * item.quantity).toFixed(2)}</div>
+                            <button onclick="removeFromCart('${item.productId}', '${item.variantId}')" style="margin-top: 5px; padding: 5px 10px; background: #fff; border: 1px solid #000; cursor: pointer; font-size: 0.8rem;">REMOVE</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Update total
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
+            
+            // Show modal
+            cartModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // Initialize Stripe Elements if needed
+            if (!elements && typeof Stripe !== 'undefined') {
+                try {
+                    elements = stripe.elements();
+                    const style = {
+                        base: {
+                            fontSize: '16px',
+                            fontFamily: 'Noto Sans Mono, monospace',
+                            color: '#000',
+                            '::placeholder': {
+                                color: '#999',
+                            },
+                        },
+                    };
+                    cardElement = elements.create('card', {style: style});
+                    cardElement.mount('#card-element');
+                    
+                    cardElement.on('change', function(event) {
+                        const displayError = document.getElementById('card-errors');
+                        if (event.error) {
+                            displayError.textContent = event.error.message;
+                        } else {
+                            displayError.textContent = '';
+                        }
+                    });
+                } catch(e) {
+                    console.log('Stripe not configured yet');
+                }
+            }
+        }
+        
+        function closeCartModal() {
+            const cartModal = document.getElementById('cart-modal');
+            cartModal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+        
+        function removeFromCart(productId, variantId) {
+            cart = cart.filter(item => !(item.productId === productId && item.variantId === variantId));
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            openCartModal(); // Refresh the cart modal
+        }
+        
+        async function processCheckout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            const email = document.getElementById('checkout-email').value;
+            const name = document.getElementById('checkout-name').value;
+            const address = document.getElementById('checkout-address').value;
+            const city = document.getElementById('checkout-city').value;
+            
+            if (!email || !name || !address || !city) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            alert('Order placed! (Demo mode - you need to set up Stripe and backend for real orders)');
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            closeCartModal();
+        }
+        
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const cartModal = document.getElementById('cart-modal');
+            if (event.target === cartModal) {
+                closeCartModal();
+            }
+        }
+    </script>
+</body>
+</html>

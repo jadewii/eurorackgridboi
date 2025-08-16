@@ -1,0 +1,222 @@
+/* CSS Animations for Powered Modules - 100x faster than GIFs! */
+
+/* Base module style */
+.animated-module {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    border: 2px solid #000;
+    overflow: hidden;
+}
+
+/* LED Blinker Animation */
+.led-blink {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #ff0000;
+    border-radius: 50%;
+    top: 10px;
+    left: 10px;
+    box-shadow: 0 0 10px #ff0000;
+    animation: blink 1s infinite;
+}
+
+.led-blink.green {
+    background: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+    animation-delay: 0.5s;
+}
+
+.led-blink.blue {
+    background: #00ffff;
+    box-shadow: 0 0 10px #00ffff;
+    animation-delay: 0.3s;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.2; }
+}
+
+/* VU Meter Animation */
+.vu-meter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 6px;
+    background: #000;
+    border: 1px solid #444;
+}
+
+.vu-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00 0%, #ffff00 60%, #ff0000 100%);
+    animation: vumeter 2s ease-in-out infinite;
+}
+
+@keyframes vumeter {
+    0% { width: 10%; }
+    25% { width: 70%; }
+    50% { width: 40%; }
+    75% { width: 90%; }
+    100% { width: 10%; }
+}
+
+/* Oscilloscope Wave Animation */
+.oscilloscope {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 30px;
+    background: #000;
+    border: 1px solid #0f0;
+    overflow: hidden;
+}
+
+.wave {
+    position: absolute;
+    width: 200%;
+    height: 2px;
+    background: #0f0;
+    top: 50%;
+    animation: wave 1s linear infinite;
+    box-shadow: 0 0 5px #0f0;
+}
+
+@keyframes wave {
+    0% { transform: translateX(0) translateY(-50%); }
+    100% { transform: translateX(-50%) translateY(-50%); }
+}
+
+/* Rotating Knob Animation */
+.knob {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: radial-gradient(circle at 30% 30%, #888, #333);
+    border-radius: 50%;
+    border: 2px solid #000;
+    top: 30px;
+    right: 15px;
+    animation: rotate 4s linear infinite;
+}
+
+.knob::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 40%;
+    background: #fff;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Spectrum Analyzer */
+.spectrum {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 30px;
+}
+
+.spectrum-bar {
+    width: 3px;
+    background: linear-gradient(to top, #0f0, #ff0);
+    animation: spectrum 0.5s ease-in-out infinite;
+}
+
+.spectrum-bar:nth-child(1) { animation-delay: 0s; height: 60%; }
+.spectrum-bar:nth-child(2) { animation-delay: 0.1s; height: 80%; }
+.spectrum-bar:nth-child(3) { animation-delay: 0.2s; height: 40%; }
+.spectrum-bar:nth-child(4) { animation-delay: 0.3s; height: 90%; }
+.spectrum-bar:nth-child(5) { animation-delay: 0.4s; height: 50%; }
+
+@keyframes spectrum {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.5); }
+}
+
+/* Matrix Rain Effect */
+.matrix-rain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+    overflow: hidden;
+}
+
+.matrix-drop {
+    position: absolute;
+    color: #0f0;
+    font-family: monospace;
+    font-size: 10px;
+    animation: fall 3s linear infinite;
+}
+
+@keyframes fall {
+    0% { transform: translateY(-100%); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Pulse Ring Effect */
+.pulse-ring {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 2px solid #00ffff;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse-ring 2s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* Apply different animations to different modules */
+.module-type-1 {
+    background: linear-gradient(45deg, #1a1a2e, #16213e);
+}
+
+.module-type-2 {
+    background: linear-gradient(45deg, #2a1a2e, #3e1638);
+}
+
+.module-type-3 {
+    background: linear-gradient(45deg, #1a2e2e, #163e3e);
+}
+
+/* Performance optimizations */
+.animated-module {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}

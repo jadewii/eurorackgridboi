@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Studio Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .rack-with-accessories {
+            background: #f5f5f5;
+            padding: 40px;
+            position: relative;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .rack-display {
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 4px;
+            width: 400px;
+            aspect-ratio: 1;
+            margin: 0 auto;
+            border: 3px solid #000;
+            position: relative;
+        }
+        
+        .module-slot {
+            background: #3a3a3a;
+            border: 1px solid #555;
+            aspect-ratio: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-slot.powered {
+            /* Glow only appears after video loads */
+        }
+        
+        .module-slot.powered.video-loaded {
+            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Video module styles */
+        .module-video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .module-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        /* Blur preview while loading */
+        .module-video-container.loading {
+            filter: blur(8px);
+            transform: scale(1.1);
+        }
+        
+        /* Pause videos when dragging for smooth performance */
+        body.dragging .module-video {
+            display: none;
+        }
+        
+        .case-card {
+            background: white;
+            border: 3px solid #000;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .case-info {
+            padding: 20px;
+        }
+        
+        .case-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo">EUROGRID - STUDIO EDITION (ALL POWERED)</div>
+    </div>
+    
+    <div class="main-content">
+        <h1 style="text-align: center; margin-bottom: 40px;">Studio Edition - All Powered Modules</h1>
+        <p style="text-align: center; margin-bottom: 20px; color: #666;">Every module is animated with optimized videos</p>
+        
+        <!-- Example Studio Rack with ALL POWERED MODULES -->
+        <div class="case-card">
+            <div class="rack-with-accessories">
+                <div class="rack-display">
+                    <!-- Row 1 - All Powered -->
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Altered Black.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Altered Black.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Altered Black.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Altered Black.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Andersons.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Andersons.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Andersons.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Andersons.mp4">
+                        </div>
+                    </div>
+                    
+                    <!-- Row 2 - All Powered -->
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod Rose.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod Rose.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod Rose.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod Rose.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                        </div>
+                    </div>
+                    
+                    <!-- Row 3 - All Powered -->
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.mp4">
+                        </div>
+                    </div>
+                    
+                    <!-- Row 4 - All Powered -->
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Untitled_Artwork 4.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Untitled_Artwork 4.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Untitled_Artwork 4.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Untitled_Artwork 4.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Varigated.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Varigated.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Varigated.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Varigated.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Voltaged Gray.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Voltaged Gray.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Voltaged Gray.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Voltaged Gray.mp4">
+                        </div>
+                    </div>
+                    <div class="module-slot powered">
+                        <div class="module-video-container loading"
+                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.webp"
+                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.blur.webp"
+                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.webm"
+                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.mp4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="case-info">
+                <div class="case-name">STUDIO RACK - ALL POWERED</div>
+                <p>Every module is animated using optimized videos for smooth performance</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Lazy loading for videos with Intersection Observer
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const container = entry.target;
+                
+                if (entry.isIntersecting) {
+                    // Load and play video when visible
+                    if (!container.querySelector('video')) {
+                        loadVideo(container);
+                    } else {
+                        const video = container.querySelector('video');
+                        video.play().catch(e => console.log('Autoplay prevented'));
+                    }
+                } else {
+                    // Pause when not visible
+                    const video = container.querySelector('video');
+                    if (video) {
+                        video.pause();
+                    }
+                }
+            });
+        }, {
+            rootMargin: '50px'
+        });
+        
+        function loadVideo(container) {
+            // Show blur preview immediately
+            const blurUrl = container.dataset.blur;
+            container.style.backgroundImage = `url('${blurUrl}')`;
+            
+            // Create video element
+            const video = document.createElement('video');
+            video.className = 'module-video';
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.playsInline = true;
+            
+            // Add sources (WebM first for better browser support)
+            const webmSource = document.createElement('source');
+            webmSource.src = container.dataset.webm;
+            webmSource.type = 'video/webm';
+            
+            const mp4Source = document.createElement('source');
+            mp4Source.src = container.dataset.mp4;
+            mp4Source.type = 'video/mp4';
+            
+            video.appendChild(webmSource);
+            video.appendChild(mp4Source);
+            
+            // Set poster as fallback
+            video.poster = container.dataset.poster;
+            
+            // When video loads, remove blur and add glow
+            video.onloadeddata = () => {
+                container.classList.remove('loading');
+                container.style.backgroundImage = `url('${container.dataset.poster}')`;
+                container.closest('.module-slot').classList.add('video-loaded');
+            };
+            
+            // Fallback to poster if video fails
+            video.onerror = () => {
+                container.style.backgroundImage = `url('${container.dataset.poster}')`;
+                container.classList.remove('loading');
+            };
+            
+            // Add to container
+            container.appendChild(video);
+            
+            // Try to play
+            video.play().catch(e => {
+                console.log('Autoplay prevented, showing poster');
+            });
+        }
+        
+        // Initialize video observers when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Observe all video containers
+            document.querySelectorAll('.module-video-container').forEach(container => {
+                videoObserver.observe(container);
+            });
+        });
+    </script>
+</body>
+</html>

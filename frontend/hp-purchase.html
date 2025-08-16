@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Buy HP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid #000;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .jacknut-ring {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .hp-card {
+            border: 2px solid #000;
+            padding: 30px;
+            text-align: center;
+            background: white;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        
+        .hp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .hp-card.best-value {
+            border: 3px solid #FFD700;
+        }
+        
+        .badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FFD700;
+            color: #000;
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .hp-amount {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .jacknut-icon {
+            width: 40px;
+            height: 40px;
+            vertical-align: middle;
+        }
+        
+        .price {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .contents {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+        
+        .buy-btn {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 12px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            text-transform: uppercase;
+        }
+        
+        .buy-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .bonus {
+            background: #FFD700;
+            color: #000;
+            padding: 10px;
+            margin: 15px -30px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div style="font-size: 1.5rem; font-weight: bold; letter-spacing: 3px; cursor: pointer;" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
+        <div class="cart-area">
+            <div class="profile-avatar-wrapper" onclick="window.location.href='profile.html'">
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-ring" alt="ring">
+                <div class="profile-avatar">J</div>
+            </div>
+            <button class="cart-counter" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px;">
+                <span id="credits">1270</span>
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 35px; height: 35px;" alt="HP">
+            </button>
+            <button onclick="window.location.href='collection.html'" class="cart-counter">
+                BACK TO COLLECTION
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1 style="text-align: center; font-size: 3rem; margin-bottom: 10px;">MODULE PACKS</h1>
+        <p style="text-align: center; color: #666; font-size: 1.1rem;">
+            Purchase HP to unlock digital modules. The more you buy, the more you save. Trade and Collect them all!
+        </p>
+        
+        <div class="hp-grid">
+            <!-- 5 HP - Small module -->
+            <div class="hp-card">
+                <h3>TINY MODULE</h3>
+                <div class="hp-amount">5 HP</div>
+                <div class="price">5 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="jacknut"></div>
+                <div class="contents">
+                    <strong>You Get:</strong><br>
+                    1 Module<br>
+                    <span style="color: #666;">Standard module size</span>
+                </div>
+                <button class="buy-btn" onclick="purchaseHP(5, 5, 'tiny')">BUY NOW</button>
+            </div>
+            
+            <!-- 10 HP - Dual module -->
+            <div class="hp-card">
+                <h3>DUAL MODULE</h3>
+                <div class="hp-amount">10 HP</div>
+                <div class="price">10 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="jacknut"></div>
+                <div class="contents">
+                    <strong>You Get:</strong><br>
+                    2 Modules<br>
+                    <span style="color: #666;">Common modules</span>
+                </div>
+                <button class="buy-btn" onclick="purchaseHP(10, 10, 'dual')">BUY NOW</button>
+            </div>
+            
+            <!-- 20 HP - Small row -->
+            <div class="hp-card">
+                <h3>SMALL ROW</h3>
+                <div class="hp-amount">20 HP</div>
+                <div class="price">20 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="jacknut"></div>
+                <div class="contents">
+                    <strong>You Get:</strong><br>
+                    4 Modules<br>
+                    <span style="color: #4169E1; font-weight: bold;">Includes 1 RARE!</span>
+                </div>
+                <button class="buy-btn" onclick="purchaseHP(20, 20, 'row')">BUY NOW</button>
+            </div>
+            
+            <!-- 60 HP - Pod size -->
+            <div class="hp-card">
+                <h3>POD CASE</h3>
+                <div class="hp-amount">60 HP</div>
+                <div class="price">50 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="jacknut"></div>
+                <div class="contents">
+                    <strong>You Get:</strong><br>
+                    12 Modules<br>
+                    <span style="color: #9370DB; font-weight: bold;">2 Rare + 1 HOLOGRAPHIC!</span>
+                </div>
+                <button class="buy-btn" onclick="purchaseHP(60, 50, 'pod')">BUY NOW</button>
+            </div>
+            
+            <!-- 84 HP - Standard 3U -->
+            <div class="hp-card best-value">
+                <div class="badge">MOST POPULAR</div>
+                <h3>3U CASE</h3>
+                <div class="hp-amount">84 HP</div>
+                <div class="price">75 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="jacknut"></div>
+                <div class="contents">
+                    <strong>You Get:</strong><br>
+                    17 Modules<br>
+                    <span style="color: #9370DB; font-weight: bold;">3 Rare + 2 Holographic!</span>
+                </div>
+                <div class="bonus">
+                    + FREE PHYSICAL STICKER PACK!
+                </div>
+                <button class="buy-btn" onclick="purchaseHP(84, 75, 'standard')">BUY NOW</button>
+            </div>
+            
+            <!-- 104 HP - Large 3U -->
+            <div class="hp-card">
+                <h3>LARGE CASE</h3>
+                <div class="hp-amount">104 HP</div>
+                <div class="price">90 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="jacknut"></div>
+                <div class="contents">
+                    <strong>You Get:</strong><br>
+                    21 Modules<br>
+                    <span style="color: #FFD700; font-weight: bold;">4 Rare + 2 Holo + 1 LIVE!</span>
+                </div>
+                <div class="bonus">
+                    + EUROGRID T-SHIRT!
+                </div>
+                <button class="buy-btn" onclick="purchaseHP(104, 90, 'large')">BUY NOW</button>
+            </div>
+            
+            <!-- 126 HP - 6U case -->
+            <div class="hp-card">
+                <h3>6U SYSTEM</h3>
+                <div class="hp-amount">126 HP</div>
+                <div class="price">110 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="jacknut"></div>
+                <div class="contents">
+                    <strong>You Get:</strong><br>
+                    25 Modules<br>
+                    <span style="color: #FFD700; font-weight: bold;">5 Rare + 3 Holo + 1 LIVE!</span>
+                </div>
+                <div class="bonus">
+                    + T-SHIRT + 5 PHYSICAL STICKERS!
+                </div>
+                <button class="buy-btn" onclick="purchaseHP(126, 110, 'double')">BUY NOW</button>
+            </div>
+            
+            <!-- 168 HP - Monster case -->
+            <div class="hp-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h3>MONSTER SYSTEM</h3>
+                <div class="hp-amount">168 HP</div>
+                <div class="price">150 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon" alt="jacknut"></div>
+                <div class="contents" style="background: rgba(255,255,255,0.9); color: #000;">
+                    <strong>You Get:</strong><br>
+                    35 Modules<br>
+                    <span style="color: #FFD700; font-weight: bold;">GUARANTEED ALL 25 UNIQUE + 10 LIVE!</span>
+                </div>
+                <div class="bonus" style="background: white; color: #000;">
+                    + COMPLETE PHYSICAL SET<br>
+                    + T-SHIRT + POSTER!
+                </div>
+                <button class="buy-btn" style="background: #FFD700; color: #000; border-color: #FFD700;" onclick="purchaseHP(168, 150, 'monster')">BUY NOW</button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 60px; padding: 30px; background: #f5f5f5; border: 2px solid #000;">
+            <h2 style="text-align: center; margin-bottom: 20px;">MODULE RARITIES</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; max-width: 800px; margin: 0 auto;">
+                <div>
+                    <strong>COMMON (70%)</strong><br>
+                    Standard modules
+                </div>
+                <div>
+                    <strong style="color: #4169E1;">RARE (20%)</strong><br>
+                    Special variants
+                </div>
+                <div>
+                    <strong style="color: #9370DB;">HOLOGRAPHIC (8%)</strong><br>
+                    Shimmering effects
+                </div>
+                <div>
+                    <strong style="color: #FF1493;">LIVE (2%)</strong><br>
+                    Animated GIFs
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 20px; color: #666;">
+                <strong>Note:</strong> You can get duplicate modules! Trade duplicates with other collectors in the marketplace.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Module pools by rarity
+        const modulesByRarity = {
+            common: [
+                'Mod-26 - Japanese ADSR Module',
+                'Mod-25 - eurorack sticker',
+                'Mod-24 - eurorack sticker',
+                'Mod-23 - eurorack sticker',
+                'Mod-22 - eurorack sticker',
+                'Mod-17 - Psychedelic Wave Pattern',
+                'Mod-16 - Digital Noise Generator',
+                'Mod-13 - Blue Geometric Pattern',
+                'Mod-12 - Red Sequencer Grid'
+            ],
+            rare: [
+                'Mod-21 - eurorack sticker',
+                'Mod-20 - eurorack sticker',
+                'Mod-15 - Pink Analog Dreams',
+                'Mod-14 - Green Matrix'
+            ],
+            holographic: [
+                'Mod-19 - eurorack sticker',
+                'Mod-18 - Abstract Shapes',
+                'Mod-11 - Rainbow Spectrum'
+            ],
+            live: [
+                'Mod-10 - Gold Master Clock',
+                'Mod-9 - Animated Oscilloscope'
+            ]
+        };
+        
+        function purchaseHP(hp, price, packType) {
+            // In production, this would process payment
+            if (confirm(`Purchase ${hp} HP for ${price} jacknuts?\n\nYou'll instantly receive your modules!`)) {
+                // Generate modules based on pack type
+                let modules = [];
+                
+                switch(packType) {
+                    case 'tiny': // 5 HP
+                        modules = getRandomModules('common', 1);
+                        break;
+                    case 'dual': // 10 HP
+                        modules = getRandomModules('common', 2);
+                        break;
+                    case 'row': // 20 HP
+                        modules = [
+                            ...getRandomModules('common', 3),
+                            ...getRandomModules('rare', 1)
+                        ];
+                        break;
+                    case 'pod': // 60 HP
+                        modules = [
+                            ...getRandomModules('common', 9),
+                            ...getRandomModules('rare', 2),
+                            ...getRandomModules('holographic', 1)
+                        ];
+                        break;
+                    case 'standard': // 84 HP - 3U case
+                        modules = [
+                            ...getRandomModules('common', 12),
+                            ...getRandomModules('rare', 3),
+                            ...getRandomModules('holographic', 2)
+                        ];
+                        break;
+                    case 'large': // 104 HP
+                        modules = [
+                            ...getRandomModules('common', 14),
+                            ...getRandomModules('rare', 4),
+                            ...getRandomModules('holographic', 2),
+                            ...getRandomModules('live', 1)
+                        ];
+                        break;
+                    case 'double': // 126 HP - 6U case
+                        modules = [
+                            ...getRandomModules('common', 16),
+                            ...getRandomModules('rare', 5),
+                            ...getRandomModules('holographic', 3),
+                            ...getRandomModules('live', 1)
+                        ];
+                        break;
+                    case 'monster': // 168 HP - guaranteed complete set
+                        // Give all 25 unique modules first
+                        modules = getAllUniqueModules();
+                        // Then add 10 random bonus modules
+                        modules.push(
+                            ...getRandomModules('common', 5),
+                            ...getRandomModules('rare', 3),
+                            ...getRandomModules('holographic', 2),
+                            ...getRandomModules('live', 10)
+                        );
+                        break;
+                }
+                
+                // Save to collection (allowing duplicates!)
+                let collection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+                let newUnlocks = [];
+                
+                modules.forEach(module => {
+                    if (!collection[module.name]) {
+                        newUnlocks.push(module.name);
+                        collection[module.name] = {
+                            unlockedDate: new Date().toISOString(),
+                            rarity: module.rarity,
+                            fromPack: packType
+                        };
+                    }
+                });
+                
+                localStorage.setItem('digital-collection', JSON.stringify(collection));
+                
+                // Redirect to pack opening animation
+                localStorage.setItem('pending-pack-reveal', JSON.stringify({
+                    modules: modules,
+                    packType: packType,
+                    newUnlocks: newUnlocks
+                }));
+                
+                window.location.href = 'pack-opening.html?auto=true';
+            }
+        }
+        
+        function getRandomModules(rarity, count) {
+            const pool = modulesByRarity[rarity];
+            const results = [];
+            
+            for (let i = 0; i < count; i++) {
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                results.push({
+                    name: pool[randomIndex],
+                    rarity: rarity
+                });
+            }
+            
+            return results;
+        }
+        
+        function getAllUniqueModules() {
+            // Returns one of each module for the complete set
+            const allModules = [];
+            Object.entries(modulesByRarity).forEach(([rarity, modules]) => {
+                modules.forEach(module => {
+                    allModules.push({
+                        name: module,
+                        rarity: rarity
+                    });
+                });
+            });
+            return allModules;
+        }
+    </script>
+</body>
+</html>

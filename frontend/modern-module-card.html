@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modern Module Card Example</title>
+    <style>
+        /* Modern approach - Use CSS animations instead of GIFs */
+        .module-card {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated elements using pure CSS */
+        .module-led {
+            width: 10px;
+            height: 10px;
+            background: #ff0000;
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .module-vu-meter {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 100px;
+            height: 8px;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .vu-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #0f0 0%, #ff0 50%, #f00 100%);
+            width: 0%;
+            animation: vu-bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes vu-bounce {
+            0% { width: 20%; }
+            50% { width: 80%; }
+            100% { width: 20%; }
+        }
+
+        /* Knobs using CSS only */
+        .knob {
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle at 30% 30%, #fff, #888);
+            border-radius: 50%;
+            border: 2px solid #000;
+            position: absolute;
+            top: 60px;
+            left: 30px;
+            transform: rotate(0deg);
+            transition: transform 0.2s;
+        }
+
+        .knob::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 40%;
+            background: #000;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .module-card:hover .knob {
+            transform: rotate(120deg);
+        }
+
+        /* Use sprites for complex animations */
+        .module-display {
+            width: 60px;
+            height: 20px;
+            background: #000;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="20"><text x="5" y="15" fill="%2300ff00" font-family="monospace" font-size="12">440Hz</text></svg>');
+        }
+    </style>
+</head>
+<body>
+    <div class="module-card">
+        <div class="module-led"></div>
+        <div class="knob"></div>
+        <div class="module-display"></div>
+        <div class="module-vu-meter">
+            <div class="vu-bar"></div>
+        </div>
+    </div>
+
+    <h2>Benefits:</h2>
+    <ul>
+        <li>No image files needed - pure CSS</li>
+        <li>Infinitely scalable</li>
+        <li>60fps smooth animations</li>
+        <li>~1KB instead of 500KB+ for GIFs</li>
+    </ul>
+</body>
+</html>
