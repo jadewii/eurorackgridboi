@@ -1,0 +1,121 @@
+/* Clean site header — matches style #1 */
+:root{
+  --nav-font: 0.9rem;
+  --nav-gap: 1.75rem;
+  --nav-color: #000;
+  --nav-hover: #667eea;
+  --nav-border: #ddd;
+}
+
+/* Spin animation for jamnut logo */
+@keyframes spin {
+  to { transform: rotate(1turn); }
+}
+
+.jamnut-spinning {
+  animation: spin 10s linear infinite;
+}
+
+/* Clean header matching style #1 */
+.site-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2rem;
+  padding:16px 40px;
+  border-bottom:1px solid var(--nav-border);
+  background:#fff;
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:10000;
+}
+
+.brand{
+  font-weight:bold;
+  font-size:1.1rem;
+  letter-spacing:0.1em;
+  text-decoration:none;
+  color:var(--nav-color);
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+}
+
+.site-nav{
+  display:flex;
+  align-items:center;
+  gap:30px;
+}
+
+.site-nav a{
+  font-size:var(--nav-font);
+  font-weight:bold;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:var(--nav-color);
+  padding:0;
+  border:none !important;
+  background:none !important;
+  box-shadow:none !important;
+  transition:color 0.3s;
+}
+
+.site-nav a:hover{
+  color:var(--nav-hover);
+}
+
+.site-nav a[aria-current="page"]{
+  color:var(--nav-hover);
+}
+
+/* Right side auth */
+.header-actions{
+  display:flex;
+  gap:15px;
+  align-items:center;
+}
+
+.header-actions .demo{
+  color:#666;
+  font-size:0.9rem;
+}
+
+.header-actions .logout{
+  background:#333;
+  color:#fff;
+  border:none;
+  padding:6px 15px;
+  border-radius:3px;
+  font-size:0.85rem;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+/* KILL all legacy boxed/button navigation styles */
+nav a.btn, nav a.button, nav a.bordered,
+.nav-btn, .nav-button, .universal-nav-btn,
+.boxed-nav a, .legacy-nav a, .store-nav a {
+  border:none !important;
+  background:none !important; 
+  box-shadow:none !important;
+  padding:0 !important;
+}
+
+/* Hide old elements */
+.universal-header, .universal-nav, #universal-nav,
+.profile-avatar-wrapper, .universal-profile-wrapper,
+.credits-display, .buy-btn-green {
+  display:none !important;
+}
+
+/* Ensure body has proper padding */
+body{
+  padding-top:70px !important;
+}
+
+@media (max-width:960px){
+  .site-nav{gap:20px}
+  .site-nav a{font-size:0.85rem}
+}

@@ -3,6 +3,8 @@
 <head>
     <title>EUROGRID - Plant Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/clean-nav.css">
+    <script src="/assets/clean-nav.js" defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -118,8 +120,7 @@
         }
         
         .main-content {
-            margin-top: 100px;
-            padding: 40px 20px;
+            padding: 100px 40px 40px;
             max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
@@ -352,41 +353,7 @@
     </style>
 </head>
 <body>
-    <div class="header-bar">
-        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
-        <div class="cart-area">
-            <div class="profile-avatar" onclick="window.location.href='profile.html'">
-                J
-            </div>
-            <button class="cart-counter" onclick="showPackStore()" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; border: 2px solid #FFD700;">
-                <span id="credits-amount">100</span> HP
-            </button>
-            <button class="cart-counter" onclick="window.location.href='collection.html'">
-                MODULES
-            </button>
-            <button class="cart-counter" onclick="window.location.href='my-racks.html'">
-                MY RACKS
-            </button>
-            <button class="cart-counter" onclick="window.location.href='community.html'">
-                COMMUNITY
-            </button>
-            <div class="dropdown">
-                <button class="cart-counter" onclick="toggleShopDropdown()" style="background: #000; color: white;">
-                    SHOP ▼
-                </button>
-                <div class="dropdown-content" id="shop-dropdown">
-                    <a href="collection.html">MODULES</a>
-                    <a href="rack-shop.html">RACKS</a>
-                    <a href="plant-shop.html">PLANTS</a>
-                    <a href="sticker-shop.html">STICKERS</a>
-                    <a href="marketplace.html">MARKETPLACE</a>
-                </div>
-            </div>
-            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
-                BUY HP
-            </button>
-        </div>
-    </div>
+    <!-- Navigation is injected by clean-nav.js -->
     
     <div class="main-content">
         <h1 class="page-title">PLANT SHOP</h1>

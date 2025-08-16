@@ -3,6 +3,8 @@
 <head>
     <title>EUROGRID - Community Racks</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/clean-nav.css">
+    <script src="/assets/clean-nav.js" defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -295,52 +297,27 @@
     </style>
 </head>
 <body>
-    <div class="header-bar">
-        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
-        <div class="cart-area">
-            <div class="profile-avatar" onclick="window.location.href='profile.html'">
-                J
-            </div>
-            <button class="cart-counter" onclick="showPackStore()" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; border: 2px solid #FFD700;">
-                <span id="credits-amount">100</span> HP
-            </button>
-            <button class="cart-counter" onclick="window.location.href='collection.html'">
-                MODULES
-            </button>
-            <button class="cart-counter" onclick="window.location.href='my-racks.html'">
-                MY RACKS
-            </button>
-            <button class="cart-counter" onclick="window.location.href='community.html'" style="background: #000; color: white;">
-                COMMUNITY
-            </button>
-            <div class="dropdown">
-                <button class="cart-counter" onclick="toggleShopDropdown()">
-                    SHOP ▼
-                </button>
-                <div class="dropdown-content" id="shop-dropdown">
-                    <a href="collection.html">MODULES</a>
-                    <a href="rack-shop.html">RACKS</a>
-                    <a href="plant-shop.html">PLANTS</a>
-                    <a href="sticker-shop.html">STICKERS</a>
-                    <a href="marketplace.html">MARKETPLACE</a>
-                </div>
-            </div>
-            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
-                BUY HP
-            </button>
-        </div>
+    <!-- Navigation is injected by clean-nav.js -->
+    <div class="old-header-removed" style="display: none;">
+        <!-- Old header removed - clean-nav.js handles navigation now -->
     </div>
     
     <div class="main-content">
         <h1 class="page-title">COMMUNITY</h1>
-        <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 1.1rem;">Discover racks, make friends, and trade modules with the community</p>
+        <p style="text-align: center; color: #666; margin-bottom: 15px; font-size: 1.1rem;">Discover racks, make friends, and trade modules with the community</p>
+        
+        <!-- Artist Badge Info -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
+            <h3 style="margin-bottom: 10px;">🎵 Become an Artist</h3>
+            <p style="margin-bottom: 15px;">Submit your music to the Patches marketplace and get an official Artist badge!</p>
+            <button style="background: white; color: #667eea; border: none; padding: 10px 25px; font-weight: bold; cursor: pointer; transition: all 0.2s;" onclick="window.location.href='patches.html'">SUBMIT MUSIC</button>
+        </div>
         
         <div class="filter-tabs">
-            <button class="filter-btn active" onclick="filterRacks('all')">ALL</button>
-            <button class="filter-btn" onclick="filterRacks('friends')">👥 FRIENDS</button>
-            <button class="filter-btn" onclick="filterRacks('trending')">🔥 TRENDING</button>
-            <button class="filter-btn" onclick="filterRacks('new')">✨ NEW</button>
-            <button class="filter-btn" onclick="filterRacks('most-liked')">❤️ MOST LIKED</button>
+            <button class="filter-btn active" onclick="filterRacks('members')">FRIENDS</button>
+            <button class="filter-btn" onclick="filterRacks('artists')">ARTISTS</button>
+            <button class="filter-btn" onclick="filterRacks('brands')">BRANDS</button>
+            <button class="filter-btn" onclick="filterRacks('all')">ALL MEMBERS</button>
         </div>
         
         <div class="racks-grid" id="community-racks">
@@ -506,7 +483,45 @@
             });
             event.target.classList.add('active');
             
-            loadCommunityRacks();
+            // Update displayed content based on filter
+            const grid = document.getElementById('community-racks');
+            
+            if (filter === 'artists') {
+                // Show artists who have submitted music
+                grid.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <h2>🎵 Featured Artists</h2>
+                        <p>Musicians who contribute patches and sounds to our community</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
+                            <div class="user-card" style="background: white; border: 2px solid #667eea; padding: 20px; text-align: center;">
+                                <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">JW</div>
+                                <h4>jadewii</h4>
+                                <span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">🎵 ARTIST</span>
+                                <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">15 tracks submitted</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (filter === 'brands') {
+                grid.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <h2>🏢 Official Brands</h2>
+                        <p>Verified manufacturers and companies in the eurorack community</p>
+                        <div style="margin-top: 30px;">Coming soon...</div>
+                    </div>
+                `;
+            } else if (filter === 'members') {
+                grid.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <h2>👥 Community Members</h2>
+                        <p>All registered users and their studios</p>
+                        <div style="margin-top: 30px;">Loading member studios...</div>
+                    </div>
+                `;
+                loadCommunityRacks();
+            } else {
+                loadCommunityRacks();
+            }
         }
         
         function addFriend(username) {
