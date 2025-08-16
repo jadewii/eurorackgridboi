@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.GRID - Simple Module Store (No Database!)</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .jamnutz-display {
+            font-size: 24px;
+            color: #ffd700;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .module-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .module-card:hover {
+            transform: scale(1.05);
+            border-color: #00ff00;
+        }
+        
+        .module-card.owned {
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .module-image {
+            width: 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .module-image.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            background: rgba(0,0,0,0.7);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .module-info {
+            padding: 15px;
+        }
+        
+        .module-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .module-price {
+            color: #ffd700;
+        }
+        
+        .buy-button {
+            width: 100%;
+            padding: 10px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .buy-button:hover {
+            background: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        
+        .buy-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        .reset-button {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎛️ EURORACK.GRID STORE</h1>
+        <div class="jamnutz-display">
+            🥜 <span id="balance">1000</span> Jamnutz
+        </div>
+        <button class="reset-button" onclick="resetEverything()">Reset Demo</button>
+    </div>
+    
+    <h2>Click any module to buy it! (500 jamnutz each)</h2>
+    
+    <div class="module-grid" id="moduleGrid"></div>
+    
+    <script>
+        // Module data
+        const modules = [
+            '00', 'Altered Black', 'Andersons', 'BAI', 
+            'Cephalopod Rose', 'Cephalopod', 'Complex Oscillator',
+            'Function Synthesizer', 'Honduh', 'Mangler and Tangler',
+            'Physical Modeler', 'textural Synthesizer', 'Varigated', 'Voltaged Gray'
+        ];
+        
+        // Simple local storage "database"
+        class SimpleStore {
+            constructor() {
+                // Initialize if first time
+                if (!localStorage.getItem('jamnutz_balance')) {
+                    localStorage.setItem('jamnutz_balance', '1000');
+                    localStorage.setItem('owned_modules', '[]');
+                    localStorage.setItem('user_id', 'user_' + Date.now());
+                }
+            }
+            
+            getBalance() {
+                return parseInt(localStorage.getItem('jamnutz_balance'));
+            }
+            
+            setBalance(amount) {
+                localStorage.setItem('jamnutz_balance', amount.toString());
+                document.getElementById('balance').textContent = amount;
+            }
+            
+            getOwnedModules() {
+                return JSON.parse(localStorage.getItem('owned_modules') || '[]');
+            }
+            
+            ownsModule(moduleName) {
+                return this.getOwnedModules().includes(moduleName);
+            }
+            
+            buyModule(moduleName) {
+                const balance = this.getBalance();
+                const price = 500;
+                
+                if (balance < price) {
+                    alert('Not enough jamnutz! You need 500 🥜');
+                    return false;
+                }
+                
+                if (this.ownsModule(moduleName)) {
+                    alert('You already own this module!');
+                    return false;
+                }
+                
+                // Process purchase
+                const owned = this.getOwnedModules();
+                owned.push(moduleName);
+                localStorage.setItem('owned_modules', JSON.stringify(owned));
+                
+                // Deduct jamnutz
+                this.setBalance(balance - price);
+                
+                // Log the "transaction"
+                const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+                transactions.push({
+                    module: moduleName,
+                    price: price,
+                    timestamp: new Date().toISOString(),
+                    balance_after: balance - price
+                });
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                
+                return true;
+            }
+        }
+        
+        const store = new SimpleStore();
+        
+        // Render modules
+        function renderModules() {
+            const grid = document.getElementById('moduleGrid');
+            grid.innerHTML = '';
+            
+            modules.forEach(moduleName => {
+                const owned = store.ownsModule(moduleName);
+                const card = document.createElement('div');
+                card.className = 'module-card' + (owned ? ' owned' : '');
+                
+                const imageUrl = `https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/${encodeURIComponent(moduleName)}.webp`;
+                
+                card.innerHTML = `
+                    <div class="module-image ${!owned ? 'locked' : ''}" 
+                         style="background-image: url('${imageUrl}')">
+                    </div>
+                    <div class="module-info">
+                        <div class="module-name">${moduleName}</div>
+                        <div class="module-price">
+                            ${owned ? '✅ Owned' : '🥜 500 Jamnutz'}
+                        </div>
+                        ${!owned ? '<button class="buy-button">Buy Module</button>' : ''}
+                    </div>
+                `;
+                
+                if (!owned) {
+                    card.querySelector('.buy-button').onclick = () => {
+                        if (store.buyModule(moduleName)) {
+                            alert(`✅ You bought ${moduleName}!`);
+                            renderModules(); // Re-render to show ownership
+                        }
+                    };
+                }
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Reset everything
+        function resetEverything() {
+            if (confirm('Reset all purchases and get 1000 jamnutz?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+        
+        // Initial render
+        renderModules();
+        document.getElementById('balance').textContent = store.getBalance();
+        
+        // Show what we're tracking
+        console.log('🎮 Simple Store Active!');
+        console.log('User ID:', localStorage.getItem('user_id'));
+        console.log('Owned Modules:', store.getOwnedModules());
+        console.log('Transactions:', JSON.parse(localStorage.getItem('transactions') || '[]'));
+    </script>
+</body>
+</html>

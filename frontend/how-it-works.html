@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - How It Works</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: #000;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Steps Section */
+        .steps {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .step {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 80px;
+            align-items: center;
+        }
+        
+        .step:nth-child(even) {
+            direction: rtl;
+        }
+        
+        .step:nth-child(even) > * {
+            direction: ltr;
+        }
+        
+        .step-content h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: #000;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .step-visual {
+            background: #f5f5f5;
+            padding: 40px;
+            border: 2px solid #000;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Pack Display */
+        .pack-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .mini-pack {
+            border: 2px solid #000;
+            padding: 20px;
+            text-align: center;
+            background: white;
+        }
+        
+        .mini-pack h4 {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .rupee-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Rewards Section */
+        .rewards {
+            background: #f5f5f5;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .rewards h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+        
+        .reward-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .reward-card {
+            background: white;
+            border: 2px solid #000;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .reward-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .price-tag {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 15px 0;
+        }
+        
+        .bonus {
+            background: #FFD700;
+            color: #000;
+            padding: 10px;
+            margin: 15px -30px;
+            font-weight: bold;
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: #000;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-btn {
+            background: white;
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        
+        .cta-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .cta-btn.primary {
+            background: #FFD700;
+        }
+        
+        /* FAQ Section */
+        .faq {
+            padding: 60px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .faq-item {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        
+        .faq-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>EUROGRID</h1>
+        <p class="tagline">Collect Digital Modules. Unlock Physical Rewards.</p>
+    </div>
+    
+    <div class="hero">
+        <h2>The Ultimate Eurorack Collecting Experience</h2>
+        <p>Open digital packs, collect rare modules, trade with the community, and unlock exclusive physical stickers!</p>
+    </div>
+    
+    <div class="steps">
+        <div class="step">
+            <div class="step-content">
+                <div class="step-number">1</div>
+                <h3>Buy Rupees</h3>
+                <p>Purchase rupees, our in-game currency. Start with just $10 or go big with bulk packages that include FREE physical rewards!</p>
+                <ul style="margin-top: 15px;">
+                    <li>10 rupees = $10 (starter)</li>
+                    <li>25 rupees = $25 (value)</li>
+                    <li>45 rupees = $45 + FREE physical pack!</li>
+                    <li>100 rupees = $80 + COMPLETE physical set!</li>
+                </ul>
+            </div>
+            <div class="step-visual">
+                <div>
+                    <svg width="100" height="100" viewBox="0 0 30 30">
+                        <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#FFD700" stroke="#FFA500" stroke-width="2"/>
+                    </svg>
+                    <h4 style="margin-top: 20px;">RUPEES</h4>
+                    <p>Your gateway to collecting</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-content">
+                <div class="step-number">2</div>
+                <h3>Open Packs</h3>
+                <p>Use your rupees to open different pack types. Each pack contains digital module cards with varying rarities!</p>
+                <div class="pack-display" style="margin-top: 20px;">
+                    <div class="mini-pack">
+                        <h4>SINGLE</h4>
+                        <p>5 rupees</p>
+                        <small>1 module</small>
+                    </div>
+                    <div class="mini-pack">
+                        <h4>STARTER</h4>
+                        <p>10 rupees</p>
+                        <small>3 modules</small>
+                    </div>
+                    <div class="mini-pack">
+                        <h4>HOLO</h4>
+                        <p>15 rupees</p>
+                        <small>4 modules</small>
+                    </div>
+                    <div class="mini-pack" style="border-color: #FFD700;">
+                        <h4>RARE</h4>
+                        <p>20 rupees</p>
+                        <small>5 modules!</small>
+                    </div>
+                </div>
+            </div>
+            <div class="step-visual">
+                <div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <div style="width: 80px; height: 120px; background: #ddd; border: 2px solid #000; display: flex; align-items: center; justify-content: center;">?</div>
+                        <div style="width: 80px; height: 120px; background: #ddd; border: 2px solid #000; display: flex; align-items: center; justify-content: center;">?</div>
+                        <div style="width: 80px; height: 120px; background: #ddd; border: 2px solid #000; display: flex; align-items: center; justify-content: center;">?</div>
+                    </div>
+                    <p style="margin-top: 20px;">Discover rare modules!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-content">
+                <div class="step-number">3</div>
+                <h3>Collect & Trade</h3>
+                <p>Build your collection of 25 unique eurorack modules! Find common, rare, holographic, and legendary variants.</p>
+                <ul style="margin-top: 15px;">
+                    <li>Trade duplicates with other collectors</li>
+                    <li>Complete sets for milestone rewards</li>
+                    <li>Show off your rare finds</li>
+                    <li>Track your progress</li>
+                </ul>
+            </div>
+            <div class="step-visual">
+                <div>
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;">
+                        <div style="width: 40px; height: 40px; background: #00ff88; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #00ff88; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #4169E1; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #9370DB; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #ddd; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #00ff88; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #ddd; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #FFD700; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #00ff88; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #ddd; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #ddd; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #00ff88; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #4169E1; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #ddd; border: 1px solid #000;"></div>
+                        <div style="width: 40px; height: 40px; background: #00ff88; border: 1px solid #000;"></div>
+                    </div>
+                    <p style="margin-top: 20px;">Your growing collection!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-content">
+                <div class="step-number">4</div>
+                <h3>Order Physical Stickers</h3>
+                <p><strong>UNLOCK TO ORDER:</strong> Once you've unlocked a module digitally, you can order the physical sticker version!</p>
+                <ul style="margin-top: 15px;">
+                    <li>Only unlocked modules can be ordered</li>
+                    <li>High-quality vinyl stickers</li>
+                    <li>Perfect for your modular setup</li>
+                    <li>Show off your rare finds IRL</li>
+                </ul>
+                <p style="margin-top: 15px; padding: 10px; background: #FFD700; color: #000; font-weight: bold;">
+                    PRO TIP: Buy the $80 ultimate pack to get ALL 25 physical stickers instantly!
+                </p>
+            </div>
+            <div class="step-visual">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 20px; justify-content: center;">
+                        <div style="width: 80px; height: 120px; background: linear-gradient(45deg, #667eea, #764ba2); border: 2px solid #000; color: white; display: flex; align-items: center; justify-content: center;">
+                            DIGITAL
+                        </div>
+                        <div style="font-size: 2rem;">→</div>
+                        <div style="width: 80px; height: 120px; background: white; border: 2px solid #000; display: flex; align-items: center; justify-content: center; box-shadow: 5px 5px 10px rgba(0,0,0,0.2);">
+                            PHYSICAL
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px;">Digital unlocks physical!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="rewards">
+        <h2>Milestone Rewards</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 40px;">Collect modules and unlock exclusive physical rewards!</p>
+        <div class="reward-grid">
+            <div class="reward-card">
+                <h3>20 Modules</h3>
+                <p>Starter Pack Reward</p>
+                <p style="margin-top: 15px; color: #666;">FREE physical sticker of your choice!</p>
+            </div>
+            <div class="reward-card">
+                <h3>40 Modules</h3>
+                <p>Collector Status</p>
+                <p style="margin-top: 15px; color: #666;">3-pack of physical stickers!</p>
+            </div>
+            <div class="reward-card">
+                <h3>60 Modules</h3>
+                <p>Expert Level</p>
+                <p style="margin-top: 15px; color: #666;">5-pack of rare physical stickers!</p>
+            </div>
+            <div class="reward-card">
+                <h3>80 Modules</h3>
+                <p>Master Collector</p>
+                <p style="margin-top: 15px; color: #666;">10-pack mega bundle!</p>
+            </div>
+            <div class="reward-card">
+                <h3>100 Modules</h3>
+                <p>LEGEND STATUS</p>
+                <p style="margin-top: 15px; color: #666;">Complete physical set + exclusive bonus!</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cta">
+        <h2>Ready to Start Collecting?</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">Join the Eurogrid community and start your collection today!</p>
+        <div class="cta-buttons">
+            <a href="collection.html" class="cta-btn primary">START COLLECTING</a>
+            <a href="marketplace.html" class="cta-btn">BROWSE MARKETPLACE</a>
+        </div>
+    </div>
+    
+    <div class="faq">
+        <h2>Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+            <h3>Do I need to buy digital packs to get physical stickers?</h3>
+            <p>Yes! You must unlock a module digitally before you can order its physical sticker. However, the $80 Ultimate pack includes ALL 25 physical stickers immediately, bypassing the unlock requirement.</p>
+        </div>
+        
+        <div class="faq-item">
+            <h3>What are the different rarities?</h3>
+            <p>Modules come in four rarities: Common (gray), Rare (blue), Epic/Holographic (purple with shimmer effect), and Legendary (gold with animated effects). Rarer modules are harder to find but more valuable for trading!</p>
+        </div>
+        
+        <div class="faq-item">
+            <h3>Can I trade my modules?</h3>
+            <p>Yes! The marketplace allows you to trade modules with other collectors. You can only trade module-for-module (no selling for rupees), keeping the economy balanced and fun.</p>
+        </div>
+        
+        <div class="faq-item">
+            <h3>What happens to extra rupees?</h3>
+            <p>Rupees never expire! Save them for future pack releases, special events, or use them to keep opening packs to complete your collection.</p>
+        </div>
+        
+        <div class="faq-item">
+            <h3>Are the physical stickers good quality?</h3>
+            <p>Absolutely! All physical stickers are high-quality vinyl, perfect for decorating your eurorack setup, laptop, or anywhere else. They're weatherproof and designed to last.</p>
+        </div>
+    </div>
+</body>
+</html>

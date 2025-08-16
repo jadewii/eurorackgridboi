@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Module Packs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .pack-section {
+            margin-bottom: 60px;
+        }
+        
+        .section-header {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .packs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .pack-card {
+            background: white;
+            border: 3px solid #000;
+            overflow: hidden;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .pack-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .pack-preview {
+            padding: 20px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        /* Mystery Box Styles */
+        .mystery-box {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #000;
+            font-size: 4rem;
+            font-weight: bold;
+            color: #000;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mystery-grid {
+            display: grid;
+            gap: 6px;
+            width: 100%;
+            aspect-ratio: 1;
+            padding: 10px;
+        }
+        
+        .mystery-grid.grid-2x2 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+        
+        .mystery-grid.grid-3x3 {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+        }
+        
+        .mystery-grid.grid-4x5 {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 4px;
+        }
+        
+        .mystery-module {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #000;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        
+        .mystery-module:hover {
+            transform: scale(1.05);
+        }
+        
+        .mystery-module.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .module-front, .module-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .module-back {
+            transform: rotateY(180deg);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        /* Jacknut Animation */
+        .flying-jacknut {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            z-index: 9999;
+            pointer-events: none;
+            animation: fly-to-button 1s ease-in-out forwards;
+        }
+        
+        @keyframes fly-to-button {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            }
+            50% { 
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            }
+        }
+        
+        .pack-info {
+            padding: 20px;
+            background: white;
+        }
+        
+        .pack-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .pack-contents {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .buy-button {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            font-weight: bold;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .buy-button:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .buy-button.purchasing {
+            animation: pulse-glow 0.5s ease-in-out;
+            background: #FFD700;
+        }
+        
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FF1493;
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: 2px solid #000;
+        }
+        
+        .best-value {
+            border-color: #FFD700;
+            border-width: 4px;
+        }
+        
+        .live-warning {
+            background: #FFE4B5;
+            border: 2px solid #FFD700;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid #000;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .jacknut-ring {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .jacknut-icon {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+        }
+        
+        /* Pack opening overlay */
+        .pack-opening-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .pack-opening-overlay.active {
+            display: flex;
+        }
+        
+        .opening-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .opening-grid {
+            display: grid;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .opening-grid.grid-1x1 {
+            grid-template-columns: 1fr;
+        }
+        
+        .opening-grid.grid-2x2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .opening-grid.grid-3x3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .opening-grid.grid-4x5 {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .reveal-card {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        
+        .reveal-card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #000;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .close-reveal {
+            padding: 15px 30px;
+            background: white;
+            color: #000;
+            border: 3px solid #000;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        
+        .close-reveal:hover {
+            background: #000;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
+        <div class="cart-area">
+            <div class="profile-avatar-wrapper" onclick="window.location.href='profile.html'">
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-ring" alt="ring">
+                <div class="profile-avatar">J</div>
+            </div>
+            <button class="cart-counter" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px;">
+                <span id="credits">100</span>
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 35px; height: 35px;" alt="HP">
+            </button>
+            <button class="cart-counter" onclick="window.location.href='collection.html'">MODULES</button>
+            <button class="cart-counter" onclick="window.location.href='rack-shop.html'">RACK SHOP</button>
+            <button class="cart-counter" onclick="window.location.href='module-packs.html'" style="background: #000; color: white;">MODULE PACKS</button>
+            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
+                BUY <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 18px; height: 18px; vertical-align: middle;" alt="HP">
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1 class="page-title">MODULE PACKS</h1>
+        
+        <!-- Powered Module Packs -->
+        <div class="pack-section">
+            <h2 class="section-header">POWERED</h2>
+            
+            <div class="live-warning">
+                ⚠️ POWERED modules require a POWERED rack to function! Make sure you have at least one powered rack before purchasing.
+            </div>
+            
+            <div class="packs-grid">
+                <!-- Single Live -->
+                <div class="pack-card">
+                    <div class="pack-preview">
+                        <div class="mystery-box">?</div>
+                    </div>
+                    <div class="pack-info">
+                        <div class="pack-name">SINGLE</div>
+                        <div class="pack-contents">1 random POWERED module</div>
+                        <button class="buy-button" onclick="buyPack('single-live', 10, 1, 'live', this)">
+                            10
+                            <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Starter Pack Live -->
+                <div class="pack-card">
+                    <div class="pack-preview">
+                        <div class="mystery-grid grid-2x2">
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <div class="pack-name">STARTER PACK</div>
+                        <div class="pack-contents">4 random POWERED modules</div>
+                        <button class="buy-button" onclick="buyPack('starter-live', 25, 4, 'live', this)">
+                            25
+                            <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Jam Pack Live -->
+                <div class="pack-card">
+                    <div class="pack-preview">
+                        <div class="mystery-grid grid-3x3">
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <div class="pack-name">JAM PACK</div>
+                        <div class="pack-contents">9 random POWERED modules</div>
+                        <button class="buy-button" onclick="buyPack('jam-live', 45, 9, 'live', this)">
+                            45
+                            <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Pro Pack Live -->
+                <div class="pack-card best-value">
+                    <div class="badge">BEST VALUE</div>
+                    <div class="pack-preview">
+                        <div class="mystery-grid grid-4x5">
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <div class="pack-name">PRO PACK</div>
+                        <div class="pack-contents">20 random POWERED modules</div>
+                        <button class="buy-button" onclick="buyPack('pro-live', 70, 20, 'live', this)">
+                            70
+                            <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Unpowered Module Packs -->
+        <div class="pack-section">
+            <h2 class="section-header">UNPOWERED</h2>
+            
+            <div class="packs-grid">
+                <!-- Single -->
+                <div class="pack-card">
+                    <div class="pack-preview">
+                        <div class="mystery-box">?</div>
+                    </div>
+                    <div class="pack-info">
+                        <div class="pack-name">SINGLE</div>
+                        <div class="pack-contents">1 random module</div>
+                        <button class="buy-button" onclick="buyPack('single', 2, 1, 'common', this)">
+                            2
+                            <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Starter Pack -->
+                <div class="pack-card">
+                    <div class="pack-preview">
+                        <div class="mystery-grid grid-2x2">
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <div class="pack-name">STARTER PACK</div>
+                        <div class="pack-contents">4 random modules</div>
+                        <button class="buy-button" onclick="buyPack('starter', 5, 4, 'common', this)">
+                            5
+                            <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Jam Pack -->
+                <div class="pack-card">
+                    <div class="pack-preview">
+                        <div class="mystery-grid grid-3x3">
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <div class="pack-name">JAM PACK</div>
+                        <div class="pack-contents">9 random modules</div>
+                        <button class="buy-button" onclick="buyPack('jam', 15, 9, 'common', this)">
+                            15
+                            <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Pro Pack -->
+                <div class="pack-card best-value">
+                    <div class="badge">BEST VALUE</div>
+                    <div class="pack-preview">
+                        <div class="mystery-grid grid-4x5">
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                            <div class="mystery-module">?</div>
+                        </div>
+                    </div>
+                    <div class="pack-info">
+                        <div class="pack-name">PRO PACK</div>
+                        <div class="pack-contents">20 random modules</div>
+                        <button class="buy-button" onclick="buyPack('pro', 25, 20, 'common', this)">
+                            25
+                            <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pack Opening Overlay -->
+    <div class="pack-opening-overlay" id="packOverlay">
+        <div class="opening-title" id="openingTitle">OPENING PACK...</div>
+        <div class="opening-grid" id="openingGrid"></div>
+        <button class="close-reveal" onclick="closeReveal()">COLLECT MODULES</button>
+    </div>
+    
+    <script>
+        // Buy pack function with animation
+        function buyPack(packType, price, quantity, moduleType, button) {
+            const credits = parseInt(document.getElementById('credits').textContent);
+            
+            // Check if user has a powered rack for Live modules
+            if (moduleType === 'live') {
+                const hasPoweredRack = localStorage.getItem('has-powered-rack');
+                if (!hasPoweredRack) {
+                    if (!confirm('⚠️ WARNING: POWERED modules require a POWERED rack!\n\nYou don\'t appear to have a powered rack yet.\n\nBuy anyway?')) {
+                        return;
+                    }
+                }
+            }
+            
+            if (credits >= price) {
+                const packName = packType.replace('-', ' ').toUpperCase();
+                if (confirm(`Purchase ${packName} for ${price} jacknuts?\n\nYou'll receive ${quantity} random modules!`)) {
+                    // Start the animation
+                    animateJacknutPurchase(price, button, () => {
+                        // After animation, reveal the modules
+                        revealPack(quantity, moduleType, packName);
+                    });
+                    
+                    // Update credits
+                    const newCredits = credits - price;
+                    localStorage.setItem('rack-credits', newCredits);
+                    
+                    // Generate random modules
+                    let modules = [];
+                    const maxId = moduleType === 'live' ? 17 : 36;
+                    for (let i = 0; i < quantity; i++) {
+                        modules.push({
+                            id: Math.floor(Math.random() * maxId) + 1,
+                            type: moduleType
+                        });
+                    }
+                    
+                    // Save to owned modules
+                    let ownedModules = JSON.parse(localStorage.getItem('owned-modules') || '[]');
+                    modules.forEach(m => {
+                        ownedModules.push(`${moduleType}-${m.id}`);
+                    });
+                    localStorage.setItem('owned-modules', JSON.stringify(ownedModules));
+                    localStorage.setItem('last-pack-modules', JSON.stringify(modules));
+                }
+            } else {
+                alert(`Insufficient jacknuts! You need ${price} but only have ${credits}.`);
+            }
+        }
+        
+        function animateJacknutPurchase(amount, button, callback) {
+            const creditsElement = document.getElementById('credits');
+            const startCredits = parseInt(creditsElement.textContent);
+            const buttonRect = button.getBoundingClientRect();
+            const creditsRect = creditsElement.getBoundingClientRect();
+            
+            // Add purchasing animation to button
+            button.classList.add('purchasing');
+            
+            // Create flying jacknuts
+            let jacknuitsAnimated = 0;
+            const animationInterval = setInterval(() => {
+                if (jacknuitsAnimated >= amount) {
+                    clearInterval(animationInterval);
+                    button.classList.remove('purchasing');
+                    if (callback) callback();
+                    return;
+                }
+                
+                // Create flying jacknut
+                const jacknut = document.createElement('img');
+                jacknut.src = 'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png';
+                jacknut.className = 'flying-jacknut';
+                jacknut.style.left = creditsRect.left + 'px';
+                jacknut.style.top = creditsRect.top + 'px';
+                document.body.appendChild(jacknut);
+                
+                // Animate to button
+                setTimeout(() => {
+                    jacknut.style.left = buttonRect.left + buttonRect.width/2 - 20 + 'px';
+                    jacknut.style.top = buttonRect.top + buttonRect.height/2 - 20 + 'px';
+                }, 10);
+                
+                // Update credits counter
+                jacknuitsAnimated++;
+                creditsElement.textContent = startCredits - jacknuitsAnimated;
+                
+                // Remove element after animation
+                setTimeout(() => {
+                    jacknut.remove();
+                }, 1000);
+            }, 50);
+        }
+        
+        function revealPack(quantity, moduleType, packName) {
+            const overlay = document.getElementById('packOverlay');
+            const grid = document.getElementById('openingGrid');
+            const title = document.getElementById('openingTitle');
+            
+            // Set title
+            title.textContent = `${packName} - CLICK TO REVEAL!`;
+            
+            // Clear grid and set appropriate class
+            grid.innerHTML = '';
+            if (quantity === 1) {
+                grid.className = 'opening-grid grid-1x1';
+            } else if (quantity === 4) {
+                grid.className = 'opening-grid grid-2x2';
+            } else if (quantity === 9) {
+                grid.className = 'opening-grid grid-3x3';
+            } else {
+                grid.className = 'opening-grid grid-4x5';
+            }
+            
+            // Get the generated modules
+            const modules = JSON.parse(localStorage.getItem('last-pack-modules') || '[]');
+            
+            // Create reveal cards
+            modules.forEach((module, index) => {
+                const card = document.createElement('div');
+                card.className = 'reveal-card';
+                card.innerHTML = `
+                    <div class="card-front">?</div>
+                    <div class="card-back"></div>
+                `;
+                
+                // Set the module image
+                const imageUrl = moduleType === 'live' 
+                    ? `https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackgif/${module.id}.gif?width=150&quality=70`
+                    : `https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/${module.id}.png`;
+                
+                card.querySelector('.card-back').style.backgroundImage = `url('${imageUrl}')`;
+                
+                // Add click to flip
+                card.onclick = () => {
+                    card.classList.add('flipped');
+                    // Auto flip all after 2 seconds
+                    if (index === 0) {
+                        setTimeout(() => {
+                            document.querySelectorAll('.reveal-card').forEach(c => {
+                                c.classList.add('flipped');
+                            });
+                        }, 2000);
+                    }
+                };
+                
+                grid.appendChild(card);
+            });
+            
+            // Show overlay
+            overlay.classList.add('active');
+        }
+        
+        function closeReveal() {
+            const overlay = document.getElementById('packOverlay');
+            overlay.classList.remove('active');
+        }
+        
+        // Load credits
+        const savedCredits = localStorage.getItem('rack-credits') || '100';
+        document.getElementById('credits').textContent = savedCredits;
+    </script>
+</body>
+</html>

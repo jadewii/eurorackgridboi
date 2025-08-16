@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RACK COINS - Instant Digital Unlocks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            letter-spacing: 5px;
+        }
+        
+        .hero-coins {
+            font-size: 6rem;
+            animation: spin 3s linear infinite;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+        
+        .cta-btn {
+            background: white;
+            color: #764ba2;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .cta-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .cta-btn.primary {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .feature {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-10px);
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .pricing {
+            background: rgba(0,0,0,0.3);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .pricing h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .price-card {
+            background: white;
+            color: #000;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .price-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .price-card.popular {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            transform: scale(1.05);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background: #FF1493;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .coins-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #764ba2;
+            margin: 10px 0;
+        }
+        
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .savings {
+            color: #00C851;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .how-it-works {
+            text-align: center;
+            margin: 60px 0;
+        }
+        
+        .how-it-works h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: white;
+            color: #764ba2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        
+        .step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        
+        .benefits {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .benefits h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .benefit-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .benefit {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .benefit-icon {
+            font-size: 2rem;
+        }
+        
+        .faq {
+            margin: 60px 0;
+        }
+        
+        .faq h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .faq-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .faq-item:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .faq-question {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .faq-answer {
+            margin-top: 10px;
+            opacity: 0.9;
+            display: none;
+        }
+        
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-coins">🪙</div>
+            <h1>RACK COINS</h1>
+            <p>The instant way to unlock digital eurorack stickers!</p>
+            <p style="font-size: 1rem; opacity: 0.8;">No waiting. No shipping. Just instant gratification.</p>
+        </div>
+        
+        <!-- CTA Buttons -->
+        <div class="cta-buttons">
+            <a href="collection-gamified.html" class="cta-btn primary">START COLLECTING</a>
+            <a href="#pricing" class="cta-btn">BUY COINS</a>
+        </div>
+        
+        <!-- Features -->
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Instant Unlocks</h3>
+                <p>Click. Unlock. Enjoy. No waiting for shipping!</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎁</div>
+                <h3>Daily Rewards</h3>
+                <p>Get 50 FREE coins every day just for logging in!</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏆</div>
+                <h3>Collection Goals</h3>
+                <p>Track your progress and complete your collection!</p>
+            </div>
+        </div>
+        
+        <!-- How It Works -->
+        <div class="how-it-works">
+            <h2>HOW IT WORKS</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Get Coins</h3>
+                    <p>Buy or earn RACK COINS</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Click Unlock</h3>
+                    <p>100 coins = 1 sticker</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Instant Access</h3>
+                    <p>Sticker unlocks immediately!</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pricing -->
+        <div class="pricing" id="pricing">
+            <h2>COIN PACKAGES</h2>
+            <div class="price-grid">
+                <div class="price-card" onclick="window.location.href='collection-gamified.html'">
+                    <div class="coins-amount">100</div>
+                    <div class="price">$1</div>
+                    <div class="savings">1 Sticker</div>
+                </div>
+                
+                <div class="price-card popular" onclick="window.location.href='collection-gamified.html'">
+                    <span class="popular-badge">BEST VALUE</span>
+                    <div class="coins-amount">500</div>
+                    <div class="price">$4</div>
+                    <div class="savings">5 Stickers - SAVE 20%</div>
+                </div>
+                
+                <div class="price-card" onclick="window.location.href='collection-gamified.html'">
+                    <div class="coins-amount">1,000</div>
+                    <div class="price">$7</div>
+                    <div class="savings">10 Stickers - SAVE 30%</div>
+                </div>
+                
+                <div class="price-card" onclick="window.location.href='collection-gamified.html'">
+                    <div class="coins-amount">2,500</div>
+                    <div class="price">$15</div>
+                    <div class="savings">25 Stickers - SAVE 40%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Benefits -->
+        <div class="benefits">
+            <h2>WHY RACK COINS?</h2>
+            <div class="benefit-list">
+                <div class="benefit">
+                    <span class="benefit-icon">💰</span>
+                    <div>
+                        <strong>Better Value</strong>
+                        <p>Digital stickers for $1 vs $5+ physical</p>
+                    </div>
+                </div>
+                <div class="benefit">
+                    <span class="benefit-icon">🌍</span>
+                    <div>
+                        <strong>No Shipping</strong>
+                        <p>Available worldwide, instantly</p>
+                    </div>
+                </div>
+                <div class="benefit">
+                    <span class="benefit-icon">🎮</span>
+                    <div>
+                        <strong>Gamified Experience</strong>
+                        <p>Collect, trade, and show off</p>
+                    </div>
+                </div>
+                <div class="benefit">
+                    <span class="benefit-icon">♻️</span>
+                    <div>
+                        <strong>Eco-Friendly</strong>
+                        <p>No packaging, no waste</p>
+                    </div>
+                </div>
+                <div class="benefit">
+                    <span class="benefit-icon">🎁</span>
+                    <div>
+                        <strong>Free Coins Daily</strong>
+                        <p>Earn coins just by visiting</p>
+                    </div>
+                </div>
+                <div class="benefit">
+                    <span class="benefit-icon">⚡</span>
+                    <div>
+                        <strong>Instant Gratification</strong>
+                        <p>See your collection grow immediately</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FAQ -->
+        <div class="faq">
+            <h2>FREQUENTLY ASKED QUESTIONS</h2>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">What are RACK COINS?</div>
+                <div class="faq-answer">RACK COINS are our digital currency that lets you instantly unlock digital stickers in your collection. 100 coins = 1 sticker unlock!</div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">How do I earn free coins?</div>
+                <div class="faq-answer">Log in daily to get 50 free coins! Plus, new users get 200 coins as a welcome bonus.</div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">Can I still buy physical stickers?</div>
+                <div class="faq-answer">Yes! You can always purchase physical stickers that ship to your door. Physical purchases also unlock the digital version!</div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">What can I do with digital stickers?</div>
+                <div class="faq-answer">Build your collection, share with friends, use as wallpapers, and show off your complete sets!</div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">Do coins expire?</div>
+                <div class="faq-answer">No! Your RACK COINS never expire. Buy now, use whenever you want.</div>
+            </div>
+        </div>
+        
+        <!-- Final CTA -->
+        <div class="hero">
+            <h2>Ready to start collecting?</h2>
+            <p>Get 200 FREE coins when you sign up!</p>
+            <div class="cta-buttons">
+                <a href="collection-gamified.html" class="cta-btn primary">GET STARTED NOW</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

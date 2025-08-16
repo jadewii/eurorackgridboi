@@ -1,0 +1,157 @@
+/* Module Display System - WebP Only */
+
+/* Base module styling */
+.module-slot {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+/* WebP background images */
+.module-slot[data-module="00"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/00.webp'); }
+.module-slot[data-module="Altered Black"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Altered%20Black.webp'); }
+.module-slot[data-module="Andersons"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Andersons.webp'); }
+.module-slot[data-module="BAI"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/BAI.webp'); }
+.module-slot[data-module="Cephalopod Rose"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Cephalopod%20Rose.webp'); }
+.module-slot[data-module="Cephalopod"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Cephalopod.webp'); }
+.module-slot[data-module="Complex Oscillator"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Complex%20Oscillator.webp'); }
+.module-slot[data-module="Function Synthesizer"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Function%20Synthesizer.webp'); }
+.module-slot[data-module="Honduh"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Honduh.webp'); }
+.module-slot[data-module="Mangler and Tangler"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Mangler%20and%20Tangler.webp'); }
+.module-slot[data-module="Physical Modeler"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Physical%20Modeler.webp'); }
+.module-slot[data-module="textural Synthesizer"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/textural%20Synthesizer.webp'); }
+.module-slot[data-module="Varigated"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Varigated.webp'); }
+.module-slot[data-module="Voltaged Gray"]::after { background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/Voltaged%20Gray.webp'); }
+
+.module-slot::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+/* POWERED MODULES - Full animation */
+.module-slot.powered {
+    /* Removed ugly green border */
+    /* border: 2px solid #00ff00; */
+    /* box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); */
+}
+
+/* Removed unnecessary emoji indicator */
+/* .module-slot.powered::before {
+    content: '⚡';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 10;
+    font-size: 16px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 5px;
+    border-radius: 3px;
+} */
+
+/* STATIC MODULES - No animation, grayscale */
+.module-slot.static::after {
+    filter: grayscale(100%) brightness(0.8);
+    animation: none !important;
+}
+
+.module-slot.static {
+    border: 1px solid #666;
+}
+
+/* USER LICENSE STATES */
+
+/* Not purchased - locked */
+.module-slot.locked::after {
+    filter: blur(8px) grayscale(100%) brightness(0.3);
+}
+
+.module-slot.locked::before {
+    content: '🔒';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    z-index: 10;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+/* Basic license - static only */
+.module-slot.basic::after {
+    filter: grayscale(50%) brightness(0.9);
+    animation: none !important;
+}
+
+.module-slot.basic.upgrade-available::before {
+    content: '⬆️ Upgrade';
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #ff8800;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Pro license - full animation */
+.module-slot.pro {
+    border: 2px solid #ffd700;
+}
+
+.module-slot.pro::before {
+    content: '✨ PRO';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: linear-gradient(45deg, #ffd700, #ff8800);
+    color: black;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* SUBSCRIPTION PERKS */
+
+/* Subscriber badge */
+.subscriber .module-slot::before {
+    content: '👑';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 10;
+}
+
+/* Exclusive modules for subscribers */
+.module-slot.exclusive::after {
+    border: 3px solid transparent;
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    background-clip: padding-box;
+}
+
+.module-slot.exclusive::before {
+    content: '💎 EXCLUSIVE';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 10;
+}

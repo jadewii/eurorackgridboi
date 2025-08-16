@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Demo - Works Without Firebase!</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            background: linear-gradient(45deg, #00ff00, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .info-box {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .jamnutz {
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .module {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .module:hover {
+            transform: scale(1.05);
+            border-color: #00ff00;
+        }
+        .module.owned {
+            border-color: #00ff00;
+            opacity: 0.7;
+        }
+        .module-img {
+            width: 100%;
+            height: 100px;
+            background: #333;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        .rack {
+            background: #000;
+            border: 3px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 150px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+        }
+        .rack-slot {
+            aspect-ratio: 1;
+            background: #222;
+            border: 2px dashed #444;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        .rack-slot.filled {
+            border: 2px solid #00ff00;
+            background: linear-gradient(45deg, #001100, #003300);
+            color: #00ff00;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            box-shadow: 0 0 20px rgba(0,255,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎛️ EURORACK.GRID Demo (No Setup Required!)</h1>
+    
+    <div class="info-box">
+        <h2>How Your Store Will Work:</h2>
+        <p>1. Users buy modules for $5 or 500 jamnutz</p>
+        <p>2. Owned modules appear in inventory (static/grayscale)</p>
+        <p>3. Drag modules into racks → They animate!</p>
+        <p>4. Subscription unlocks case colors, sizes, exclusive modules</p>
+    </div>
+    
+    <div class="info-box">
+        <h3>Your Balance: <span class="jamnutz">🥜 <span id="balance">1000</span> Jamnutz</span></h3>
+    </div>
+    
+    <h2>Module Store (Click to Buy)</h2>
+    <div class="module-grid" id="store"></div>
+    
+    <h2>Your Inventory (Static Modules)</h2>
+    <div class="module-grid" id="inventory"></div>
+    
+    <h2>Your Rack (Modules Animate Here!)</h2>
+    <div class="rack" id="rack"></div>
+    
+    <button onclick="clearAll()">Reset Demo</button>
+    
+    <script>
+        // Demo data
+        const modules = ['Function Synthesizer', 'Honduh', 'Physical Modeler', 'Complex Oscillator', 'Cephalopod', 'Mangler and Tangler'];
+        let jamnutz = 1000;
+        let owned = [];
+        let racked = [];
+        
+        // Load from localStorage
+        if (localStorage.getItem('demo_jamnutz')) {
+            jamnutz = parseInt(localStorage.getItem('demo_jamnutz'));
+            owned = JSON.parse(localStorage.getItem('demo_owned') || '[]');
+        }
+        
+        function updateDisplay() {
+            document.getElementById('balance').textContent = jamnutz;
+            
+            // Store
+            const store = document.getElementById('store');
+            store.innerHTML = '';
+            modules.forEach(name => {
+                const isOwned = owned.includes(name);
+                const div = document.createElement('div');
+                div.className = 'module' + (isOwned ? ' owned' : '');
+                div.innerHTML = `
+                    <div class="module-img">🎛️</div>
+                    <div>${name}</div>
+                    <div style="color: #ffd700">${isOwned ? '✓ Owned' : '500 🥜'}</div>
+                `;
+                if (!isOwned) {
+                    div.onclick = () => buyModule(name);
+                }
+                store.appendChild(div);
+            });
+            
+            // Inventory
+            const inv = document.getElementById('inventory');
+            inv.innerHTML = owned.length ? '' : '<div style="grid-column: 1/-1; text-align: center; color: #666;">No modules owned yet</div>';
+            owned.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'module';
+                div.innerHTML = `
+                    <div class="module-img" style="filter: grayscale(100%)">🎛️</div>
+                    <div>${name}</div>
+                    <div style="color: #666">Static</div>
+                `;
+                div.onclick = () => addToRack(name);
+                inv.appendChild(div);
+            });
+            
+            // Rack
+            const rack = document.getElementById('rack');
+            rack.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'rack-slot';
+                if (racked[i]) {
+                    slot.className += ' filled';
+                    slot.innerHTML = '🎛️<br>' + racked[i].substring(0, 8);
+                } else {
+                    slot.textContent = 'Empty';
+                }
+                rack.appendChild(slot);
+            }
+            
+            // Save state
+            localStorage.setItem('demo_jamnutz', jamnutz);
+            localStorage.setItem('demo_owned', JSON.stringify(owned));
+        }
+        
+        function buyModule(name) {
+            if (jamnutz >= 500) {
+                jamnutz -= 500;
+                owned.push(name);
+                alert('✅ Purchased ' + name + '!');
+                updateDisplay();
+            } else {
+                alert('Not enough jamnutz! You need 500 🥜');
+            }
+        }
+        
+        function addToRack(name) {
+            const emptySlot = racked.findIndex((s, i) => !racked[i]);
+            if (emptySlot !== -1 || racked.length < 6) {
+                if (emptySlot !== -1) {
+                    racked[emptySlot] = name;
+                } else {
+                    racked.push(name);
+                }
+                alert('⚡ ' + name + ' is now animated in your rack!');
+                updateDisplay();
+            } else {
+                alert('Rack is full!');
+            }
+        }
+        
+        function clearAll() {
+            if (confirm('Reset everything?')) {
+                jamnutz = 1000;
+                owned = [];
+                racked = [];
+                localStorage.clear();
+                updateDisplay();
+            }
+        }
+        
+        updateDisplay();
+    </script>
+</body>
+</html>

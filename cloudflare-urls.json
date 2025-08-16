@@ -1,0 +1,74 @@
+{
+  "function-synthesizer": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/118b2523_function-synthesizer.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/118b2523_function-synthesizer.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/118b2523_function-synthesizer.webp",
+    "hash": "118b2523"
+  },
+  "honduh": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/8cb68a78_honduh.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/8cb68a78_honduh.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/8cb68a78_honduh.webp",
+    "hash": "8cb68a78"
+  },
+  "andersons": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/4230b967_andersons.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/4230b967_andersons.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/4230b967_andersons.webp",
+    "hash": "4230b967"
+  },
+  "varigated": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/6fd2dbf2_varigated.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/6fd2dbf2_varigated.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/6fd2dbf2_varigated.webp",
+    "hash": "6fd2dbf2"
+  },
+  "bai": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/cfbd3e0a_bai.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/cfbd3e0a_bai.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/cfbd3e0a_bai.webp",
+    "hash": "cfbd3e0a"
+  },
+  "cephalopod-rose": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/3562316d_cephalopod-rose.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/3562316d_cephalopod-rose.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/3562316d_cephalopod-rose.webp",
+    "hash": "3562316d"
+  },
+  "physical-modeler": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/4c7034c8_physical-modeler.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/4c7034c8_physical-modeler.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/4c7034c8_physical-modeler.webp",
+    "hash": "4c7034c8"
+  },
+  "voltaged-gray": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/e5753518_voltaged-gray.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/e5753518_voltaged-gray.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/e5753518_voltaged-gray.webp",
+    "hash": "e5753518"
+  },
+  "complex-oscillator": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/f53cfbed_complex-oscillator.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/f53cfbed_complex-oscillator.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/f53cfbed_complex-oscillator.webp",
+    "hash": "f53cfbed"
+  },
+  "textural-synthesizer": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/1a29478a_textural-synthesizer.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/1a29478a_textural-synthesizer.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/1a29478a_textural-synthesizer.webp",
+    "hash": "1a29478a"
+  },
+  "mangler-tangler": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/336a5867_mangler-tangler.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/336a5867_mangler-tangler.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/336a5867_mangler-tangler.webp",
+    "hash": "336a5867"
+  },
+  "altered-black": {
+    "preview": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,quality=50,blur=5/previews/79adcc1a_altered-black.jpg",
+    "animated": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=300,format=webp/modules/79adcc1a_altered-black.webp",
+    "thumbnail": "https://eurorackgrid.r2.dev/cdn-cgi/image/width=150,format=webp/modules/79adcc1a_altered-black.webp",
+    "hash": "79adcc1a"
+  }
+}

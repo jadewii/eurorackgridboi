@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Proper Auth Setup</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        button { 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            background: #0f0;
+            color: #000;
+            border: 3px solid #0f0;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+        }
+        button:hover { background: #000; color: #0f0; }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+            background: #111;
+            color: #0f0;
+            border: 2px solid #0f0;
+            width: 300px;
+        }
+        .status { 
+            padding: 15px; 
+            margin: 20px 0; 
+            border: 2px solid #0f0; 
+            background: #111;
+        }
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .module {
+            border: 2px solid #0f0;
+            padding: 10px;
+            text-align: center;
+            background: #111;
+            position: relative;
+        }
+        .module img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+        }
+        .module.locked {
+            opacity: 0.5;
+        }
+        .module.locked::after {
+            content: "🔒 LOCKED";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+            color: #f00;
+            padding: 5px 10px;
+            border: 2px solid #f00;
+            font-weight: bold;
+        }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+        .warning { color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1>🔐 EUROGRID - SECURE NFT SYSTEM</h1>
+    
+    <div class="status">
+        <h2>Step 1: Authentication</h2>
+        <div>
+            <input type="email" id="email" placeholder="test@example.com" value="test@example.com">
+            <input type="password" id="password" placeholder="password123" value="password123">
+        </div>
+        <button onclick="signUp()">Create Account</button>
+        <button onclick="signIn()">Sign In</button>
+        <button onclick="signOut()">Sign Out</button>
+        
+        <div id="auth-status" style="margin-top: 10px;">Not logged in</div>
+    </div>
+    
+    <div class="status">
+        <h2>Step 2: Your Collection</h2>
+        <div>HP Balance: <span id="hp-balance">0</span></div>
+        <div>Owned Modules: <span id="owned-count">0</span></div>
+        <button onclick="addTestHP()">Add 500 HP (Test)</button>
+        <button onclick="loadModules()">Load Available Modules</button>
+    </div>
+    
+    <div id="modules" class="module-grid"></div>
+    
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let userBalance = 0;
+        let ownedModules = new Set();
+        
+        // Make functions global
+        window.signUp = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password
+            });
+            
+            if (error) {
+                document.getElementById('auth-status').innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            } else {
+                document.getElementById('auth-status').innerHTML = `<span class="success">✅ Account created! Now sign in.</span>`;
+                
+                // Create initial balance record
+                if (data.user) {
+                    await supabase.from('user_balance').insert({
+                        user_id: data.user.id,
+                        hp_balance: 100 // Start with 100 HP
+                    });
+                }
+            }
+        };
+        
+        window.signIn = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+            
+            if (error) {
+                document.getElementById('auth-status').innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            } else {
+                currentUser = data.user;
+                document.getElementById('auth-status').innerHTML = `<span class="success">✅ Logged in as: ${data.user.email}</span>`;
+                await loadUserData();
+            }
+        };
+        
+        window.signOut = async function() {
+            await supabase.auth.signOut();
+            currentUser = null;
+            document.getElementById('auth-status').innerHTML = 'Logged out';
+            document.getElementById('hp-balance').textContent = '0';
+            document.getElementById('owned-count').textContent = '0';
+        };
+        
+        async function loadUserData() {
+            if (!currentUser) return;
+            
+            // Get user balance
+            const { data: balanceData } = await supabase
+                .from('user_balance')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .single();
+            
+            if (balanceData) {
+                userBalance = balanceData.hp_balance;
+                document.getElementById('hp-balance').textContent = userBalance;
+            }
+            
+            // Get owned modules
+            const { data: ownedData } = await supabase
+                .from('user_modules')
+                .select('module_id')
+                .eq('user_id', currentUser.id);
+            
+            if (ownedData) {
+                ownedModules = new Set(ownedData.map(o => o.module_id));
+                document.getElementById('owned-count').textContent = ownedModules.size;
+            }
+        }
+        
+        window.addTestHP = async function() {
+            if (!currentUser) {
+                alert('Please sign in first!');
+                return;
+            }
+            
+            const { data, error } = await supabase
+                .from('user_balance')
+                .update({ hp_balance: userBalance + 500 })
+                .eq('user_id', currentUser.id);
+            
+            if (!error) {
+                userBalance += 500;
+                document.getElementById('hp-balance').textContent = userBalance;
+            }
+        };
+        
+        window.loadModules = async function() {
+            const modulesDiv = document.getElementById('modules');
+            modulesDiv.innerHTML = '<h2>Loading modules...</h2>';
+            
+            // Get all modules from database
+            const { data: modules, error } = await supabase
+                .from('modules')
+                .select('*');
+            
+            if (error) {
+                modulesDiv.innerHTML = `<span class="error">Error: ${error.message}<br>Make sure you run the SQL setup!</span>`;
+                return;
+            }
+            
+            if (!modules || modules.length === 0) {
+                modulesDiv.innerHTML = `<span class="warning">No modules found. Run the SQL setup first!</span>`;
+                return;
+            }
+            
+            modulesDiv.innerHTML = '';
+            
+            for (const module of modules) {
+                const div = document.createElement('div');
+                div.className = 'module';
+                
+                const isOwned = ownedModules.has(module.id);
+                if (!isOwned && currentUser) {
+                    div.classList.add('locked');
+                }
+                
+                // For owned modules or if logged in, try to get signed URL
+                if (isOwned && currentUser) {
+                    // This is where we'd call the Edge Function for a signed URL
+                    // For now, show placeholder
+                    const img = document.createElement('img');
+                    img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150"><rect width="200" height="150" fill="%23111"/><text x="100" y="75" text-anchor="middle" fill="%230f0">OWNED</text></svg>';
+                    div.appendChild(img);
+                } else {
+                    // Show locked placeholder
+                    const img = document.createElement('img');
+                    img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150"><rect width="200" height="150" fill="%23111"/><text x="100" y="75" text-anchor="middle" fill="%23666">MODULE</text></svg>';
+                    div.appendChild(img);
+                }
+                
+                const name = document.createElement('div');
+                name.textContent = module.name;
+                
+                const price = document.createElement('div');
+                price.textContent = `${module.hp_cost} HP`;
+                price.style.color = '#ff0';
+                
+                if (!isOwned && currentUser) {
+                    const buyBtn = document.createElement('button');
+                    buyBtn.textContent = 'UNLOCK';
+                    buyBtn.style.padding = '5px 10px';
+                    buyBtn.style.fontSize = '14px';
+                    buyBtn.onclick = () => purchaseModule(module);
+                    div.appendChild(buyBtn);
+                }
+                
+                div.appendChild(name);
+                div.appendChild(price);
+                modulesDiv.appendChild(div);
+            }
+        };
+        
+        async function purchaseModule(module) {
+            if (!currentUser) {
+                alert('Please sign in first!');
+                return;
+            }
+            
+            if (userBalance < module.hp_cost) {
+                alert(`Not enough HP! Need ${module.hp_cost}, have ${userBalance}`);
+                return;
+            }
+            
+            // Deduct HP
+            const { error: balanceError } = await supabase
+                .from('user_balance')
+                .update({ 
+                    hp_balance: userBalance - module.hp_cost,
+                    total_spent: userBalance + module.hp_cost
+                })
+                .eq('user_id', currentUser.id);
+            
+            if (balanceError) {
+                alert('Failed to update balance');
+                return;
+            }
+            
+            // Add to owned modules
+            const { error: purchaseError } = await supabase
+                .from('user_modules')
+                .insert({
+                    user_id: currentUser.id,
+                    module_id: module.id,
+                    purchase_price: module.hp_cost
+                });
+            
+            if (purchaseError) {
+                alert('Purchase failed: ' + purchaseError.message);
+                return;
+            }
+            
+            alert(`✅ Purchased ${module.name}!`);
+            await loadUserData();
+            await loadModules();
+        }
+        
+        // Check if already logged in
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                currentUser = session.user;
+                document.getElementById('auth-status').innerHTML = `<span class="success">✅ Logged in as: ${session.user.email}</span>`;
+                loadUserData();
+            }
+        });
+    </script>
+</body>
+</html>

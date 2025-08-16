@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.GRID - Module Store (Firebase)</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            background: #1a1a1a;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #333;
+        }
+        
+        .user-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .jamnutz {
+            color: #ffd700;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0;
+            background: #1a1a1a;
+            padding: 0 20px;
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            background: #222;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #333;
+            color: #fff;
+            border-bottom: 3px solid #00ff00;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .store-grid, .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .module-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .module-card:hover {
+            transform: scale(1.05);
+            border-color: #00ff00;
+        }
+        
+        .module-card.owned {
+            border-color: #00ff00;
+            opacity: 0.7;
+        }
+        
+        .module-image {
+            width: 100%;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .module-image.locked::after {
+            content: '🔒';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+        
+        .module-info {
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .module-name {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .module-price {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .buy-btn {
+            width: 100%;
+            padding: 8px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        
+        .buy-btn:hover {
+            background: #00ff00;
+            box-shadow: 0 0 10px rgba(0,255,0,0.5);
+        }
+        
+        .buy-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        .rack-builder {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .rack-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            background: #000;
+            padding: 20px;
+            border: 3px solid #444;
+            border-radius: 10px;
+            min-height: 200px;
+            margin: 20px 0;
+        }
+        
+        .rack-slot {
+            aspect-ratio: 1;
+            background: #222;
+            border: 2px dashed #444;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .rack-slot.filled {
+            border: 2px solid #00ff00;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .rack-slot.drop-target {
+            border-color: #ffff00;
+            background: rgba(255,255,0,0.1);
+        }
+        
+        .inventory-module {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: grab;
+        }
+        
+        .inventory-module.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .subscription-banner {
+            background: linear-gradient(45deg, #ffd700, #ff00ff);
+            padding: 15px;
+            text-align: center;
+            color: #000;
+            font-weight: bold;
+        }
+        
+        #authModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #authModal.show {
+            display: flex;
+        }
+        
+        .auth-form {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .auth-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #000;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 5px;
+        }
+        
+        .auth-form button {
+            width: 100%;
+            padding: 12px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎛️ EURORACK.GRID</h1>
+        <div class="user-info">
+            <span class="jamnutz">🥜 <span id="jamnutzBalance">0</span></span>
+            <span id="userEmail">Not logged in</span>
+            <button onclick="toggleAuth()" id="authBtn">Login</button>
+        </div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('store')">🛒 Store</button>
+        <button class="tab" onclick="showTab('inventory')">📦 My Modules</button>
+        <button class="tab" onclick="showTab('builder')">🔧 Rack Builder</button>
+        <button class="tab" onclick="showTab('subscription')">👑 Pro</button>
+    </div>
+    
+    <div id="storeTab" class="content">
+        <h2>Module Store</h2>
+        <p>Buy modules for $5 each or 500 jamnutz. They come to life when racked!</p>
+        <div class="store-grid" id="storeGrid">
+            <div class="loading">Loading modules...</div>
+        </div>
+    </div>
+    
+    <div id="inventoryTab" class="content" style="display:none">
+        <h2>My Module Inventory</h2>
+        <p>Your owned modules (static). Drag them to a rack to animate!</p>
+        <div class="inventory-grid" id="inventoryGrid">
+            <div class="loading">No modules owned yet</div>
+        </div>
+    </div>
+    
+    <div id="builderTab" class="content" style="display:none">
+        <h2>Rack Builder</h2>
+        <p>Drag modules from your inventory to the rack. They'll animate when placed!</p>
+        
+        <div class="rack-builder">
+            <h3>Your Rack (6U)</h3>
+            <div class="rack-grid" id="rackGrid">
+                <!-- 12 slots (2 rows x 6 columns) -->
+            </div>
+            
+            <h3>Available Modules (drag these ⬆️)</h3>
+            <div id="availableModules"></div>
+        </div>
+    </div>
+    
+    <div id="subscriptionTab" class="content" style="display:none">
+        <div class="subscription-banner">
+            🌟 UNLOCK PREMIUM FEATURES 🌟
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <h2>Subscription Tiers</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                <div class="module-card" style="padding: 20px;">
+                    <h3 style="color: #ffd700;">Monthly - $9.99</h3>
+                    <ul style="text-align: left; padding-left: 20px;">
+                        <li>1,500 jamnutz/month</li>
+                        <li>Unlock 10+ case colors</li>
+                        <li>Large cases (12U, 18U)</li>
+                        <li>5 exclusive modules</li>
+                        <li>Early access</li>
+                    </ul>
+                    <button class="buy-btn">Subscribe Monthly</button>
+                </div>
+                
+                <div class="module-card" style="padding: 20px; border-color: #ff00ff;">
+                    <h3 style="color: #ff00ff;">Yearly - $99</h3>
+                    <ul style="text-align: left; padding-left: 20px;">
+                        <li>20,000 jamnutz instantly!</li>
+                        <li>ALL case colors & sizes</li>
+                        <li>MEGA cases (24U+)</li>
+                        <li>15 exclusive modules</li>
+                        <li>Custom rack backgrounds</li>
+                        <li>Save $20!</li>
+                    </ul>
+                    <button class="buy-btn" style="background: linear-gradient(45deg, #ffd700, #ff00ff);">Subscribe Yearly</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Auth Modal -->
+    <div id="authModal">
+        <div class="auth-form">
+            <h2 id="authTitle">Login</h2>
+            <input type="email" id="emailInput" placeholder="Email">
+            <input type="password" id="passwordInput" placeholder="Password">
+            <button onclick="handleAuth()" id="authSubmit">Login</button>
+            <button onclick="toggleAuthMode()" id="authToggle">Need an account? Sign up</button>
+            <button onclick="closeAuth()" style="background: #666; margin-top: 5px;">Cancel</button>
+        </div>
+    </div>
+    
+    <script type="module">
+        // ============ REPLACE WITH YOUR FIREBASE CONFIG ============
+        const firebaseConfig = {
+            // PASTE YOUR CONFIG HERE FROM FIREBASE CONSOLE
+            apiKey: "...",
+            authDomain: "...",
+            projectId: "...",
+            storageBucket: "...",
+            messagingSenderId: "...",
+            appId: "..."
+        };
+        
+        // FOR TESTING - Using demo data
+        window.demoMode = !firebaseConfig.apiKey || firebaseConfig.apiKey === "...";
+        
+        if (window.demoMode) {
+            console.log('🎮 DEMO MODE - Using local storage instead of Firebase');
+            initDemoMode();
+        } else {
+            initFirebase();
+        }
+        
+        // Demo mode for testing without Firebase
+        function initDemoMode() {
+            window.currentUser = { 
+                email: 'demo@example.com', 
+                uid: 'demo123',
+                jamnutz: parseInt(localStorage.getItem('demo_jamnutz') || '1000')
+            };
+            
+            window.ownedModules = JSON.parse(localStorage.getItem('demo_owned') || '[]');
+            
+            document.getElementById('userEmail').textContent = 'Demo Mode';
+            document.getElementById('jamnutzBalance').textContent = window.currentUser.jamnutz;
+            document.getElementById('authBtn').style.display = 'none';
+            
+            loadModules();
+        }
+        
+        // Real Firebase initialization
+        async function initFirebase() {
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } 
+                = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+            const { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } 
+                = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+            
+            const app = initializeApp(firebaseConfig);
+            window.auth = getAuth(app);
+            window.db = getFirestore(app);
+            
+            // Auth state listener
+            onAuthStateChanged(window.auth, async (user) => {
+                if (user) {
+                    window.currentUser = user;
+                    document.getElementById('userEmail').textContent = user.email;
+                    document.getElementById('authBtn').textContent = 'Logout';
+                    document.getElementById('authModal').classList.remove('show');
+                    
+                    // Load user data
+                    await loadUserData(user.uid);
+                    loadModules();
+                } else {
+                    window.currentUser = null;
+                    document.getElementById('userEmail').textContent = 'Not logged in';
+                    document.getElementById('authBtn').textContent = 'Login';
+                    document.getElementById('jamnutzBalance').textContent = '0';
+                }
+            });
+        }
+        
+        // Module data
+        window.modules = [
+            '00', 'Altered Black', 'Andersons', 'BAI',
+            'Cephalopod Rose', 'Cephalopod', 'Complex Oscillator',
+            'Function Synthesizer', 'Honduh', 'Mangler and Tangler',
+            'Physical Modeler', 'textural Synthesizer', 'Varigated', 'Voltaged Gray'
+        ];
+        
+        window.ownedModules = [];
+        
+        function loadModules() {
+            const grid = document.getElementById('storeGrid');
+            grid.innerHTML = '';
+            
+            window.modules.forEach(moduleName => {
+                const owned = window.ownedModules.includes(moduleName);
+                const card = document.createElement('div');
+                card.className = 'module-card' + (owned ? ' owned' : '');
+                
+                // For now, using the animated WebP as preview (will change to static PNG later)
+                const imageUrl = `https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/${encodeURIComponent(moduleName)}.webp`;
+                
+                card.innerHTML = `
+                    <div class="module-image ${!owned ? 'locked' : ''}" 
+                         style="background-image: url('${imageUrl}')"></div>
+                    <div class="module-info">
+                        <div class="module-name">${moduleName}</div>
+                        <div class="module-price">${owned ? '✅ Owned' : '🥜 500 / $5'}</div>
+                        ${!owned ? `<button class="buy-btn" onclick="buyModule('${moduleName}')">Buy</button>` : ''}
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            updateInventory();
+            setupRackBuilder();
+        }
+        
+        window.buyModule = async function(moduleName) {
+            if (!window.currentUser) {
+                alert('Please login first!');
+                toggleAuth();
+                return;
+            }
+            
+            if (window.demoMode) {
+                // Demo purchase
+                if (window.currentUser.jamnutz >= 500) {
+                    window.currentUser.jamnutz -= 500;
+                    window.ownedModules.push(moduleName);
+                    localStorage.setItem('demo_jamnutz', window.currentUser.jamnutz);
+                    localStorage.setItem('demo_owned', JSON.stringify(window.ownedModules));
+                    document.getElementById('jamnutzBalance').textContent = window.currentUser.jamnutz;
+                    alert(`✅ Purchased ${moduleName}!`);
+                    loadModules();
+                } else {
+                    alert('Not enough jamnutz! You need 500 🥜');
+                }
+            } else {
+                // Real Firebase purchase
+                // TODO: Implement Stripe or jamnutz purchase
+                alert('Purchase system coming soon!');
+            }
+        };
+        
+        function updateInventory() {
+            const grid = document.getElementById('inventoryGrid');
+            
+            if (window.ownedModules.length === 0) {
+                grid.innerHTML = '<div class="loading">No modules owned yet</div>';
+                return;
+            }
+            
+            grid.innerHTML = '';
+            window.ownedModules.forEach(moduleName => {
+                const card = document.createElement('div');
+                card.className = 'module-card';
+                
+                // Static image (not animated in inventory)
+                const imageUrl = `https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/${encodeURIComponent(moduleName)}.webp`;
+                
+                card.innerHTML = `
+                    <div class="module-image" style="background-image: url('${imageUrl}'); filter: grayscale(50%)"></div>
+                    <div class="module-info">
+                        <div class="module-name">${moduleName}</div>
+                        <div class="module-price" style="color: #666">Not racked</div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        function setupRackBuilder() {
+            const rackGrid = document.getElementById('rackGrid');
+            const availableModules = document.getElementById('availableModules');
+            
+            // Create rack slots
+            rackGrid.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'rack-slot';
+                slot.dataset.slot = i;
+                slot.textContent = 'Empty';
+                
+                // Drag and drop handlers
+                slot.ondragover = (e) => {
+                    e.preventDefault();
+                    slot.classList.add('drop-target');
+                };
+                
+                slot.ondragleave = () => {
+                    slot.classList.remove('drop-target');
+                };
+                
+                slot.ondrop = (e) => {
+                    e.preventDefault();
+                    slot.classList.remove('drop-target');
+                    
+                    const moduleName = e.dataTransfer.getData('module');
+                    if (moduleName && window.ownedModules.includes(moduleName)) {
+                        const imageUrl = `https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/${encodeURIComponent(moduleName)}.webp`;
+                        slot.style.backgroundImage = `url('${imageUrl}')`;
+                        slot.classList.add('filled');
+                        slot.textContent = '';
+                        slot.dataset.module = moduleName;
+                    }
+                };
+                
+                rackGrid.appendChild(slot);
+            }
+            
+            // Show owned modules as draggable
+            availableModules.innerHTML = '';
+            window.ownedModules.forEach(moduleName => {
+                const module = document.createElement('div');
+                module.className = 'inventory-module';
+                module.draggable = true;
+                module.style.backgroundImage = `url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/euroracklegacywebp/${encodeURIComponent(moduleName)}.webp')`;
+                module.style.filter = 'grayscale(50%)';
+                module.title = moduleName;
+                
+                module.ondragstart = (e) => {
+                    e.dataTransfer.setData('module', moduleName);
+                    module.classList.add('dragging');
+                };
+                
+                module.ondragend = () => {
+                    module.classList.remove('dragging');
+                };
+                
+                availableModules.appendChild(module);
+            });
+        }
+        
+        // Tab switching
+        window.showTab = function(tab) {
+            document.querySelectorAll('.content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(tab + 'Tab').style.display = 'block';
+            event.target.classList.add('active');
+        };
+        
+        // Auth functions
+        window.toggleAuth = function() {
+            if (window.currentUser) {
+                if (confirm('Logout?')) {
+                    if (window.auth) {
+                        signOut(window.auth);
+                    } else {
+                        // Demo logout
+                        window.currentUser = null;
+                        location.reload();
+                    }
+                }
+            } else {
+                document.getElementById('authModal').classList.add('show');
+            }
+        };
+        
+        window.closeAuth = function() {
+            document.getElementById('authModal').classList.remove('show');
+        };
+        
+        window.toggleAuthMode = function() {
+            const isLogin = document.getElementById('authTitle').textContent === 'Login';
+            document.getElementById('authTitle').textContent = isLogin ? 'Sign Up' : 'Login';
+            document.getElementById('authSubmit').textContent = isLogin ? 'Sign Up' : 'Login';
+            document.getElementById('authToggle').textContent = isLogin ? 'Have an account? Login' : 'Need an account? Sign up';
+        };
+        
+        window.handleAuth = async function() {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const isLogin = document.getElementById('authTitle').textContent === 'Login';
+            
+            if (!window.auth) {
+                alert('Firebase not configured. Using demo mode.');
+                return;
+            }
+            
+            try {
+                if (isLogin) {
+                    await signInWithEmailAndPassword(window.auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(window.auth, email, password);
+                    // Create user document
+                    await setDoc(doc(window.db, 'users', window.auth.currentUser.uid), {
+                        email: email,
+                        jamnutz_balance: 1000, // Welcome bonus!
+                        created_at: new Date()
+                    });
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+        
+        async function loadUserData(uid) {
+            if (!window.db) return;
+            
+            const userDoc = await getDoc(doc(window.db, 'users', uid));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                document.getElementById('jamnutzBalance').textContent = data.jamnutz_balance || 0;
+            }
+            
+            // Load owned modules
+            const ownershipDocs = await getDocs(collection(window.db, `ownership/${uid}/modules`));
+            window.ownedModules = [];
+            ownershipDocs.forEach(doc => {
+                window.ownedModules.push(doc.id);
+            });
+        }
+    </script>
+</body>
+</html>

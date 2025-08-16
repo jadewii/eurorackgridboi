@@ -1,0 +1,30 @@
+<!-- Content Security Policy for Supabase Integration -->
+<!-- Add this meta tag to your HTML pages that need to load images from Supabase -->
+
+<meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    img-src 'self' https: data: blob: *.supabase.co;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https: *.supabase.co;
+">
+
+<!-- For Next.js, add this to next.config.js: -->
+<!--
+module.exports = {
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; img-src 'self' https: data: blob: *.supabase.co; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https: *.supabase.co;"
+          }
+        ]
+      }
+    ]
+  }
+}
+-->

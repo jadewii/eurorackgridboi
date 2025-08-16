@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Pack Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #000;
+        }
+        
+        .rupee-balance {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .pack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .pack-card {
+            border: 2px solid #000;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            background: white;
+            transition: transform 0.2s;
+        }
+        
+        .pack-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .pack-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        
+        .pack-contents {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+        
+        .pack-price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .open-btn {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 12px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        
+        .open-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .open-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .buy-more-btn {
+            background: #FFD700;
+            color: #000;
+            border: 2px solid #000;
+            padding: 15px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 40px auto;
+            display: block;
+            font-size: 1.2rem;
+        }
+        
+        .best-value {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: #FFD700;
+            color: #000;
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PACK STORE</h1>
+        <div class="rupee-balance">
+            <span>Your Balance:</span>
+            <svg width="30" height="30" viewBox="0 0 30 30">
+                <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#FFD700" stroke="#FFA500" stroke-width="2"/>
+            </svg>
+            <span id="rupee-count">0</span>
+            <span>Rupees</span>
+        </div>
+    </div>
+    
+    <div class="pack-grid">
+        <div class="pack-card">
+            <h3>Single Pack</h3>
+            <div class="pack-contents">
+                <strong>Contains:</strong><br>
+                1 Standard Module<br>
+                <span style="color: #666; font-size: 0.9rem;">Common rarity only</span>
+            </div>
+            <div class="pack-price">
+                <svg width="30" height="30" viewBox="0 0 30 30">
+                    <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#00ff88" stroke="#00cc70" stroke-width="2"/>
+                </svg>
+                <span style="font-size: 1.5rem; font-weight: bold;">5</span>
+            </div>
+            <button class="open-btn" onclick="openPack('single', 5)">OPEN PACK</button>
+        </div>
+        
+        <div class="pack-card">
+            <h3>Starter Pack</h3>
+            <div class="pack-contents">
+                <strong>Contains:</strong><br>
+                3 Standard Modules<br>
+                <span style="color: #666; font-size: 0.9rem;">All common rarity</span>
+            </div>
+            <div class="pack-price">
+                <svg width="30" height="30" viewBox="0 0 30 30">
+                    <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#4169E1" stroke="#1E90FF" stroke-width="2"/>
+                </svg>
+                <span style="font-size: 1.5rem; font-weight: bold;">10</span>
+            </div>
+            <button class="open-btn" onclick="openPack('starter', 10)">OPEN PACK</button>
+        </div>
+        
+        <div class="pack-card">
+            <div class="best-value">MOST POPULAR</div>
+            <h3>Holo Pack</h3>
+            <div class="pack-contents">
+                <strong>Contains:</strong><br>
+                4 Total Modules<br>
+                <span style="color: #666; font-size: 0.9rem;">3 Common + 1 HOLOGRAPHIC!</span>
+            </div>
+            <div class="pack-price">
+                <svg width="30" height="30" viewBox="0 0 30 30">
+                    <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#9370DB" stroke="#8A2BE2" stroke-width="2"/>
+                </svg>
+                <span style="font-size: 1.5rem; font-weight: bold;">15</span>
+            </div>
+            <button class="open-btn" onclick="openPack('holo', 15)">OPEN PACK</button>
+        </div>
+        
+        <div class="pack-card">
+            <h3>Ultra Pack</h3>
+            <div class="pack-contents">
+                <strong>Contains:</strong><br>
+                5 Total Modules<br>
+                <span style="color: #666; font-size: 0.9rem;">3 Common + 1 Holo + 1 ULTRA RARE!</span>
+            </div>
+            <div class="pack-price">
+                <svg width="30" height="30" viewBox="0 0 30 30">
+                    <polygon points="15,3 22,10 22,17 15,24 8,17 8,10" fill="#FFD700" stroke="#FFA500" stroke-width="2"/>
+                </svg>
+                <span style="font-size: 1.5rem; font-weight: bold;">20</span>
+            </div>
+            <button class="open-btn" onclick="openPack('ultra', 20)">OPEN PACK</button>
+        </div>
+    </div>
+    
+    <button class="buy-more-btn" onclick="window.location.href='collection.html'">
+        BUY MORE RUPEES
+    </button>
+    
+    <script>
+        // Update rupee balance
+        function updateBalance() {
+            const rupees = parseInt(localStorage.getItem('rack-credits') || '0');
+            document.getElementById('rupee-count').textContent = rupees;
+            
+            // Disable buttons if not enough rupees
+            document.querySelectorAll('.open-btn').forEach(btn => {
+                const cost = parseInt(btn.getAttribute('onclick').match(/\d+/)[0]);
+                btn.disabled = rupees < cost;
+                if (rupees < cost) {
+                    btn.textContent = 'NEED MORE RUPEES';
+                }
+            });
+        }
+        
+        function openPack(type, cost) {
+            const rupees = parseInt(localStorage.getItem('rack-credits') || '0');
+            
+            if (rupees < cost) {
+                alert('Not enough rupees! You need ' + cost + ' rupees for this pack.');
+                return;
+            }
+            
+            // Deduct rupees
+            localStorage.setItem('rack-credits', (rupees - cost).toString());
+            
+            // Redirect to pack opening
+            window.location.href = 'pack-opening.html?pack=' + type;
+        }
+        
+        // Initialize
+        updateBalance();
+    </script>
+</body>
+</html>

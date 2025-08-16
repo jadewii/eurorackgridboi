@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Bucket Issue</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        button { padding: 15px 30px; margin: 10px; font-size: 18px; background: #0f0; color: #000; cursor: pointer; }
+        pre { background: #111; padding: 15px; border: 2px solid #0f0; overflow: auto; }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+        img { max-width: 200px; margin: 10px; border: 2px solid #0f0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 DEBUG: Find the Problem</h1>
+    
+    <button onclick="test1()">Test 1: List ALL Buckets</button>
+    <button onclick="test2()">Test 2: Direct GIF URL</button>
+    <button onclick="test3()">Test 3: Try Different Spelling</button>
+    
+    <pre id="output">Click a test...</pre>
+    <div id="images"></div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        const output = document.getElementById('output');
+        const images = document.getElementById('images');
+        
+        async function test1() {
+            output.textContent = 'Testing: List ALL buckets...\n\n';
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                output.textContent += `Status: ${response.status}\n`;
+                const data = await response.json();
+                output.textContent += `Response: ${JSON.stringify(data, null, 2)}\n\n`;
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    output.textContent += `✅ Found ${data.length} bucket(s):\n`;
+                    for (const bucket of data) {
+                        output.textContent += `- ${bucket.name} (${bucket.public ? 'public' : 'private'})\n`;
+                        
+                        // Try to list files in each bucket
+                        const filesResp = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${bucket.name}`, {
+                            headers: {
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`
+                            }
+                        });
+                        
+                        if (filesResp.ok) {
+                            const files = await filesResp.json();
+                            output.textContent += `  └─ ${files.length} files\n`;
+                        }
+                    }
+                } else {
+                    output.textContent += '❌ No buckets found or empty array\n';
+                }
+            } catch (error) {
+                output.textContent += `❌ Error: ${error.message}\n`;
+            }
+        }
+        
+        async function test2() {
+            output.textContent = 'Testing: Direct GIF URLs...\n\n';
+            images.innerHTML = '';
+            
+            // Try different URL patterns
+            const patterns = [
+                `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/01.gif`,
+                `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/1.gif`,
+                `${SUPABASE_URL}/storage/v1/object/sign/eurorackgif/01.gif`
+            ];
+            
+            for (const url of patterns) {
+                output.textContent += `Trying: ${url}\n`;
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.onload = () => {
+                    output.textContent += `✅ SUCCESS: ${url} loaded!\n`;
+                };
+                img.onerror = () => {
+                    output.textContent += `❌ FAILED: ${url}\n`;
+                };
+                images.appendChild(img);
+            }
+        }
+        
+        async function test3() {
+            output.textContent = 'Testing: Different bucket names...\n\n';
+            
+            const names = ['eurorackgif', 'eurorackart', 'eurorrackgif', 'eurorakgif'];
+            
+            for (const name of names) {
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${name}`, {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const files = await response.json();
+                        output.textContent += `✅ Found bucket "${name}" with ${files.length} files!\n`;
+                    } else {
+                        output.textContent += `❌ Bucket "${name}" not found\n`;
+                    }
+                } catch (error) {
+                    output.textContent += `❌ Error checking "${name}": ${error.message}\n`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

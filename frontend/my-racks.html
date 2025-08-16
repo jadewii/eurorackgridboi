@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - My Racks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid #000;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .jacknut-ring {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1001;
+            border: 2px solid #000;
+            top: 100%;
+            margin-top: 2px;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+        }
+        
+        .dropdown-content a {
+            color: #000;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-weight: bold;
+            transition: all 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-content a:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .new-rack-btn {
+            background: #0f0;
+            color: #000;
+            border: 3px solid #000;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .new-rack-btn:hover {
+            background: #00ff88;
+            transform: scale(1.05);
+        }
+        
+        .racks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+            align-items: start;
+        }
+        
+        .rack-card {
+            background: transparent;
+            overflow: visible;
+            transition: all 0.2s;
+            position: relative;
+            height: fit-content;
+        }
+        
+        .rack-card:hover {
+            transform: scale(1.02);
+        }
+        
+        .rack-preview {
+            background: #000;
+            padding: 30px;
+            display: grid;
+            gap: 3px;
+            cursor: pointer;
+            position: relative;
+            border: 3px solid #000;
+            margin-bottom: 15px;
+        }
+        
+        .rack-preview.size-42 {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(2, 100px);
+            width: fit-content;
+            margin: 0 auto;
+        }
+        
+        .rack-preview.size-84 {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(4, 100px);
+            width: fit-content;
+            margin: 0 auto;
+        }
+        
+        .rack-preview.size-104 {
+            display: grid;
+            grid-template-columns: repeat(6, 75px);
+            grid-template-rows: repeat(4, 75px);
+            width: fit-content;
+            margin: 0 auto;
+        }
+        
+        .rack-preview.size-168 {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(4, 60px);
+            width: fit-content;
+            margin: 0 auto;
+        }
+        
+        .rack-preview.silver { background: linear-gradient(180deg, #c0c0c0 0%, #808080 100%); }
+        .rack-preview.black { background: linear-gradient(180deg, #333 0%, #000 100%); }
+        .rack-preview.wood { background: linear-gradient(180deg, #8B4513 0%, #654321 100%); }
+        .rack-preview.white { background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%); }
+        .rack-preview.blue { background: linear-gradient(180deg, #4169E1 0%, #1E90FF 100%); }
+        .rack-preview.red { background: linear-gradient(180deg, #DC143C 0%, #8B0000 100%); }
+        
+        .mini-module {
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+        
+        .empty-slot {
+            border: 1px dashed rgba(255,255,255,0.2);
+            aspect-ratio: 1;
+        }
+        
+        .rack-info {
+            padding: 0;
+            background: transparent;
+            border-top: none;
+        }
+        
+        .rack-name-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .rack-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            border: none;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+        
+        .rack-name:hover {
+            opacity: 0.7;
+        }
+        
+        .rack-name-input {
+            font-size: 1.8rem;
+            font-weight: bold;
+            padding: 0;
+            border: none;
+            border-bottom: 2px solid #000;
+            font-family: inherit;
+            width: 100%;
+            background: transparent;
+            outline: none;
+        }
+        
+        .rack-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .rack-details {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .rack-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border: 2px solid #000;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .action-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .action-btn.trade {
+            background: #FFB6C1;
+            border-color: #FF69B4;
+        }
+        
+        .action-btn.trade:hover {
+            background: #FF69B4;
+            color: white;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            border: 2px solid #000;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        
+        .module-count {
+            margin-left: auto;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border: 3px dashed #ccc;
+            margin: 40px 0;
+        }
+        
+        .empty-state h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .empty-state p {
+            color: #999;
+            margin-bottom: 30px;
+        }
+        
+        .friend-badge {
+            background: #4169E1;
+            color: white;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+        
+        .trending-badge {
+            background: #FFD700;
+            color: #000;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+        
+        .likes-counter {
+            background: #FFB6C1;
+            color: #000;
+            padding: 5px 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: 2px solid #FF69B4;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
+        <div class="cart-area">
+            <div class="profile-avatar-wrapper" onclick="window.location.href='profile.html'">
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-ring" alt="ring">
+                <div class="profile-avatar">J</div>
+            </div>
+            <button class="cart-counter" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px;">
+                <span id="credits">1238</span>
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 35px; height: 35px;" alt="HP">
+            </button>
+            <button class="cart-counter" onclick="window.location.href='collection.html'">
+                MODULES
+            </button>
+            <button class="cart-counter" onclick="window.location.href='my-racks.html'" style="background: #000; color: white;">
+                MY RACKS
+            </button>
+            <button class="cart-counter" onclick="window.location.href='community.html'">
+                COMMUNITY
+            </button>
+            <div class="dropdown">
+                <button class="cart-counter" onclick="toggleShopDropdown()">
+                    SHOP ▼
+                </button>
+                <div class="dropdown-content" id="shop-dropdown">
+                    <a href="collection.html">MODULES</a>
+                    <a href="rack-shop.html">RACKS</a>
+                    <a href="plant-shop.html">PLANTS</a>
+                    <a href="sticker-shop.html">STICKERS</a>
+                    <a href="marketplace.html">MARKETPLACE</a>
+                </div>
+            </div>
+            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
+                BUY HP
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">MY RACKS</h1>
+            <button class="new-rack-btn" onclick="createNewRack()">+ NEW RACK</button>
+        </div>
+        
+        <div class="racks-grid" id="my-racks">
+            <!-- Racks will be loaded here -->
+        </div>
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        
+        // Load user's racks
+        function loadMyRacks() {
+            const grid = document.getElementById('my-racks');
+            
+            // Get saved racks or create defaults
+            let savedRacks = JSON.parse(localStorage.getItem('my-racks') || '[]');
+            
+            // If no saved racks, create level-based defaults
+            if (savedRacks.length === 0) {
+                savedRacks = [
+                    {
+                        id: 'rack-1',
+                        name: 'Starter Rack',
+                        size: '42',
+                        color: 'black',
+                        modules: [],
+                        totalSlots: 8
+                    },
+                    {
+                        id: 'rack-2',
+                        name: 'Main System',
+                        size: '84',
+                        color: 'black',
+                        modules: [],
+                        totalSlots: 16
+                    }
+                ];
+                localStorage.setItem('my-racks', JSON.stringify(savedRacks));
+            }
+            
+            grid.innerHTML = '';
+            savedRacks.forEach(rack => {
+                const card = createRackCard(rack);
+                grid.appendChild(card);
+            });
+        }
+        
+        // Create rack card element
+        function createRackCard(rack) {
+            const card = document.createElement('div');
+            card.className = 'rack-card';
+            
+            // Create preview
+            const preview = document.createElement('div');
+            preview.className = `rack-preview size-${rack.size} ${rack.color || 'black'}`;
+            preview.onclick = () => editRack(rack.id);
+            
+            // Calculate grid size based on HP
+            let slots = 8; // Default for 42HP
+            if (rack.size === '84') slots = 16;
+            else if (rack.size === '104') slots = 24;
+            else if (rack.size === '168') slots = 32;
+            
+            // Add empty slots
+            for (let i = 0; i < slots; i++) {
+                const slot = document.createElement('div');
+                const module = rack.modules && rack.modules.find(m => m.slotId === i);
+                
+                if (module) {
+                    slot.className = 'mini-module';
+                    slot.style.backgroundImage = `url(${SUPABASE_URL}/storage/v1/object/public/eurorackart/${module.moduleId.toString().padStart(2, '0')}.png)`;
+                } else {
+                    slot.className = 'empty-slot';
+                }
+                
+                preview.appendChild(slot);
+            }
+            
+            // Create info section
+            const info = document.createElement('div');
+            info.className = 'rack-info';
+            
+            // Name only - editable
+            const nameEl = document.createElement('div');
+            nameEl.className = 'rack-name';
+            nameEl.textContent = rack.name || 'Untitled Rack';
+            nameEl.onclick = (e) => {
+                e.stopPropagation();
+                makeNameEditable(nameEl, rack.id);
+            };
+            
+            info.appendChild(nameEl);
+            
+            // Name section with actions - below the title
+            const nameSection = document.createElement('div');
+            nameSection.className = 'rack-name-section';
+            
+            // Actions
+            const actions = document.createElement('div');
+            actions.className = 'rack-actions';
+            
+            const friendBtn = document.createElement('button');
+            friendBtn.className = 'action-btn';
+            friendBtn.textContent = '+ FRIEND';
+            friendBtn.onclick = (e) => {
+                e.stopPropagation();
+                alert('Friend feature coming soon!');
+            };
+            
+            const tradeBtn = document.createElement('button');
+            tradeBtn.className = 'action-btn trade';
+            tradeBtn.textContent = 'TRADE';
+            tradeBtn.onclick = (e) => {
+                e.stopPropagation();
+                alert('Trading feature coming soon!');
+            };
+            
+            actions.appendChild(friendBtn);
+            actions.appendChild(tradeBtn);
+            
+            nameSection.appendChild(actions);
+            info.appendChild(nameSection);
+            
+            // User section
+            const userSection = document.createElement('div');
+            userSection.className = 'user-section';
+            
+            const userAvatar = document.createElement('div');
+            userAvatar.className = 'user-avatar';
+            userAvatar.textContent = 'J';
+            
+            const userName = document.createElement('div');
+            userName.className = 'user-name';
+            userName.textContent = 'jadewii';
+            
+            const moduleCount = document.createElement('div');
+            moduleCount.className = 'module-count';
+            const moduleText = rack.modules ? rack.modules.length : 0;
+            moduleCount.textContent = `${moduleText}/${slots} modules`;
+            
+            userSection.appendChild(userAvatar);
+            userSection.appendChild(userName);
+            userSection.appendChild(moduleCount);
+            
+            info.appendChild(userSection);
+            
+            // Stats section
+            const stats = document.createElement('div');
+            stats.className = 'rack-stats';
+            stats.style.marginTop = '10px';
+            
+            const details = document.createElement('div');
+            details.className = 'rack-details';
+            details.textContent = `${rack.size}HP • ${rack.color || 'black'} case`;
+            
+            const likes = document.createElement('div');
+            likes.className = 'likes-counter';
+            likes.innerHTML = `💜 ${Math.floor(Math.random() * 100)}`;
+            
+            stats.appendChild(details);
+            stats.appendChild(likes);
+            
+            info.appendChild(stats);
+            
+            card.appendChild(preview);
+            card.appendChild(info);
+            
+            return card;
+        }
+        
+        // Make name editable
+        function makeNameEditable(nameEl, rackId) {
+            const currentName = nameEl.textContent;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'rack-name-input';
+            input.value = currentName;
+            
+            input.onblur = () => saveName(input, nameEl, rackId);
+            input.onkeypress = (e) => {
+                if (e.key === 'Enter') {
+                    saveName(input, nameEl, rackId);
+                }
+            };
+            
+            nameEl.replaceWith(input);
+            input.focus();
+            input.select();
+        }
+        
+        // Save rack name
+        function saveName(input, nameEl, rackId) {
+            const newName = input.value.trim() || 'Untitled Rack';
+            nameEl.textContent = newName;
+            
+            // Update in localStorage
+            let savedRacks = JSON.parse(localStorage.getItem('my-racks') || '[]');
+            const rack = savedRacks.find(r => r.id === rackId);
+            if (rack) {
+                rack.name = newName;
+                localStorage.setItem('my-racks', JSON.stringify(savedRacks));
+            }
+            
+            input.replaceWith(nameEl);
+        }
+        
+        // Create new rack
+        function createNewRack() {
+            window.location.href = 'rack-shop.html';
+        }
+        
+        // Edit existing rack
+        function editRack(rackId) {
+            window.location.href = `rack-builder.html?edit=${rackId}`;
+        }
+        
+        // Shop dropdown toggle
+        function toggleShopDropdown() {
+            const dropdown = document.getElementById('shop-dropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.cart-counter')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+        
+        // Update credits
+        const savedCredits = localStorage.getItem('rack-credits') || '1238';
+        document.getElementById('credits').textContent = savedCredits;
+        
+        // Initialize
+        loadMyRacks();
+    </script>
+</body>
+</html>

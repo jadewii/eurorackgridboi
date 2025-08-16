@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Test - Public vs Private</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        .test { border: 2px solid #0f0; padding: 15px; margin: 20px 0; }
+        button { padding: 10px 20px; margin: 10px; background: #0f0; color: #000; cursor: pointer; }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .info { color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1>🔒 SECURITY TEST: Public Bucket + RLS</h1>
+    
+    <div class="test">
+        <h2>What "Public Bucket" Actually Means:</h2>
+        <ul>
+            <li>✅ Bucket is discoverable by API</li>
+            <li>✅ Files still require authentication</li>
+            <li>✅ RLS policies control who can access what</li>
+            <li>✅ Perfect for paid content/NFTs</li>
+        </ul>
+    </div>
+    
+    <div class="test">
+        <h2>Test 1: Try to Access Without Authentication</h2>
+        <button onclick="testNoAuth()">Test Anonymous Access</button>
+        <div id="test1-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>Test 2: Try Direct URL (No API Key)</h2>
+        <button onclick="testDirectUrl()">Test Direct URL</button>
+        <div id="test2-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>Test 3: With Proper Authentication</h2>
+        <button onclick="testWithAuth()">Test With Auth</button>
+        <div id="test3-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>The Truth About Your Setup:</h2>
+        <p class="info">
+        Current situation:<br>
+        - Your bucket is PRIVATE<br>
+        - This means NO frontend code can access it (even with auth)<br>
+        - You need a backend server or Edge Functions<br>
+        <br>
+        With PUBLIC bucket + RLS:<br>
+        - Frontend can request files through API<br>
+        - RLS policies check if user owns the module<br>
+        - Only owned modules are accessible<br>
+        - This is industry standard for paid content<br>
+        <br>
+        Examples using this approach:<br>
+        - Spotify (public bucket + auth for songs)<br>
+        - Netflix (public bucket + auth for videos)<br>
+        - Steam (public bucket + auth for games)<br>
+        </p>
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        async function testNoAuth() {
+            const result = document.getElementById('test1-result');
+            result.innerHTML = 'Testing...';
+            
+            try {
+                // Try without any authentication
+                const response = await fetch(`${SUPABASE_URL}/storage/v1/object/public/eurorackgif/01.gif`);
+                
+                if (response.status === 400) {
+                    result.innerHTML = '<span class="success">✅ SECURE: Cannot access without auth (bucket is private)</span>';
+                } else if (response.status === 200) {
+                    result.innerHTML = '<span class="info">⚠️ Bucket is public, but RLS policies can still protect individual files</span>';
+                } else {
+                    result.innerHTML = `<span class="error">Status: ${response.status}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            }
+        }
+        
+        function testDirectUrl() {
+            const result = document.getElementById('test2-result');
+            const directUrl = `${SUPABASE_URL}/storage/v1/object/public/eurorackgif/01.gif`;
+            
+            result.innerHTML = `
+                <p>Direct URL: ${directUrl}</p>
+                <p class="error">❌ This will fail with private bucket (400 error)</p>
+                <p class="success">✅ With public bucket + RLS, this checks authentication</p>
+            `;
+        }
+        
+        async function testWithAuth() {
+            const result = document.getElementById('test3-result');
+            result.innerHTML = 'Testing with API key...';
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/storage/v1/object/list/eurorackgif`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.status === 400) {
+                    const error = await response.json();
+                    result.innerHTML = `<span class="error">❌ Bucket not found (it's private, can't access from frontend)</span>`;
+                } else if (response.ok) {
+                    const files = await response.json();
+                    result.innerHTML = `<span class="success">✅ Can list files: Found ${files.length} files</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>

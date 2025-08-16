@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>eurorack.store - Digital Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: white;
+            color: #000;
+            overflow-x: hidden;
+        }
+        
+        /* Fixed Header Bar */
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .collection-stats {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFB6C1;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .shop-btn {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .shop-btn:hover {
+            background: #333;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 100px;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .description {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        
+        .progress-bar {
+            background: #f0f0f0;
+            height: 30px;
+            border: 2px solid #000;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #FFB6C1, #C8B6DB, #87CEEB);
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: #000;
+            color: white;
+        }
+        
+        /* Sticker Grid - Exact same as stickers.html */
+        .sticker-grid {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            line-height: 0;
+            margin: 0 auto;
+            padding: 0;
+            justify-content: center;
+        }
+        
+        .sticker-item {
+            width: calc(100vw / 6);
+            max-width: 250px;
+            height: calc(100vw / 6);
+            max-height: 250px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            line-height: 0;
+            border: 4px solid transparent;
+            flex-shrink: 0;
+        }
+        
+        .sticker-item img {
+            width: 120%;
+            height: 120%;
+            object-fit: cover;
+            display: block;
+            position: absolute;
+            top: -10%;
+            left: -10%;
+        }
+        
+        /* Unowned state - grayed out */
+        .sticker-item.locked img {
+            filter: grayscale(1) brightness(0.4);
+            opacity: 0.5;
+        }
+        
+        .sticker-item.locked {
+            border-color: transparent;
+        }
+        
+        /* Owned state - normal with green border */
+        .sticker-item.owned {
+            border-color: #00ff88;
+        }
+        
+        .sticker-item.owned img {
+            filter: none;
+            opacity: 1;
+        }
+        
+        /* Lock icon for unowned */
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .sticker-item.locked:hover .lock-overlay {
+            opacity: 1;
+        }
+        
+        .lock-icon {
+            font-size: 2rem;
+            color: white;
+        }
+        
+        /* Purchase hint */
+        .purchase-hint {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .sticker-item.locked:hover .purchase-hint {
+            opacity: 1;
+        }
+        
+        /* Reorder button for owned stickers */
+        .reorder-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .sticker-item.owned:hover .reorder-btn {
+            opacity: 1;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sticker-item {
+                width: calc(100vw / 3);
+                height: calc(100vw / 3);
+                max-width: 150px;
+                max-height: 150px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .collection-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sticker-item {
+                width: calc(100vw / 2);
+                height: calc(100vw / 2);
+                max-width: 200px;
+                max-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='stickers.html'">EURORACK.STORE</div>
+        <div style="position: absolute; left: 50%; transform: translateX(-50%); color: #000; font-weight: bold; font-size: 0.9rem;">
+            DIGITAL STICKER BINDER
+        </div>
+        <div class="cart-area">
+            <div class="collection-stats">
+                <div class="stat">
+                    <div class="stat-number" id="owned-count">0</div>
+                    <div class="stat-label">Owned</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="total-count">14</div>
+                    <div class="stat-label">Total</div>
+                </div>
+            </div>
+            <button class="shop-btn" onclick="window.location.href='stickers.html'">BUY STICKERS</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="title-section">
+            <h1 class="page-title">MY COLLECTION</h1>
+            <div class="subtitle">Physical purchases unlock digital versions</div>
+            <div class="description">Click locked stickers to purchase • Click owned stickers to reorder</div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill">0%</div>
+                </div>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-btn active" onclick="filterStickers('all')">ALL</button>
+                <button class="filter-btn" onclick="filterStickers('owned')">OWNED</button>
+                <button class="filter-btn" onclick="filterStickers('locked')">LOCKED</button>
+            </div>
+        </div>
+
+        <!-- Sticker Grid -->
+        <div class="sticker-grid" id="sticker-grid"></div>
+    </div>
+
+    <script src="printify-products.js"></script>
+    <script>
+        // Collection data
+        let myCollection = JSON.parse(localStorage.getItem('digital-collection') || '{}');
+        let currentFilter = 'all';
+        
+        // Demo: unlock a few stickers if collection is empty
+        if (Object.keys(myCollection).length === 0) {
+            const demoUnlocked = ['Mod-01 - eurorack sticker', 'Mod-03 - eurorack sticker', 'Mod-07 - eurorack sticker'];
+            demoUnlocked.forEach(id => {
+                myCollection[id] = {
+                    unlockedDate: new Date().toISOString(),
+                    points: 100
+                };
+            });
+            localStorage.setItem('digital-collection', JSON.stringify(myCollection));
+        }
+        
+        function loadStickers() {
+            const grid = document.getElementById('sticker-grid');
+            grid.innerHTML = '';
+            
+            let stickers = printifyProducts.filter(p => p.category === 'stickers');
+            
+            // Apply filter
+            if (currentFilter === 'owned') {
+                stickers = stickers.filter(s => myCollection[s.title]);
+            } else if (currentFilter === 'locked') {
+                stickers = stickers.filter(s => !myCollection[s.title]);
+            }
+            
+            stickers.forEach(sticker => {
+                const isOwned = myCollection[sticker.title];
+                const item = document.createElement('div');
+                item.className = `sticker-item ${isOwned ? 'owned' : 'locked'}`;
+                
+                item.innerHTML = `
+                    <img src="${sticker.image}?width=600" alt="${sticker.title}">
+                    ${!isOwned ? `
+                        <div class="lock-overlay">
+                            <div class="lock-icon">🔒</div>
+                        </div>
+                        <div class="purchase-hint">$2 DIGITAL • $5 PHYSICAL</div>
+                    ` : `
+                        <button class="reorder-btn" onclick="event.stopPropagation(); reorderSticker('${sticker.id}', '${sticker.title}')">
+                            REORDER +
+                        </button>
+                    `}
+                `;
+                
+                item.onclick = () => {
+                    if (!isOwned) {
+                        // Show purchase options or redirect to shop
+                        if (confirm(`Purchase "${sticker.title}"?\n\n• Digital Only: $2\n• Physical + Digital: $5-10\n\nGo to shop?`)) {
+                            // Add to cart and go to shop
+                            const cart = JSON.parse(localStorage.getItem('sticker-selections') || '{"2x2":{}}');
+                            cart['2x2'][sticker.id] = 1;
+                            localStorage.setItem('sticker-selections', JSON.stringify(cart));
+                            window.location.href = 'stickers.html';
+                        }
+                    }
+                };
+                
+                grid.appendChild(item);
+            });
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            const total = printifyProducts.filter(p => p.category === 'stickers').length;
+            const owned = Object.keys(myCollection).length;
+            const percentage = Math.round((owned / total) * 100);
+            
+            document.getElementById('owned-count').textContent = owned;
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-fill').textContent = percentage + '%';
+        }
+        
+        function filterStickers(filter) {
+            currentFilter = filter;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadStickers();
+        }
+        
+        function reorderSticker(stickerId, stickerTitle) {
+            if (confirm(`Reorder "${stickerTitle}"?\n\nPerfect for gifts or backups!`)) {
+                // Add to cart
+                const cart = JSON.parse(localStorage.getItem('sticker-selections') || '{"2x2":{}}');
+                cart['2x2'][stickerId] = (cart['2x2'][stickerId] || 0) + 1;
+                localStorage.setItem('sticker-selections', JSON.stringify(cart));
+                
+                alert('Added to cart!');
+                
+                if (confirm('Go to checkout?')) {
+                    window.location.href = 'stickers.html';
+                }
+            }
+        }
+        
+        // Check for new unlocks from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const justUnlocked = urlParams.get('justUnlocked');
+        if (justUnlocked) {
+            setTimeout(() => {
+                alert(`🎉 Congratulations! You unlocked ${justUnlocked} new sticker${justUnlocked > 1 ? 's' : ''} in your digital collection!`);
+            }, 500);
+        }
+        
+        // Initialize
+        loadStickers();
+    </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase Connection</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #000;
+        }
+        .success { background: #90EE90; }
+        .error { background: #FFB6C1; }
+        .warning { background: #FFFFE0; }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            font-family: monospace;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: white;
+            border: 2px solid #000;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #000;
+            color: white;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .image-item {
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        .image-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .live-badge {
+            background: #FF1493;
+            color: white;
+            padding: 5px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Supabase Connection Test</h1>
+    
+    <div class="status warning">
+        <strong>Quick Setup:</strong><br>
+        1. Enter your Supabase URL and Anon Key below<br>
+        2. Click "Test Connection"<br>
+        3. If successful, click "Load eurorackgif Bucket"
+    </div>
+    
+    <h2>Step 1: Configure</h2>
+    <input type="text" id="url" placeholder="Supabase URL (e.g., https://xxxxx.supabase.co)">
+    <input type="text" id="key" placeholder="Anon Key (starts with eyJ...)">
+    <button onclick="saveAndTest()">Test Connection</button>
+    
+    <h2>Step 2: Test Results</h2>
+    <div id="results"></div>
+    
+    <h2>Step 3: Load Images</h2>
+    <button onclick="loadImages()" id="loadBtn" disabled>Load eurorackgif Bucket</button>
+    <div id="image-grid" class="image-grid"></div>
+    
+    <h2>Debug Log</h2>
+    <pre id="log"></pre>
+    
+    <script>
+        let supabaseUrl = '';
+        let supabaseKey = '';
+        const log = document.getElementById('log');
+        const results = document.getElementById('results');
+        
+        function addLog(message, data = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            log.textContent += `[${timestamp}] ${message}\n`;
+            if (data) {
+                log.textContent += JSON.stringify(data, null, 2) + '\n';
+            }
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        async function saveAndTest() {
+            supabaseUrl = document.getElementById('url').value.trim();
+            supabaseKey = document.getElementById('key').value.trim();
+            
+            if (!supabaseUrl || !supabaseKey) {
+                alert('Please enter both URL and Key');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('test-supabase-url', supabaseUrl);
+            localStorage.setItem('test-supabase-key', supabaseKey);
+            
+            results.innerHTML = '';
+            addLog('Starting connection test...');
+            
+            // Test 1: Basic connection
+            try {
+                addLog('Testing basic API connection...');
+                const response = await fetch(`${supabaseUrl}/storage/v1/bucket`, {
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const buckets = await response.json();
+                    results.innerHTML += '<div class="status success">✅ Connection successful!</div>';
+                    addLog('Buckets found:', buckets);
+                    
+                    // Check if eurorackgif exists
+                    const hasEurorackgif = buckets.some(b => b.name === 'eurorackgif');
+                    if (hasEurorackgif) {
+                        results.innerHTML += '<div class="status success">✅ eurorackgif bucket found!</div>';
+                        document.getElementById('loadBtn').disabled = false;
+                    } else {
+                        results.innerHTML += '<div class="status warning">⚠️ eurorackgif bucket not found. Please create it in Supabase.</div>';
+                    }
+                } else {
+                    results.innerHTML += '<div class="status error">❌ Connection failed: ' + response.status + '</div>';
+                    addLog('Connection error:', response.statusText);
+                }
+            } catch (error) {
+                results.innerHTML += '<div class="status error">❌ Network error: ' + error.message + '</div>';
+                addLog('Network error:', error);
+            }
+        }
+        
+        async function loadImages() {
+            const grid = document.getElementById('image-grid');
+            grid.innerHTML = '';
+            
+            addLog('Loading files from eurorackgif bucket...');
+            
+            try {
+                // List files
+                const response = await fetch(`${supabaseUrl}/storage/v1/object/list/eurorackgif`, {
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to list files: ${response.status}`);
+                }
+                
+                const files = await response.json();
+                addLog(`Found ${files.length} files`);
+                
+                if (files.length === 0) {
+                    grid.innerHTML = '<div style="grid-column: 1/-1;">No files found. Upload some GIF files to the eurorackgif bucket.</div>';
+                    return;
+                }
+                
+                // Display each file
+                for (const file of files) {
+                    addLog(`Loading: ${file.name}`);
+                    
+                    // Try to get image URL
+                    let imageUrl;
+                    
+                    // Try signed URL first
+                    try {
+                        const signResponse = await fetch(`${supabaseUrl}/storage/v1/object/sign/eurorackgif/${file.name}`, {
+                            method: 'POST',
+                            headers: {
+                                'apikey': supabaseKey,
+                                'Authorization': `Bearer ${supabaseKey}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ expiresIn: 60 })
+                        });
+                        
+                        if (signResponse.ok) {
+                            const data = await signResponse.json();
+                            imageUrl = `${supabaseUrl}/storage/v1${data.signedURL}`;
+                            addLog(`Using signed URL for ${file.name}`);
+                        } else {
+                            throw new Error('Signed URL failed');
+                        }
+                    } catch (e) {
+                        // Fall back to public URL
+                        imageUrl = `${supabaseUrl}/storage/v1/object/public/eurorackgif/${file.name}`;
+                        addLog(`Using public URL for ${file.name}`);
+                    }
+                    
+                    // Create image element
+                    const item = document.createElement('div');
+                    item.className = 'image-item';
+                    item.innerHTML = `
+                        <div class="live-badge">LIVE MODULE</div>
+                        <img src="${imageUrl}" alt="${file.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22150%22><rect fill=%22%23ddd%22 width=%22200%22 height=%22150%22/><text x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22>Error Loading</text></svg>'">
+                        <div>${file.name}</div>
+                        <div style="font-size: 0.8em; color: #666;">${(file.metadata?.size / 1024 || 0).toFixed(1)} KB</div>
+                    `;
+                    
+                    grid.appendChild(item);
+                }
+                
+                results.innerHTML += `<div class="status success">✅ Loaded ${files.length} LIVE modules!</div>`;
+                
+            } catch (error) {
+                results.innerHTML += '<div class="status error">❌ Error loading images: ' + error.message + '</div>';
+                addLog('Error:', error);
+            }
+        }
+        
+        // Load saved credentials
+        window.onload = () => {
+            const savedUrl = localStorage.getItem('test-supabase-url');
+            const savedKey = localStorage.getItem('test-supabase-key');
+            
+            if (savedUrl) document.getElementById('url').value = savedUrl;
+            if (savedKey) document.getElementById('key').value = savedKey;
+            
+            addLog('Page loaded. Enter credentials and click Test Connection.');
+        };
+    </script>
+</body>
+</html>

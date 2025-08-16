@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Supabase Bucket</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        pre { background: #f0f0f0; padding: 15px; border: 2px solid #000; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Supabase Bucket Checker</h1>
+    
+    <button onclick="checkBuckets()">1. List All Buckets</button>
+    <button onclick="checkEurorackgif()">2. Check eurorackgif Bucket</button>
+    <button onclick="checkWithAuth()">3. Try Different Auth</button>
+    
+    <h2>Output:</h2>
+    <pre id="output">Click a button to start...</pre>
+    
+    <script>
+        const output = document.getElementById('output');
+        const url = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeHNoY3lxeGhibXZxcnJ0aHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDAwMzksImV4cCI6MjA3MDQxNjAzOX0.e893j0nOPXCiDBF6upe7-UTPuYoka9Y29kkvenkg1eM';
+        
+        function log(msg, data = null) {
+            output.textContent += msg + '\n';
+            if (data) {
+                output.textContent += JSON.stringify(data, null, 2) + '\n';
+            }
+            output.textContent += '------------------------\n';
+        }
+        
+        async function checkBuckets() {
+            output.textContent = 'Checking all buckets...\n\n';
+            
+            try {
+                const response = await fetch(`${url}/storage/v1/bucket`, {
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                
+                log(`Response status: ${response.status}`);
+                const data = await response.json();
+                
+                if (Array.isArray(data)) {
+                    log(`✅ Found ${data.length} bucket(s):`);
+                    data.forEach(bucket => {
+                        log(`Bucket: ${bucket.name}`, {
+                            id: bucket.id,
+                            public: bucket.public,
+                            created: bucket.created_at
+                        });
+                        
+                        // Try to list files in this bucket
+                        fetch(`${url}/storage/v1/object/list/${bucket.name}`, {
+                            headers: {
+                                'apikey': key,
+                                'Authorization': `Bearer ${key}`
+                            }
+                        }).then(r => r.json()).then(files => {
+                            if (Array.isArray(files)) {
+                                log(`  └─ Files in ${bucket.name}: ${files.length} files`);
+                                if (files.length > 0) {
+                                    log(`     First file: ${files[0].name}`);
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    log('❌ Response data:', data);
+                }
+            } catch (error) {
+                log('❌ Network error:', error.message);
+            }
+        }
+        
+        async function checkEurorackgif() {
+            output.textContent = 'Checking eurorackgif bucket...\n\n';
+            
+            // Try different URL patterns
+            const patterns = [
+                '/storage/v1/object/list/eurorackgif',
+                '/storage/v1/object/eurorackgif',
+                '/storage/v1/object/list/eurorackgif/',
+            ];
+            
+            for (const pattern of patterns) {
+                log(`Trying: ${pattern}`);
+                
+                try {
+                    const response = await fetch(`${url}${pattern}`, {
+                        headers: {
+                            'apikey': key,
+                            'Authorization': `Bearer ${key}`
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && Array.isArray(data)) {
+                        log(`✅ SUCCESS! Found ${data.length} files with pattern: ${pattern}`);
+                        if (data.length > 0) {
+                            log('First 3 files:', data.slice(0, 3));
+                        }
+                        return;
+                    } else {
+                        log(`Status ${response.status}:`, data);
+                    }
+                } catch (error) {
+                    log('Error:', error.message);
+                }
+            }
+        }
+        
+        async function checkWithAuth() {
+            output.textContent = 'Testing different auth methods...\n\n';
+            
+            // Test with just apikey
+            log('Test 1: Just apikey header');
+            try {
+                const response = await fetch(`${url}/storage/v1/object/list/eurorackgif`, {
+                    headers: {
+                        'apikey': key
+                    }
+                });
+                const data = await response.json();
+                log(`Response:`, data);
+            } catch (error) {
+                log('Error:', error.message);
+            }
+            
+            // Test with just Authorization
+            log('\nTest 2: Just Authorization header');
+            try {
+                const response = await fetch(`${url}/storage/v1/object/list/eurorackgif`, {
+                    headers: {
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                const data = await response.json();
+                log(`Response:`, data);
+            } catch (error) {
+                log('Error:', error.message);
+            }
+        }
+    </script>
+</body>
+</html>

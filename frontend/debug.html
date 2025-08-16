@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .test { padding: 10px; margin: 10px; border: 1px solid #000; }
+    </style>
+</head>
+<body>
+    <h1>Debug Test</h1>
+    
+    <div class="test">
+        <h2>1. Check if printify-products.js loads:</h2>
+        <div id="products-check">Checking...</div>
+    </div>
+    
+    <div class="test">
+        <h2>2. Check if store.js loads:</h2>
+        <div id="store-check">Checking...</div>
+    </div>
+    
+    <div class="test">
+        <h2>3. Products count:</h2>
+        <div id="products-count">Checking...</div>
+    </div>
+    
+    <script src="printify-products.js"></script>
+    <script>
+        // Check if products loaded
+        setTimeout(() => {
+            document.getElementById('products-check').innerHTML = 
+                typeof printifyProducts !== 'undefined' ? 
+                '✅ printify-products.js loaded!' : 
+                '❌ printify-products.js NOT loaded';
+                
+            document.getElementById('products-count').innerHTML = 
+                typeof printifyProducts !== 'undefined' ? 
+                `✅ Found ${printifyProducts.length} products` : 
+                '❌ No products found';
+        }, 100);
+    </script>
+    
+    <script>
+        // Simple store check
+        let products = [];
+        if (typeof printifyProducts !== 'undefined') {
+            products = printifyProducts;
+        }
+        document.getElementById('store-check').innerHTML = '✅ Basic JS works';
+    </script>
+    
+    <div class="test">
+        <h2>4. Try loading the page manually:</h2>
+        <button onclick="window.location.href='index.html'">Open Main Page</button>
+    </div>
+    
+    <div class="test">
+        <h2>5. Console errors (open browser console to see):</h2>
+        <script>
+            window.onerror = function(msg, url, line) {
+                console.error('Error: ' + msg + ' at line ' + line);
+                document.body.innerHTML += '<div style="color:red;">Error: ' + msg + ' at line ' + line + '</div>';
+            };
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Plant Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/clean-nav.css">
+    <script src="/assets/clean-nav.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #000;
+        }
+        
+        .profile-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1001;
+            border: 2px solid #000;
+            top: 100%;
+            margin-top: 2px;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+        }
+        
+        .dropdown-content a {
+            color: #000;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-weight: bold;
+            transition: all 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-content a:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            padding: 100px 40px 40px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+        }
+        
+        .plant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        
+        .plant-card {
+            background: white;
+            border: 3px solid #000;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .plant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .plant-card.owned {
+            background: #e8ffe8;
+            border-color: #0f0;
+        }
+        
+        .plant-image {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .plant-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        .plant-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .plant-desc {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            min-height: 40px;
+        }
+        
+        .plant-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 15px;
+        }
+        
+        .buy-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: 2px solid #FFD700;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            text-transform: uppercase;
+        }
+        
+        .buy-btn:hover {
+            background: linear-gradient(45deg, #FFA500, #FFD700);
+            transform: scale(1.05);
+        }
+        
+        .buy-btn:disabled {
+            background: #ccc;
+            border-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .rarity-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 3px;
+        }
+        
+        .rarity-common {
+            background: #888;
+            color: white;
+        }
+        
+        .rarity-uncommon {
+            background: #0f0;
+            color: #000;
+        }
+        
+        .rarity-rare {
+            background: #00f;
+            color: white;
+        }
+        
+        .rarity-legendary {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+        }
+        
+        .rarity-mythic {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: white;
+        }
+        
+        /* Plant blessing modal */
+        .blessing-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .blessing-modal.active {
+            display: flex;
+        }
+        
+        .blessing-content {
+            background: white;
+            border: 3px solid #FFD700;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            position: relative;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,215,0,0.8); }
+        }
+        
+        .blessing-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #000;
+            text-transform: uppercase;
+        }
+        
+        .blessing-message {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .revealed-plant {
+            font-size: 6rem;
+            margin: 20px 0;
+            animation: bounce 1s ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .plant-reveal-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .plant-reveal-desc {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .blessing-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: 2px solid #FFD700;
+            padding: 12px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+        
+        .blessing-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .info-banner {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation is injected by clean-nav.js -->
+    
+    <div class="main-content">
+        <h1 class="page-title">PLANT SHOP</h1>
+        
+        <div class="info-banner">
+            <p>🌿 Collect rare plants for your studio! Random blessings from the Eurogods may grant you free plants! 🌿</p>
+        </div>
+        
+        <div class="plant-grid" id="plant-grid">
+            <!-- Plants will be loaded here -->
+        </div>
+    </div>
+    
+    <!-- Plant Blessing Modal -->
+    <div class="blessing-modal" id="blessing-modal">
+        <div class="blessing-content">
+            <h2 class="blessing-title">Divine Plant Blessing!</h2>
+            <p class="blessing-message">The Eurogods have blessed you with a new plant for your studio!</p>
+            <div class="revealed-plant" id="revealed-plant-emoji">🌿</div>
+            <div class="plant-reveal-name" id="revealed-plant-name">Pothos</div>
+            <div class="plant-reveal-desc" id="revealed-plant-desc">A resilient companion for your sonic journeys</div>
+            <button class="blessing-btn" onclick="acceptBlessing()">ACCEPT BLESSING</button>
+        </div>
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co';
+        
+        // Plant collection with PNG images
+        const plantCatalog = {
+            plant01: { 
+                url: '/storage/v1/object/public/plants/plant01.png', 
+                name: 'Monstera', 
+                rarity: 'common', 
+                desc: 'Brings tropical vibes to your patches', 
+                price: 10 
+            },
+            plant02: { 
+                url: '/storage/v1/object/public/plants/plant02.png', 
+                name: 'Snake Plant', 
+                rarity: 'common', 
+                desc: 'Thrives in the desert of white noise', 
+                price: 8 
+            },
+            plant03: { 
+                url: '/storage/v1/object/public/plants/plant03.png', 
+                name: 'Pothos', 
+                rarity: 'common', 
+                desc: 'A resilient companion for your sonic journeys', 
+                price: 10 
+            },
+            plant04: { 
+                url: '/storage/v1/object/public/plants/plant04.png', 
+                name: 'Fiddle Leaf', 
+                rarity: 'uncommon', 
+                desc: 'Statement piece for your studio', 
+                price: 25 
+            },
+            plant05: { 
+                url: '/storage/v1/object/public/plants/plant05.png', 
+                name: 'Bird of Paradise', 
+                rarity: 'uncommon', 
+                desc: 'Exotic beauty for harsh sounds', 
+                price: 30 
+            },
+            plant06: { 
+                url: '/storage/v1/object/public/plants/plant06.png', 
+                name: 'ZZ Plant', 
+                rarity: 'common', 
+                desc: 'Low maintenance high reward', 
+                price: 12 
+            },
+            plant07: { 
+                url: '/storage/v1/object/public/plants/plant07.png', 
+                name: 'Rubber Tree', 
+                rarity: 'uncommon', 
+                desc: 'Bounces back from any patch', 
+                price: 20 
+            },
+            plant08: { 
+                url: '/storage/v1/object/public/plants/plant08.png', 
+                name: 'Peace Lily', 
+                rarity: 'rare', 
+                desc: 'Brings harmony to chaotic sessions', 
+                price: 45 
+            },
+            plant09: { 
+                url: '/storage/v1/object/public/plants/plant09.png', 
+                name: 'Bonsai', 
+                rarity: 'rare', 
+                desc: 'Ancient wisdom for modern synthesis', 
+                price: 50 
+            },
+            plant10: { 
+                url: '/storage/v1/object/public/plants/plant10.png', 
+                name: 'Orchid', 
+                rarity: 'legendary', 
+                desc: 'Delicate beauty for harsh sounds', 
+                price: 100 
+            }
+        };
+        
+        let ownedPlants = [];
+        
+        // Load plant shop
+        function loadPlantShop() {
+            const grid = document.getElementById('plant-grid');
+            grid.innerHTML = '';
+            
+            // Load owned plants
+            ownedPlants = JSON.parse(localStorage.getItem('owned-decorations') || '[]');
+            
+            // Create plant cards
+            Object.entries(plantCatalog).forEach(([key, plant]) => {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+                if (ownedPlants.includes(key)) {
+                    card.classList.add('owned');
+                }
+                
+                card.innerHTML = `
+                    <div class="rarity-badge rarity-${plant.rarity}">${plant.rarity}</div>
+                    <div class="plant-image">
+                        <img src="${SUPABASE_URL}${plant.url}" alt="${plant.name}">
+                    </div>
+                    <div class="plant-name">${plant.name}</div>
+                    <div class="plant-desc">${plant.desc}</div>
+                    <div class="plant-price">${plant.price} HP</div>
+                    <button class="buy-btn" 
+                            onclick="buyPlant('${key}', ${plant.price})" 
+                            ${ownedPlants.includes(key) ? 'disabled' : ''}>
+                        ${ownedPlants.includes(key) ? 'OWNED' : 'BUY'}
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Buy plant
+        function buyPlant(plantKey, price) {
+            const hp = parseInt(localStorage.getItem('rack-credits') || '100');
+            
+            if (hp >= price) {
+                if (confirm(`Purchase ${plantKey} for ${price} HP?`)) {
+                    // Deduct HP
+                    localStorage.setItem('rack-credits', (hp - price).toString());
+                    updateCredits();
+                    
+                    // Add to owned plants
+                    ownedPlants.push(plantKey);
+                    localStorage.setItem('owned-decorations', JSON.stringify(ownedPlants));
+                    
+                    // Reload shop
+                    loadPlantShop();
+                    
+                    alert(`You now own a ${plantKey}! Visit your profile to place it on your rack.`);
+                }
+            } else {
+                alert(`Not enough HP! You need ${price} HP.`);
+            }
+        }
+        
+        // Plant blessing system
+        function checkForPlantBlessing() {
+            // 5% chance on shop visit
+            if (Math.random() < 0.05) {
+                setTimeout(() => {
+                    revealPlantBlessing();
+                }, 3000);
+            }
+        }
+        
+        function revealPlantBlessing() {
+            // Get random plant based on rarity
+            const roll = Math.random() * 100;
+            let rarityFilter;
+            
+            if (roll < 1) {
+                rarityFilter = 'mythic';
+            } else if (roll < 5) {
+                rarityFilter = 'legendary';
+            } else if (roll < 15) {
+                rarityFilter = 'rare';
+            } else if (roll < 40) {
+                rarityFilter = 'uncommon';
+            } else {
+                rarityFilter = 'common';
+            }
+            
+            // Get plants of selected rarity
+            const availablePlants = Object.entries(plantCatalog)
+                .filter(([key, plant]) => plant.rarity === rarityFilter && !ownedPlants.includes(key))
+                .map(([key, plant]) => ({ key, ...plant }));
+            
+            if (availablePlants.length === 0) {
+                return; // No unowned plants of this rarity
+            }
+            
+            // Pick random plant
+            const selectedPlant = availablePlants[Math.floor(Math.random() * availablePlants.length)];
+            
+            // Update modal
+            document.getElementById('revealed-plant-emoji').innerHTML = `<img src="${SUPABASE_URL}${selectedPlant.url}" style="width: 100px; height: 100px; object-fit: contain;">`;
+            document.getElementById('revealed-plant-name').innerHTML = selectedPlant.name;
+            document.getElementById('revealed-plant-desc').innerHTML = selectedPlant.desc;
+            
+            // Show modal
+            document.getElementById('blessing-modal').classList.add('active');
+            
+            // Save to pending
+            localStorage.setItem('pending-blessing', selectedPlant.key);
+        }
+        
+        function acceptBlessing() {
+            const plantKey = localStorage.getItem('pending-blessing');
+            if (plantKey) {
+                // Add to owned plants
+                ownedPlants.push(plantKey);
+                localStorage.setItem('owned-decorations', JSON.stringify(ownedPlants));
+                
+                // Clear pending
+                localStorage.removeItem('pending-blessing');
+                
+                // Reload shop
+                loadPlantShop();
+            }
+            
+            // Hide modal
+            document.getElementById('blessing-modal').classList.remove('active');
+        }
+        
+        // Update HP display
+        function updateCredits() {
+            const credits = localStorage.getItem('rack-credits') || '100';
+            document.getElementById('credits-amount').textContent = credits;
+        }
+        
+        // Shop dropdown
+        function toggleShopDropdown() {
+            document.getElementById('shop-dropdown').classList.toggle('show');
+        }
+        
+        window.onclick = function(event) {
+            if (!event.target.matches('.cart-counter')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove('show');
+                }
+            }
+        }
+        
+        // Initialize
+        loadPlantShop();
+        updateCredits();
+        checkForPlantBlessing();
+    </script>
+</body>
+</html>

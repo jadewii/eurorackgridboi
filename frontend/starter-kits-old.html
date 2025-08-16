@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EUROGRID - Starter Kits</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            color: #000;
+        }
+        
+        .cart-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cart-counter {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .cart-counter:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .page-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        /* Power Toggle */
+        .power-toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            gap: 15px;
+        }
+        
+        .power-toggle {
+            position: relative;
+            width: 80px;
+            height: 40px;
+        }
+        
+        .power-toggle input {
+            display: none;
+        }
+        
+        .power-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ccc;
+            border: 2px solid #000;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        
+        .power-slider:before {
+            position: absolute;
+            content: "";
+            height: 28px;
+            width: 28px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            border: 2px solid #000;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .power-slider {
+            background: #FFD700;
+        }
+        
+        input:checked + .power-slider:before {
+            transform: translateX(40px);
+        }
+        
+        .lightning-icon {
+            font-size: 2rem;
+        }
+        
+        .power-warning {
+            background: #FFE4B5;
+            border: 2px solid #FFD700;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .power-warning.active {
+            display: block;
+        }
+        
+        .kits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .kit-card {
+            background: white;
+            border: 3px solid #000;
+            overflow: hidden;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .kit-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .kit-preview {
+            padding: 20px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        /* Rack display for actual modules */
+        .rack-display {
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            padding: 10px;
+            display: grid;
+            gap: 3px;
+            width: 100%;
+            max-width: 250px;
+            border: 2px solid #000;
+            position: relative;
+        }
+        
+        .rack-display.grid-3x3 {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            aspect-ratio: 1;
+        }
+        
+        .rack-display.grid-5x5 {
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            aspect-ratio: 1;
+        }
+        
+        .rack-display.grid-6x6 {
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            aspect-ratio: 1;
+        }
+        
+        .module-slot {
+            background: #000;
+            border: 1px solid #333;
+            aspect-ratio: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-slot.empty {
+            background: #000;
+            opacity: 0.7;
+        }
+        
+        .module-slot.powered {
+            box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.4);
+        }
+        
+        .module-video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .module-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .module-video-container.loading {
+            filter: blur(4px);
+            transform: scale(1.05);
+        }
+        
+        /* Mystery Grid Styles */
+        .mystery-grid {
+            display: grid;
+            gap: 6px;
+            width: 100%;
+            padding: 10px;
+        }
+        
+        .mystery-grid.grid-3x3 {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            aspect-ratio: 1;
+        }
+        
+        .mystery-grid.grid-5x5 {
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            aspect-ratio: 1;
+        }
+        
+        .mystery-grid.grid-6x6 {
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            aspect-ratio: 1;
+        }
+        
+        .mystery-grid.grid-7x7 {
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(7, 1fr);
+            aspect-ratio: 1;
+        }
+        
+        .mystery-grid.grid-10x10 {
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            aspect-ratio: 1;
+            gap: 3px;
+        }
+        
+        .mystery-module {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #000;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        
+        .mystery-module:hover:not(.flipped) {
+            transform: scale(1.05);
+        }
+        
+        .kit-info {
+            padding: 20px;
+            background: white;
+        }
+        
+        .kit-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .kit-contents {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .kit-benefits {
+            background: #f5f5f5;
+            border: 2px solid #000;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 0;
+            font-size: 0.85rem;
+        }
+        
+        .buy-button {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            font-weight: bold;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .buy-button:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .buy-button.powered {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+        
+        .buy-button.powered:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FF1493;
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: 2px solid #000;
+            text-transform: uppercase;
+        }
+        
+        .best-value {
+            border-color: #FFD700;
+            border-width: 4px;
+        }
+        
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid #000;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .jacknut-ring {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .jacknut-icon {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+        }
+        
+        .savings-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #00FF00;
+            color: #000;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: 2px solid #000;
+            transform: rotate(-5deg);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="logo" onclick="window.location.href='collection.html'">EURORACK.STORE</div>
+        <div class="cart-area">
+            <div class="profile-avatar-wrapper" onclick="window.location.href='profile.html'">
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-ring" alt="ring">
+                <div class="profile-avatar">J</div>
+            </div>
+            <button class="cart-counter" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px;">
+                <span id="credits">100</span>
+                <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 35px; height: 35px;" alt="HP">
+            </button>
+            <button class="cart-counter" onclick="window.location.href='collection.html'">MODULES</button>
+            <button class="cart-counter" onclick="window.location.href='rack-shop.html'">RACK SHOP</button>
+            <button class="cart-counter" onclick="window.location.href='module-packs.html'">MODULE PACKS</button>
+            <button class="cart-counter" onclick="window.location.href='vibe-shop.html'">VIBE SHOP</button>
+            <button class="cart-counter" onclick="window.location.href='starter-kits.html'" style="background: #000; color: white;">STARTER KITS</button>
+            <button class="cart-counter" onclick="window.location.href='prebuilt-cases.html'">PRE-BUILT</button>
+            <button class="cart-counter" onclick="window.location.href='hp-purchase.html'" style="background: #0f0; color: #000; border: 2px solid #000;">
+                BUY <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" style="width: 18px; height: 18px; vertical-align: middle;" alt="HP">
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1 class="page-title">STARTER KITS</h1>
+        <p class="page-subtitle">Bulk module packs for serious collectors - Get tons of random modules at once!</p>
+        
+        <!-- Power Toggle -->
+        <div class="power-toggle-container">
+            <span class="lightning-icon">⚡</span>
+            <label class="power-toggle">
+                <input type="checkbox" id="powerToggle" onchange="togglePower()">
+                <span class="power-slider"></span>
+            </label>
+            <span style="font-weight: bold;">POWERED MODULES</span>
+        </div>
+        
+        <div class="power-warning" id="powerWarning">
+            ⚠️ POWERED modules require a POWERED rack to function! Make sure you have at least one powered rack before purchasing.
+        </div>
+        
+        <!-- Starter Kits Grid -->
+        <div class="kits-grid">
+            
+            <!-- Explorer Kit (9 modules) -->
+            <div class="kit-card">
+                <div class="kit-preview">
+                    <div class="rack-display grid-3x3">
+                        <!-- Row 1 -->
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.mp4">
+                            </div>
+                        </div>
+                        <!-- Row 2 -->
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <!-- Row 3 -->
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Honduh.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot empty"></div>
+                    </div>
+                </div>
+                <div class="kit-info">
+                    <div class="kit-name">EXPLORER KIT</div>
+                    <div class="kit-contents">9 random modules</div>
+                    <div class="kit-benefits">
+                        <div class="benefit-item">✅ Great for beginners</div>
+                        <div class="benefit-item">✅ Build your first rack</div>
+                        <div class="benefit-item">✅ Save 10% vs singles</div>
+                    </div>
+                    <button class="buy-button" id="explorer-btn" onclick="buyKit('explorer', 9)">
+                        <span class="price">15</span>
+                        <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Producer Kit (25 modules) -->
+            <div class="kit-card">
+                <div class="savings-badge">SAVE 15%</div>
+                <div class="kit-preview">
+                    <div class="rack-display grid-5x5">
+                        <!-- Row 1 -->
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Altered Black.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Altered Black.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Altered Black.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Altered Black.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Andersons.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Andersons.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Andersons.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Andersons.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod.mp4">
+                            </div>
+                        </div>
+                        <!-- Row 2 -->
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Function Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Mangler and Tangler.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <!-- Row 3 -->
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Physical Modeler.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/textural Synthesizer.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Varigated.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Varigated.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Varigated.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Varigated.mp4">
+                            </div>
+                        </div>
+                        <!-- Row 4 -->
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Voltaged Gray.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Voltaged Gray.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Voltaged Gray.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Voltaged Gray.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot empty"></div>
+                        <!-- Row 5 -->
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Untitled_Artwork 4.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Untitled_Artwork 4.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Untitled_Artwork 4.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Untitled_Artwork 4.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot empty"></div>
+                    </div>
+                </div>
+                <div class="kit-info">
+                    <div class="kit-name">PRODUCER KIT</div>
+                    <div class="kit-contents">25 random modules</div>
+                    <div class="kit-benefits">
+                        <div class="benefit-item">✅ Complete small system</div>
+                        <div class="benefit-item">✅ Great variety</div>
+                        <div class="benefit-item">✅ Save 15% vs singles</div>
+                    </div>
+                    <button class="buy-button" id="producer-btn" onclick="buyKit('producer', 25)">
+                        <span class="price">35</span>
+                        <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Studio Kit (36 modules) -->
+            <div class="kit-card">
+                <div class="badge">POPULAR</div>
+                <div class="kit-preview">
+                    <div class="rack-display grid-6x6">
+                        <!-- Generate a mix of powered modules and empty slots -->
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/00.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/BAI.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod Rose.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod Rose.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod Rose.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Cephalopod Rose.mp4">
+                            </div>
+                        </div>
+                        <div class="module-slot empty"></div>
+                        <div class="module-slot powered">
+                            <div class="module-video-container loading"
+                                 data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.webp"
+                                 data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.blur.webp"
+                                 data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.webm"
+                                 data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/Complex Oscillator.mp4">
+                            </div>
+                        </div>
+                        <!-- Repeat pattern for remaining rows -->
+                        <script>
+                            // Fill remaining 30 slots with mix of powered and empty
+                            const modules = [
+                                'Honduh', 'Function Synthesizer', 'Mangler and Tangler', 
+                                'Physical Modeler', 'textural Synthesizer', 'Varigated',
+                                'Voltaged Gray', 'Untitled_Artwork 4', 'Altered Black', 'Andersons'
+                            ];
+                            for(let i = 0; i < 30; i++) {
+                                if(Math.random() > 0.4) {
+                                    const module = modules[i % modules.length];
+                                    document.write(`<div class="module-slot powered">
+                                        <div class="module-video-container loading"
+                                             data-poster="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/${module}.webp"
+                                             data-blur="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/${module}.blur.webp"
+                                             data-webm="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/${module}.webm"
+                                             data-mp4="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackpowered/${module}.mp4">
+                                        </div>
+                                    </div>`);
+                                } else {
+                                    document.write('<div class="module-slot empty"></div>');
+                                }
+                            }
+                        </script>
+                    </div>
+                </div>
+                <div class="kit-info">
+                    <div class="kit-name">STUDIO KIT</div>
+                    <div class="kit-contents">36 random modules</div>
+                    <div class="kit-benefits">
+                        <div class="benefit-item">✅ Fill a whole rack</div>
+                        <div class="benefit-item">✅ Professional setup</div>
+                        <div class="benefit-item">✅ Save 20% vs singles</div>
+                    </div>
+                    <button class="buy-button" id="studio-btn" onclick="buyKit('studio', 36)">
+                        <span class="price">50</span>
+                        <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Pro Kit (49 modules) -->
+            <div class="kit-card">
+                <div class="savings-badge">SAVE 25%</div>
+                <div class="kit-preview">
+                    <div class="mystery-grid grid-7x7">
+                        <!-- Generate 49 mystery modules -->
+                        <script>
+                            for(let i = 0; i < 49; i++) {
+                                document.write('<div class="mystery-module">?</div>');
+                            }
+                        </script>
+                    </div>
+                </div>
+                <div class="kit-info">
+                    <div class="kit-name">PRO KIT</div>
+                    <div class="kit-contents">49 random modules</div>
+                    <div class="kit-benefits">
+                        <div class="benefit-item">✅ Multiple rack setup</div>
+                        <div class="benefit-item">✅ Massive collection</div>
+                        <div class="benefit-item">✅ Save 25% vs singles</div>
+                    </div>
+                    <button class="buy-button" id="pro-btn" onclick="buyKit('pro', 49)">
+                        <span class="price">65</span>
+                        <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mega Kit (100 modules) -->
+            <div class="kit-card best-value">
+                <div class="badge">BEST VALUE</div>
+                <div class="savings-badge">SAVE 40%</div>
+                <div class="kit-preview">
+                    <div class="mystery-grid grid-10x10">
+                        <!-- Generate 100 mystery modules -->
+                        <script>
+                            for(let i = 0; i < 100; i++) {
+                                document.write('<div class="mystery-module">?</div>');
+                            }
+                        </script>
+                    </div>
+                </div>
+                <div class="kit-info">
+                    <div class="kit-name">MEGA KIT</div>
+                    <div class="kit-contents">100 random modules</div>
+                    <div class="kit-benefits">
+                        <div class="benefit-item">🔥 Complete studio</div>
+                        <div class="benefit-item">🔥 Ultimate collection</div>
+                        <div class="benefit-item">🔥 Save 40% vs singles</div>
+                        <div class="benefit-item">🎁 Bonus: Free rack!</div>
+                    </div>
+                    <button class="buy-button" id="mega-btn" onclick="buyKit('mega', 100)">
+                        <span class="price">100</span>
+                        <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Collector's Kit (200 modules) -->
+            <div class="kit-card best-value">
+                <div class="badge">LEGENDARY</div>
+                <div class="savings-badge">SAVE 50%</div>
+                <div class="kit-preview">
+                    <div class="mystery-grid grid-10x10">
+                        <!-- Generate 100 mystery modules (visual representation) -->
+                        <script>
+                            for(let i = 0; i < 100; i++) {
+                                document.write('<div class="mystery-module" style="background: linear-gradient(135deg, #B8860B 0%, #FFD700 100%);">✨</div>');
+                            }
+                        </script>
+                    </div>
+                </div>
+                <div class="kit-info">
+                    <div class="kit-name">COLLECTOR'S KIT</div>
+                    <div class="kit-contents">200 random modules</div>
+                    <div class="kit-benefits">
+                        <div class="benefit-item">👑 Instant mega-collection</div>
+                        <div class="benefit-item">👑 Save 50% vs singles</div>
+                        <div class="benefit-item">🎁 Bonus: 2 Free racks!</div>
+                        <div class="benefit-item">🎁 Bonus: Vibe shop credits!</div>
+                    </div>
+                    <button class="buy-button powered" id="collector-btn" onclick="buyKit('collector', 200)">
+                        <span class="price">180</span>
+                        <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jacknut-icon">
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script>
+        // Lazy loading for videos with Intersection Observer
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const container = entry.target;
+                
+                if (entry.isIntersecting) {
+                    // Load and play video when visible
+                    if (!container.querySelector('video')) {
+                        loadVideo(container);
+                    } else {
+                        const video = container.querySelector('video');
+                        video.play().catch(e => console.log('Autoplay prevented'));
+                    }
+                } else {
+                    // Pause when not visible
+                    const video = container.querySelector('video');
+                    if (video) {
+                        video.pause();
+                    }
+                }
+            });
+        }, {
+            rootMargin: '50px'
+        });
+        
+        function loadVideo(container) {
+            // Show blur preview immediately
+            const blurUrl = container.dataset.blur;
+            if (blurUrl) {
+                container.style.backgroundImage = `url('${blurUrl}')`;
+            }
+            
+            // Create video element
+            const video = document.createElement('video');
+            video.className = 'module-video';
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.playsInline = true;
+            
+            // Add sources (WebM first for better browser support)
+            const webmSource = document.createElement('source');
+            webmSource.src = container.dataset.webm;
+            webmSource.type = 'video/webm';
+            
+            const mp4Source = document.createElement('source');
+            mp4Source.src = container.dataset.mp4;
+            mp4Source.type = 'video/mp4';
+            
+            video.appendChild(webmSource);
+            video.appendChild(mp4Source);
+            
+            // Set poster as fallback
+            video.poster = container.dataset.poster;
+            
+            // When video loads, remove blur
+            video.onloadeddata = () => {
+                container.classList.remove('loading');
+                container.style.backgroundImage = `url('${container.dataset.poster}')`;
+            };
+            
+            // Fallback to poster if video fails
+            video.onerror = () => {
+                container.style.backgroundImage = `url('${container.dataset.poster}')`;
+                container.classList.remove('loading');
+            };
+            
+            // Add to container
+            container.appendChild(video);
+            
+            // Try to play
+            video.play().catch(e => {
+                console.log('Autoplay prevented, showing poster');
+            });
+        }
+        
+        // Initialize video observers when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Observe all video containers
+            document.querySelectorAll('.module-video-container').forEach(container => {
+                videoObserver.observe(container);
+            });
+        });
+        
+        // Toggle between powered and unpowered
+        function togglePower() {
+            const isPowered = document.getElementById('powerToggle').checked;
+            const warning = document.getElementById('powerWarning');
+            const buttons = document.querySelectorAll('.buy-button');
+            
+            // Show/hide warning
+            if (isPowered) {
+                warning.classList.add('active');
+                
+                // Check if user has powered rack
+                const hasPoweredRack = localStorage.getItem('has-powered-rack');
+                if (!hasPoweredRack) {
+                    if (!confirm('⚠️ WARNING: POWERED modules require a POWERED rack!\n\nYou don\'t appear to have a powered rack yet.\n\nContinue anyway?')) {
+                        document.getElementById('powerToggle').checked = false;
+                        return;
+                    }
+                }
+            } else {
+                warning.classList.remove('active');
+            }
+            
+            // Update prices and styles
+            const prices = {
+                explorer: { normal: 15, powered: 45 },
+                producer: { normal: 35, powered: 100 },
+                studio: { normal: 50, powered: 150 },
+                pro: { normal: 65, powered: 200 },
+                mega: { normal: 100, powered: 350 },
+                collector: { normal: 180, powered: 600 }
+            };
+            
+            Object.keys(prices).forEach(kit => {
+                const btn = document.getElementById(`${kit}-btn`);
+                const priceSpan = btn.querySelector('.price');
+                
+                if (isPowered) {
+                    priceSpan.textContent = prices[kit].powered;
+                    btn.classList.add('powered');
+                } else {
+                    priceSpan.textContent = prices[kit].normal;
+                    btn.classList.remove('powered');
+                }
+            });
+        }
+        
+        // Buy kit function
+        function buyKit(kitType, quantity) {
+            const isPowered = document.getElementById('powerToggle').checked;
+            const moduleType = isPowered ? 'live' : 'common';
+            const btn = document.getElementById(`${kitType}-btn`);
+            const price = parseInt(btn.querySelector('.price').textContent);
+            const credits = parseInt(document.getElementById('credits').textContent);
+            
+            if (credits >= price) {
+                const kitName = kitType.toUpperCase() + ' KIT';
+                if (confirm(`Purchase ${kitName} for ${price} jacknuts?\n\nYou'll receive ${quantity} random ${isPowered ? 'POWERED' : ''} modules!`)) {
+                    // Update credits
+                    const newCredits = credits - price;
+                    document.getElementById('credits').textContent = newCredits;
+                    localStorage.setItem('rack-credits', newCredits);
+                    
+                    // Generate random modules
+                    let modules = [];
+                    const maxId = moduleType === 'live' ? 17 : 36;
+                    for (let i = 0; i < quantity; i++) {
+                        modules.push({
+                            id: Math.floor(Math.random() * maxId) + 1,
+                            type: moduleType
+                        });
+                    }
+                    
+                    // Save to owned modules
+                    let ownedModules = JSON.parse(localStorage.getItem('owned-modules') || '[]');
+                    modules.forEach(m => {
+                        ownedModules.push(`${moduleType}-${m.id}`);
+                    });
+                    localStorage.setItem('owned-modules', JSON.stringify(ownedModules));
+                    
+                    // Special bonuses for large kits
+                    let bonusMessage = '';
+                    if (kitType === 'mega') {
+                        bonusMessage = '\n\n🎁 BONUS: You also received a FREE RACK!';
+                        // Add free rack logic here
+                    } else if (kitType === 'collector') {
+                        bonusMessage = '\n\n🎁 BONUS: You received 2 FREE RACKS and 50 VIBE SHOP CREDITS!';
+                        // Add free racks and vibe credits logic here
+                        let vibeCredits = parseInt(localStorage.getItem('vibe-credits') || '0');
+                        localStorage.setItem('vibe-credits', vibeCredits + 50);
+                    }
+                    
+                    alert(`🎉 ${kitName} purchased!\n\n${quantity} modules have been added to your collection!${bonusMessage}`);
+                }
+            } else {
+                alert(`Insufficient jacknuts! You need ${price} but only have ${credits}.`);
+            }
+        }
+        
+        // Load credits
+        const savedCredits = localStorage.getItem('rack-credits') || '100';
+        document.getElementById('credits').textContent = savedCredits;
+    </script>
+</body>
+</html>
