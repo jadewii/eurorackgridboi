@@ -1,13 +1,396 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>EUROGRID - Loading...</title>
-    <meta http-equiv="refresh" content="0; url=landing.html">
-    <script>
-        window.location.href = "landing.html";
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EURORACK.GRID - Virtual Modular Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 20px 40px;
+            border-bottom: 2px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #000;
+            text-decoration: underline;
+        }
+        
+        .login-btn {
+            background: #7C4DFF;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .hero-title {
+            font-size: 5rem;
+            font-weight: bold;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            line-height: 0.9;
+        }
+        
+        .hero-title .rack-text {
+            display: block;
+        }
+        
+        .jacknut-icon {
+            width: 60px;
+            height: 60px;
+            display: inline-block;
+            vertical-align: middle;
+            background: #333;
+            border-radius: 50%;
+            border: 4px solid #666;
+            position: relative;
+        }
+        
+        .jacknut-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #999;
+            border-radius: 50%;
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            color: #666;
+            margin: 30px 0 20px;
+            font-style: italic;
+        }
+        
+        .description {
+            font-size: 1rem;
+            color: #777;
+            margin-bottom: 50px;
+        }
+        
+        /* CTA Buttons */
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 80px;
+        }
+        
+        .cta-btn {
+            padding: 15px 40px;
+            border: 3px solid #000;
+            background: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: #000;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .cta-btn:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .cta-btn.primary {
+            background: #FFD700;
+        }
+        
+        .cta-btn.primary:hover {
+            background: #000;
+            color: #FFD700;
+        }
+        
+        /* Rack Display */
+        .rack-preview {
+            max-width: 900px;
+            margin: 0 auto 100px;
+            padding: 0 20px;
+        }
+        
+        .rack-preview img {
+            width: 100%;
+            border: 3px solid #000;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .rack-display-demo {
+            background: #333;
+            border-radius: 10px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 200px);
+            gap: 2px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .demo-module {
+            background: #f5f5f5;
+            border-radius: 5px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto 100px;
+            padding: 0 40px;
+        }
+        
+        .feature {
+            text-align: center;
+        }
+        
+        .feature-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border: 3px solid #333;
+        }
+        
+        .feature h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .feature p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        /* Newsletter Section */
+        .newsletter {
+            background: #000;
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+        }
+        
+        .newsletter h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .newsletter p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: #ccc;
+        }
+        
+        .newsletter-form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .newsletter-form input {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 1rem;
+            border: 2px solid #fff;
+            background: transparent;
+            color: white;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .newsletter-form input::placeholder {
+            color: #999;
+        }
+        
+        .newsletter-form button {
+            padding: 15px 30px;
+            background: #FFD700;
+            color: #000;
+            border: none;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        
+        .newsletter-form button:hover {
+            background: #fff;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #222;
+            color: #999;
+            padding: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: #FFD700;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <p>Redirecting to EUROGRID...</p>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">EURORACK.GRID</div>
+        <nav class="nav-links">
+            <a href="collection.html">COLLECTION</a>
+            <a href="starters.html">STARTER KITS</a>
+            <a href="rack-shop.html">RACKS</a>
+        </nav>
+        <button class="login-btn" onclick="window.location.href='login.html'">Login</button>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 class="hero-title">
+            EUR<span class="jacknut-icon"></span>RACK
+            <span class="rack-text">GRID</span>
+        </h1>
+        
+        <p class="tagline">for synth nerds & hypsters only</p>
+        
+        <p class="description">
+            collect, trade, and display live modules in your virtual studio
+        </p>
+        
+        <div class="cta-buttons">
+            <a href="collection.html" class="cta-btn primary">START BUILDING</a>
+            <a href="starters.html" class="cta-btn">BROWSE MODULES</a>
+            <a href="#newsletter" class="cta-btn">GET JAMNUTZ</a>
+        </div>
+    </section>
+
+    <!-- Rack Preview -->
+    <section class="rack-preview">
+        <div class="rack-display-demo">
+            <div class="demo-module" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/10.png');"></div>
+            <div class="demo-module" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/16.png');"></div>
+            <div class="demo-module" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/17.png');"></div>
+            <div class="demo-module" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/25.png');"></div>
+            <div class="demo-module" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/22.png');"></div>
+            <div class="demo-module" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/23.png');"></div>
+            <div class="demo-module" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/19.png');"></div>
+            <div class="demo-module" style="background-image: url('https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/20.png');"></div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature">
+            <div class="feature-icon">🎛️</div>
+            <h3>Collect Modules</h3>
+            <p>Browse and purchase modules for 500 jamnutz each</p>
+        </div>
+        
+        <div class="feature">
+            <div class="feature-icon">🔧</div>
+            <h3>Build Racks</h3>
+            <p>Design custom racks and watch your modules animate</p>
+        </div>
+        
+        <div class="feature">
+            <div class="feature-icon">🔄</div>
+            <h3>Share & Trade</h3>
+            <p>Show off your studio and trade with other users</p>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter" id="newsletter">
+        <h2>Stay in the Loop</h2>
+        <p>Get updates on new modules, features, and exclusive drops</p>
+        
+        <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" placeholder="your@email.com" required>
+            <button type="submit">SUBSCRIBE</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 EURORACK.GRID | Built for the modular community</p>
+        <p>Questions? <a href="mailto:hello@eurorack.grid">hello@eurorack.grid</a></p>
+    </footer>
+
+    <script>
+        function subscribeNewsletter(e) {
+            e.preventDefault();
+            alert('Thanks for subscribing! Check your email for confirmation.');
+            e.target.reset();
+        }
+    </script>
 </body>
 </html>

@@ -7,6 +7,7 @@
     <title>EURORACKGRID - My Modules</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="module-system.css">
+    <script src="auth-check.js"></script>
     <script src="purchase-integration-fixed.js" defer></script>
     <script src="universal-nav.js" defer></script>
     <style>
@@ -414,18 +415,57 @@
         const totalModules = 100;
         let ownedModules = [];
         let currentView = 'grid';
+        let currentUser = null;
         
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize page when user is authenticated
+        window.addEventListener('userAuthenticated', function(e) {
+            currentUser = e.detail;
+            console.log('User authenticated:', currentUser);
+            
+            // Update welcome message
+            const welcomeMsg = document.querySelector('.collection-title');
+            if (welcomeMsg && currentUser) {
+                welcomeMsg.textContent = `${currentUser.name.toUpperCase()}'S MODULES`;
+            }
+            
             loadUserModules();
             populateGrid();
             updateStats();
         });
         
+        // Fallback initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auth check will redirect if not logged in
+            // This is just a fallback
+            setTimeout(() => {
+                if (!currentUser) {
+                    console.log('Fallback initialization');
+                    loadUserModules();
+                    populateGrid();
+                    updateStats();
+                }
+            }, 500);
+        });
+        
         // Load user's modules
         function loadUserModules() {
-            if (window.userSystem && window.userSystem.currentUser) {
-                ownedModules = window.userSystem.currentUser.ownedModules || [];
+            // Get from user data
+            if (currentUser && currentUser.modules) {
+                ownedModules = currentUser.modules;
+            }
+            
+            // Also check purchased modules
+            const purchased = JSON.parse(localStorage.getItem('purchased_modules') || '[]');
+            purchased.forEach(moduleId => {
+                if (!ownedModules.includes(moduleId)) {
+                    ownedModules.push(moduleId);
+                }
+            });
+            
+            // Save back to user
+            if (currentUser) {
+                currentUser.modules = ownedModules;
+                localStorage.setItem('eurogrid_user', JSON.stringify(currentUser));
             }
         }
         

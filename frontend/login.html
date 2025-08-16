@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EURORACK.GRID - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .login-form {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .login-button:active {
+            transform: translateY(0);
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .quick-login {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .quick-button {
+            flex: 1;
+            padding: 12px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .quick-button:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+        }
+        
+        .signup-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">EURORACK.GRID</div>
+            <div class="tagline">Your Digital Module Collection</div>
+        </div>
+        
+        <div class="login-form">
+            <div class="error-message" id="error-message"></div>
+            <div class="success-message" id="success-message"></div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="your@email.com"
+                        required
+                    />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="••••••••"
+                        required
+                    />
+                </div>
+                
+                <button type="submit" class="login-button">
+                    Login to My Modules
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>OR</span>
+            </div>
+            
+            <div class="quick-login">
+                <button class="quick-button" onclick="demoLogin()">
+                    Demo Account
+                </button>
+                <button class="quick-button" onclick="guestLogin()">
+                    Guest Browse
+                </button>
+            </div>
+            
+            <div class="signup-link">
+                New to EURORACK.GRID? 
+                <a href="#" onclick="showSignup()">Create Account</a>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; color: #666;">Logging you in...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if already logged in
+            const user = localStorage.getItem('eurogrid_user');
+            if (user) {
+                // Already logged in, redirect to My Modules
+                window.location.href = '/my-modules.html';
+            }
+            
+            // Handle form submission
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+        });
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Hide messages
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            
+            // Simulate authentication (replace with real auth)
+            setTimeout(() => {
+                if (email && password) {
+                    // Store user session
+                    const userData = {
+                        email: email,
+                        name: email.split('@')[0],
+                        loginTime: new Date().toISOString(),
+                        modules: []
+                    };
+                    
+                    localStorage.setItem('eurogrid_user', JSON.stringify(userData));
+                    
+                    // Show success
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('success-message').textContent = 'Login successful! Redirecting...';
+                    document.getElementById('success-message').style.display = 'block';
+                    
+                    // Redirect to My Modules
+                    setTimeout(() => {
+                        window.location.href = '/my-modules.html';
+                    }, 1000);
+                } else {
+                    // Show error
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('error-message').textContent = 'Invalid email or password';
+                    document.getElementById('error-message').style.display = 'block';
+                }
+            }, 1500);
+        }
+        
+        function demoLogin() {
+            // Auto-fill demo credentials
+            document.getElementById('email').value = 'demo@eurorack.grid';
+            document.getElementById('password').value = 'demo123';
+            
+            // Submit form
+            document.getElementById('login-form').dispatchEvent(new Event('submit'));
+        }
+        
+        function guestLogin() {
+            // Store guest session
+            const guestData = {
+                email: 'guest@eurorack.grid',
+                name: 'Guest User',
+                isGuest: true,
+                loginTime: new Date().toISOString(),
+                modules: []
+            };
+            
+            localStorage.setItem('eurogrid_user', JSON.stringify(guestData));
+            
+            // Redirect to collection
+            window.location.href = '/collection.html';
+        }
+        
+        function showSignup() {
+            // For now, just alert
+            alert('Signup coming soon! Use the Demo Account for now.');
+        }
+    </script>
+</body>
+</html>
