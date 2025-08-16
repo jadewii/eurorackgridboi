@@ -6,6 +6,7 @@
     <meta http-equiv="Expires" content="0">
     <title>EURORACK.GRID - Digital Eurorack Modules</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="auth-check.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -15,8 +16,97 @@
             overflow-x: hidden;
         }
         
+        /* Header */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #000;
+            z-index: 1000;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: #667eea;
+        }
+        
+        .auth-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .login-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info.active {
+            display: flex;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .logout-btn {
+            padding: 6px 15px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
         /* Hero Section */
         .hero {
+            margin-top: 70px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -426,11 +516,23 @@
     </style>
 </head>
 <body>
-    <!-- Auth Prompt -->
-    <div class="auth-prompt">
-        <button class="auth-btn" onclick="showLogin()">LOGIN</button>
-        <button class="auth-btn signup" onclick="showSignup()">FREE NUTZ</button>
-    </div>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-logo">EURORACK.GRID</div>
+        <nav class="header-nav">
+            <a href="/collection.html" class="nav-link">Collection</a>
+            <a href="/starters.html" class="nav-link">Starter Kits</a>
+            <a href="/rack-shop.html" class="nav-link">Racks</a>
+            <div class="auth-section">
+                <a href="/login.html" class="login-btn" id="login-btn">Login</a>
+                <div class="user-info" id="user-info">
+                    <a href="/my-modules.html" class="nav-link">My Modules</a>
+                    <span class="user-name" id="user-name"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </nav>
+    </header>
     
     <!-- Hero Section -->
     <section class="hero">
@@ -800,9 +902,8 @@
             <div class="showcase-module" style="padding: 0; overflow: hidden;">
                 <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/dpo_fullres_pingpong.webp" alt="DPO" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-            <div class="showcase-module">
-                🎚️
-                <span class="module-label">FILTER</span>
+            <div class="showcase-module" style="padding: 0; overflow: hidden;">
+                <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/custom_module_animated.webp" alt="CYBER OSCILLATOR" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div class="showcase-module">
                 🎛️
@@ -847,16 +948,44 @@
     
     <script src="purchase-integration-fixed.js"></script>
     <script>
-        // Simple login/signup handlers
-        function showLogin() {
-            if (window.userSystem) {
-                window.userSystem.showLoginModal();
+        // Check authentication on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('eurogrid_user');
+            
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    // User is logged in
+                    document.getElementById('login-btn').style.display = 'none';
+                    document.getElementById('user-info').classList.add('active');
+                    document.getElementById('user-name').textContent = user.name;
+                    
+                    // Update CTA buttons for logged in users
+                    const ctaButtons = document.querySelectorAll('.cta-btn.primary');
+                    ctaButtons.forEach(btn => {
+                        if (btn.textContent === 'START BUILDING') {
+                            btn.textContent = 'MY MODULES';
+                            btn.href = '/my-modules.html';
+                        }
+                    });
+                } catch (e) {
+                    console.error('Invalid user data');
+                }
             }
-        }
+            
+            // Animate logo
+            const jamnut = document.getElementById('jamnut-logo');
+            if (jamnut) {
+                jamnut.style.animation = 'spin 10s linear infinite';
+            }
+        });
         
-        function showSignup() {
-            if (window.userSystem) {
-                window.userSystem.showLoginModal();
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('eurogrid_user');
+                localStorage.removeItem('eurogrid_cart');
+                window.location.reload();
             }
         }
         
