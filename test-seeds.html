@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Seed Loading</title>
+    <script src="js/pack-config.js"></script>
+</head>
+<body>
+    <h1>Seed Image Test</h1>
+    
+    <div style="display: grid; grid-template-columns: repeat(3, 200px); gap: 20px; padding: 20px;">
+        <div style="border: 2px solid #4CAF50; padding: 10px;">
+            <h3>Seed 1</h3>
+            <img id="seed1" style="width: 100%; height: 150px; object-fit: contain; background: #f0f0f0;">
+        </div>
+        <div style="border: 2px solid #9C27B0; padding: 10px;">
+            <h3>Seed 9 (Rare)</h3>
+            <img id="seed9" style="width: 100%; height: 150px; object-fit: contain; background: #f0f0f0;">
+        </div>
+        <div style="border: 2px solid #FFD700; padding: 10px;">
+            <h3>Seed 10 (Legendary)</h3>
+            <img id="seed10" style="width: 100%; height: 150px; object-fit: contain; background: #f0f0f0;">
+        </div>
+    </div>
+    
+    <h2>Pack Configuration Test</h2>
+    <pre id="config"></pre>
+    
+    <script>
+        // Test pack configuration
+        document.getElementById('config').textContent = 'PACKS found: ' + JSON.stringify(Object.keys(PACKS), null, 2);
+        
+        // Test seed image loading
+        const SEED_WORKER_URL = 'https://eurorack-images.dawlessjammin.workers.dev/api/seed-image';
+        
+        async function loadSeed(seedId, imgId) {
+            try {
+                const response = await fetch(`${SEED_WORKER_URL}?seed_id=${seedId}`);
+                console.log(`Seed ${seedId}: ${response.status} ${response.statusText}`);
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    document.getElementById(imgId).src = URL.createObjectURL(blob);
+                    console.log(`Successfully loaded ${seedId}`);
+                } else {
+                    console.error(`Failed to load ${seedId}: ${response.status}`);
+                }
+            } catch (error) {
+                console.error(`Error loading ${seedId}:`, error);
+            }
+        }
+        
+        // Load test seeds (using seeds that actually exist)
+        loadSeed('s1', 'seed1');
+        loadSeed('s2', 'seed9');  // Using s2 for now since s9 doesn't exist
+        loadSeed('s3', 'seed10'); // Using s3 for now since s10 doesn't exist
+    </script>
+</body>
+</html>

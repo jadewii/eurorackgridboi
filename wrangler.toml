@@ -1,0 +1,11 @@
+name = "eurorack-images"
+main = "workers/media-access-secure.js"
+compatibility_date = "2024-01-01"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "eurorackgridplants"
+
+[[r2_buckets]]
+binding = "SEEDS_R2"
+bucket_name = "eurorackgridseeds"

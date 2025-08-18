@@ -4,9 +4,11 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>EUROGRID - Buy Jamnutz</title>
+    <title>JAMNUTZ - Get NUTZ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="purchase-integration-fixed.js" defer></script>
+    <script src="assets/clean-nav.js?v=3" defer></script>
+    <link rel="stylesheet" href="assets/clean-nav.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -96,6 +98,12 @@
         .back-btn:hover {
             background: #000;
             color: white;
+        }
+        
+        .main-content {
+            padding: 100px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         
         .main-title {
@@ -215,10 +223,11 @@
     </style>
 </head>
 <body>
-    <!-- Universal navigation will be inserted here by universal-nav.js -->
+    <!-- Navigation is injected by clean-nav.js -->
     
-    <h1 class="main-title">JAMNUTZ PACKS</h1>
-    <p class="subtitle">Purchase jamnutz to unlock digital modules. The more you buy, the more you save. Trade and collect them all!</p>
+    <div class="main-content">
+    <h1 class="main-title">GET NUTZ</h1>
+    <p class="subtitle">Purchase NUTZ to unlock digital gear. The more you buy, the more you save. Trade and collect them all!</p>
     
     <div class="packs-grid">
         <!-- Tiny Pack -->
@@ -226,11 +235,11 @@
             <div class="pack-name">TINY PACK</div>
             <div class="pack-amount">500</div>
             <div class="pack-price">
-                $5 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jamnut-icon-large" alt="jamnutz">
+                $5 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="jamnut-icon-large" alt="NUTZ" style="filter: brightness(0.1);">
             </div>
             <div class="you-get">
                 <div class="you-get-title">You Get:</div>
-                <div class="you-get-detail">500 Jamnutz</div>
+                <div class="you-get-detail">500 NUTZ</div>
                 <div class="you-get-detail">Standard pack size</div>
             </div>
             <button class="buy-btn" onclick="purchasePack('tiny')">BUY NOW</button>
@@ -241,11 +250,11 @@
             <div class="pack-name">DUAL PACK</div>
             <div class="pack-amount">1000</div>
             <div class="pack-price">
-                $10 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jamnut-icon-large" alt="jamnutz">
+                $10 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="jamnut-icon-large" alt="NUTZ" style="filter: brightness(0.1);">
             </div>
             <div class="you-get">
                 <div class="you-get-title">You Get:</div>
-                <div class="you-get-detail">1000 Jamnutz</div>
+                <div class="you-get-detail">1000 NUTZ</div>
                 <div class="you-get-detail">Common pack</div>
             </div>
             <button class="buy-btn" onclick="purchasePack('dual')">BUY NOW</button>
@@ -256,11 +265,11 @@
             <div class="pack-name">SMALL PACK</div>
             <div class="pack-amount">2000</div>
             <div class="pack-price">
-                $20 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jamnut-icon-large" alt="jamnutz">
+                $20 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="jamnut-icon-large" alt="NUTZ" style="filter: brightness(0.1);">
             </div>
             <div class="you-get">
                 <div class="you-get-title">You Get:</div>
-                <div class="you-get-detail">2000 Jamnutz</div>
+                <div class="you-get-detail">2000 NUTZ</div>
                 <div class="you-get-detail bonus">Includes 1 RARE!</div>
             </div>
             <button class="buy-btn" onclick="purchasePack('small')">BUY NOW</button>
@@ -271,11 +280,11 @@
             <div class="pack-name">POD PACK</div>
             <div class="pack-amount">6000</div>
             <div class="pack-price">
-                $50 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jamnut-icon-large" alt="jamnutz">
+                $50 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="jamnut-icon-large" alt="NUTZ" style="filter: brightness(0.1);">
             </div>
             <div class="you-get">
                 <div class="you-get-title">You Get:</div>
-                <div class="you-get-detail">6000 Jamnutz</div>
+                <div class="you-get-detail">6000 NUTZ</div>
                 <div class="you-get-detail bonus">Save $10!</div>
             </div>
             <button class="buy-btn" onclick="purchasePack('pod')">BUY NOW</button>
@@ -287,11 +296,11 @@
             <div class="pack-name">3U PACK</div>
             <div class="pack-amount">8400</div>
             <div class="pack-price">
-                $75 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jamnut-icon-large" alt="jamnutz">
+                $75 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="jamnut-icon-large" alt="NUTZ" style="filter: brightness(0.1);">
             </div>
             <div class="you-get">
                 <div class="you-get-title">You Get:</div>
-                <div class="you-get-detail">8400 Jamnutz</div>
+                <div class="you-get-detail">8400 NUTZ</div>
                 <div class="you-get-detail bonus">Best Value!</div>
             </div>
             <button class="buy-btn" onclick="purchasePack('3u')">BUY NOW</button>
@@ -302,15 +311,16 @@
             <div class="pack-name">LARGE PACK</div>
             <div class="pack-amount">10400</div>
             <div class="pack-price">
-                $90 <img src="https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/icons/jacknut.png" class="jamnut-icon-large" alt="jamnutz">
+                $90 <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" class="jamnut-icon-large" alt="NUTZ" style="filter: brightness(0.1);">
             </div>
             <div class="you-get">
                 <div class="you-get-title">You Get:</div>
-                <div class="you-get-detail">10400 Jamnutz</div>
+                <div class="you-get-detail">10400 NUTZ</div>
                 <div class="you-get-detail bonus">Bonus 1400!</div>
             </div>
             <button class="buy-btn" onclick="purchasePack('large')">BUY NOW</button>
         </div>
+    </div>
     </div>
     
     <script>
@@ -326,12 +336,12 @@
             
             const pack = packs[packType];
             if (pack) {
-                alert(`Coming soon: Purchase ${pack.amount} jamnutz for $${pack.price}!`);
+                alert(`Coming soon: Purchase ${pack.amount} NUTZ for $${pack.price}!`);
                 // TODO: Integrate with Stripe payment
             }
         }
         
-        // Update jamnutz display if user is logged in
+        // Update NUTZ display if user is logged in
         if (window.userSystem && window.userSystem.currentUser) {
             const counter = document.querySelector('.jamnutz-counter');
             if (counter) {

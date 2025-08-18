@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>EUROGRID - Rack Shop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="module-system.css">
-    <link rel="stylesheet" href="assets/clean-nav.css">
+    <title>Redirecting to Shop...</title>
+    <meta http-equiv="refresh" content="0; url=shop.html">
+    <script>
+        // Redirect to shop and open racks tab
+        window.location.href = "shop.html";
+        setTimeout(() => {
+            if (window.showTab) window.showTab('racks');
+        }, 100);
+    </script>
     <script src="power-animations.js" defer></script>
     <script src="assets/clean-nav.js" defer></script>
     <script src="purchase-integration-fixed.js" defer></script>

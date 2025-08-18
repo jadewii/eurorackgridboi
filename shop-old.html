@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JAMNUTZ - Eurorack Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/clean-nav.css">
+    <script src="assets/clean-nav.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .main-content {
+            padding: 100px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+        }
+        
+        .page-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 50px;
+            font-size: 1.2rem;
+        }
+        
+        /* Shop Categories Grid */
+        .shop-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .category-card {
+            background: white;
+            border: 3px solid #000;
+            padding: 30px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .category-count {
+            background: #000;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .category-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .category-preview {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .preview-item {
+            width: 60px;
+            height: 60px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .category-action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price-range {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .shop-btn {
+            padding: 10px 25px;
+            background: #000;
+            color: white;
+            border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .shop-btn:hover {
+            background: #667eea;
+        }
+        
+        /* Featured Section */
+        .featured-section {
+            margin-bottom: 60px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #000;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .view-all-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        
+        .view-all-link:hover {
+            color: #764ba2;
+        }
+        
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .featured-item {
+            background: white;
+            border: 2px solid #000;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .featured-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .featured-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .featured-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .featured-price {
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+        
+        /* Special Offers Banner */
+        .offers-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .offers-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .offers-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .offers-btn {
+            padding: 12px 30px;
+            background: white;
+            color: #667eea;
+            border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        
+        .offers-btn:hover {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation is injected by clean-nav.js -->
+    
+    <div class="main-content">
+        <h1 class="page-title">SHOP</h1>
+        <p class="page-subtitle">Everything you need for your modular journey in one place</p>
+        
+        <!-- Special Offers Banner -->
+        <div class="offers-banner">
+            <h2 class="offers-title">🎉 NEW USER SPECIAL</h2>
+            <p class="offers-text">Get 20% off your first module pack purchase!</p>
+            <button class="offers-btn" onclick="navigate('module-packs.html')">CLAIM OFFER</button>
+        </div>
+        
+        <!-- Shop Categories -->
+        <div class="shop-categories">
+            <!-- Modules Category -->
+            <div class="category-card" onclick="navigate('collection.html')">
+                <div class="category-header">
+                    <h3 class="category-title">Modules</h3>
+                    <span class="category-count">500+</span>
+                </div>
+                <p class="category-description">Digital modules for your virtual rack. Oscillators, filters, effects, and more.</p>
+                <div class="category-preview">
+                    <div class="preview-item">🎛️</div>
+                    <div class="preview-item">🎚️</div>
+                    <div class="preview-item">🎯</div>
+                    <div class="preview-item">⚡</div>
+                </div>
+                <div class="category-action">
+                    <span class="price-range">10-500 HP</span>
+                    <button class="shop-btn">BROWSE</button>
+                </div>
+            </div>
+            
+            <!-- Racks Category -->
+            <div class="category-card" onclick="navigate('rack-shop.html')">
+                <div class="category-header">
+                    <h3 class="category-title">Racks</h3>
+                    <span class="category-count">50+</span>
+                </div>
+                <p class="category-description">Cases and racks in all sizes. From portable pods to massive walls.</p>
+                <div class="category-preview">
+                    <div class="preview-item">📦</div>
+                    <div class="preview-item">🗄️</div>
+                    <div class="preview-item">🎪</div>
+                    <div class="preview-item">🏗️</div>
+                </div>
+                <div class="category-action">
+                    <span class="price-range">100-2000 HP</span>
+                    <button class="shop-btn">BROWSE</button>
+                </div>
+            </div>
+            
+            <!-- Panels Category -->
+            <div class="category-card" onclick="navigate('panels.html')">
+                <div class="category-header">
+                    <h3 class="category-title">Panels</h3>
+                    <span class="category-count">200+</span>
+                </div>
+                <p class="category-description">Custom panels and blank plates. Make your rack unique.</p>
+                <div class="category-preview">
+                    <div class="preview-item">🎨</div>
+                    <div class="preview-item">🖼️</div>
+                    <div class="preview-item">✨</div>
+                    <div class="preview-item">🌈</div>
+                </div>
+                <div class="category-action">
+                    <span class="price-range">5-50 HP</span>
+                    <button class="shop-btn">BROWSE</button>
+                </div>
+            </div>
+            
+            <!-- Plants Category -->
+            <div class="category-card" onclick="navigate('plant-shop.html')">
+                <div class="category-header">
+                    <h3 class="category-title">Plants</h3>
+                    <span class="category-count">50+</span>
+                </div>
+                <p class="category-description">Add some green to your studio. Decorative plants for ambiance.</p>
+                <div class="category-preview">
+                    <div class="preview-item">🌵</div>
+                    <div class="preview-item">🌿</div>
+                    <div class="preview-item">🪴</div>
+                    <div class="preview-item">🌱</div>
+                </div>
+                <div class="category-action">
+                    <span class="price-range">10-100 HP</span>
+                    <button class="shop-btn">BROWSE</button>
+                </div>
+            </div>
+            
+            <!-- Accessories Category -->
+            <div class="category-card" onclick="navigate('vibe-shop.html')">
+                <div class="category-header">
+                    <h3 class="category-title">Accessories</h3>
+                    <span class="category-count">100+</span>
+                </div>
+                <p class="category-description">Cables, stands, lights, and studio vibes to complete your setup.</p>
+                <div class="category-preview">
+                    <div class="preview-item">🔌</div>
+                    <div class="preview-item">💡</div>
+                    <div class="preview-item">🎵</div>
+                    <div class="preview-item">⚡</div>
+                </div>
+                <div class="category-action">
+                    <span class="price-range">5-200 HP</span>
+                    <button class="shop-btn">BROWSE</button>
+                </div>
+            </div>
+            
+            <!-- Patches Category -->
+            <div class="category-card" onclick="navigate('patches.html')">
+                <div class="category-header">
+                    <h3 class="category-title">Patches</h3>
+                    <span class="category-count">1000+</span>
+                </div>
+                <p class="category-description">Presets, patches, and sounds from the community.</p>
+                <div class="category-preview">
+                    <div class="preview-item">🎶</div>
+                    <div class="preview-item">🎧</div>
+                    <div class="preview-item">📻</div>
+                    <div class="preview-item">🎹</div>
+                </div>
+                <div class="category-action">
+                    <span class="price-range">FREE-50 HP</span>
+                    <button class="shop-btn">BROWSE</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Featured Items -->
+        <div class="featured-section">
+            <div class="section-header">
+                <h2 class="section-title">Featured This Week</h2>
+                <a href="collection.html" class="view-all-link">View All →</a>
+            </div>
+            <div class="featured-grid">
+                <div class="featured-item" onclick="navigate('collection.html')">
+                    <div class="featured-icon">🌊</div>
+                    <div class="featured-name">Wave Folder</div>
+                    <div class="featured-price">120 HP</div>
+                </div>
+                <div class="featured-item" onclick="navigate('collection.html')">
+                    <div class="featured-icon">🎛️</div>
+                    <div class="featured-name">Dual VCA</div>
+                    <div class="featured-price">80 HP</div>
+                </div>
+                <div class="featured-item" onclick="navigate('collection.html')">
+                    <div class="featured-icon">⚡</div>
+                    <div class="featured-name">Power Supply</div>
+                    <div class="featured-price">150 HP</div>
+                </div>
+                <div class="featured-item" onclick="navigate('rack-shop.html')">
+                    <div class="featured-icon">📦</div>
+                    <div class="featured-name">90HP Case</div>
+                    <div class="featured-price">300 HP</div>
+                </div>
+                <div class="featured-item" onclick="navigate('vibe-shop.html')">
+                    <div class="featured-icon">🌵</div>
+                    <div class="featured-name">Desert Cactus</div>
+                    <div class="featured-price">25 HP</div>
+                </div>
+                <div class="featured-item" onclick="navigate('patches.html')">
+                    <div class="featured-icon">🎶</div>
+                    <div class="featured-name">Ambient Pack</div>
+                    <div class="featured-price">FREE</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Popular Packs -->
+        <div class="featured-section">
+            <div class="section-header">
+                <h2 class="section-title">Popular Packs</h2>
+                <a href="module-packs.html" class="view-all-link">View All →</a>
+            </div>
+            <div class="featured-grid">
+                <div class="featured-item" onclick="navigate('module-packs.html')">
+                    <div class="featured-icon">📦</div>
+                    <div class="featured-name">Starter Pack</div>
+                    <div class="featured-price">500 HP</div>
+                </div>
+                <div class="featured-item" onclick="navigate('module-packs.html')">
+                    <div class="featured-icon">🎪</div>
+                    <div class="featured-name">Pro Bundle</div>
+                    <div class="featured-price">1500 HP</div>
+                </div>
+                <div class="featured-item" onclick="navigate('module-packs.html')">
+                    <div class="featured-icon">🌟</div>
+                    <div class="featured-name">Rare Collection</div>
+                    <div class="featured-price">2000 HP</div>
+                </div>
+                <div class="featured-item" onclick="navigate('starters.html')">
+                    <div class="featured-icon">🚀</div>
+                    <div class="featured-name">Beginner Kit</div>
+                    <div class="featured-price">300 HP</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Fix all navigation with relative paths
+        function navigate(page) {
+            console.log('Navigating to:', page);
+            // Use relative path without leading slash
+            window.location.href = page;
+        }
+        
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Shop page loaded, navigation ready');
+        });
+    </script>
+</body>
+</html>

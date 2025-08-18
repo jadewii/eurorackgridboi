@@ -123,18 +123,16 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
         <div class="universal-nav">
-            <a href="landing.html" class="universal-nav-btn ${window.location.pathname.includes('landing.html') ? 'active' : ''}">HOME</a>
-            <a href="my-studio.html" class="universal-nav-btn ${window.location.pathname.includes('my-studio.html') || window.location.pathname.includes('index.html') ? 'active' : ''}">MY STUDIO</a>
-            <a href="my-gear.html" class="universal-nav-btn ${window.location.pathname.includes('my-gear.html') ? 'active' : ''}">MY GEAR</a>
-            <a href="my-modules.html" class="universal-nav-btn ${window.location.pathname.includes('my-modules.html') ? 'active' : ''}">MY MODULES</a>
-            <a href="collection.html" class="universal-nav-btn ${window.location.pathname.includes('collection.html') ? 'active' : ''}">MODULES</a>
-            <a href="rack-shop.html" class="universal-nav-btn ${window.location.pathname.includes('rack-shop.html') ? 'active' : ''}">RACKS</a>
+            <a href="index.html" class="universal-nav-btn ${window.location.pathname.includes('index.html') || window.location.pathname === '/' ? 'active' : ''}">HOME</a>
+            <a href="my-studio.html" class="universal-nav-btn ${window.location.pathname.includes('my-studio.html') ? 'active' : ''}">STUDIO</a>
+            <a href="my-gear.html" class="universal-nav-btn ${window.location.pathname.includes('my-gear.html') ? 'active' : ''}">GEAR</a>
+            <a href="plant-collection.html" class="universal-nav-btn ${window.location.pathname.includes('plant-collection.html') ? 'active' : ''}">PLANTS</a>
+            <a href="plant-pack-shop.html" class="universal-nav-btn ${window.location.pathname.includes('plant-pack-shop.html') ? 'active' : ''}">SEED PACK</a>
+            <a href="patches.html" class="universal-nav-btn ${window.location.pathname.includes('patches.html') ? 'active' : ''}">PATCHES</a>
+            <a href="my-modules.html" class="universal-nav-btn ${window.location.pathname.includes('my-modules.html') ? 'active' : ''}">MY COLLECTION</a>
             <a href="module-packs.html" class="universal-nav-btn ${window.location.pathname.includes('module-packs.html') ? 'active' : ''}">PACKS</a>
-            <a href="panels.html" class="universal-nav-btn ${window.location.pathname.includes('panels.html') ? 'active' : ''}">PANELS</a>
-            <a href="starters.html" class="universal-nav-btn ${window.location.pathname.includes('starters.html') || window.location.pathname.includes('starter-kits.html') ? 'active' : ''}">STARTER KITS</a>
-            <a href="prebuilt-cases.html" class="universal-nav-btn ${window.location.pathname.includes('prebuilt-cases.html') ? 'active' : ''}">SYSTEMS</a>
-            <a href="vibe-shop.html" class="universal-nav-btn ${window.location.pathname.includes('vibe-shop.html') ? 'active' : ''}">VIBE SHOP</a>
-            <a href="buy-jamnutz.html" class="universal-nav-btn ${window.location.pathname.includes('buy-jamnutz.html') ? 'active' : ''}" style="background: #00FF00; color: #000; border-color: #000;">BUY 🥜</a>
+            <a href="community.html" class="universal-nav-btn ${window.location.pathname.includes('community.html') ? 'active' : ''}">COMMUNITY</a>
+            <a href="hp-purchase.html" class="universal-nav-btn ${window.location.pathname.includes('hp-purchase.html') ? 'active' : ''}" style="background: #FFD700; color: #000; border-color: #000;">GET JAMNUTZ</a>
         </div>
     </div>
     `;

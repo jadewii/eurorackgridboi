@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="assets/clean-nav.css">
     <script src="auth-check.js"></script>
     <script src="purchase-integration-fixed.js" defer></script>
-    <script src="assets/clean-nav.js" defer></script>
+    <script src="assets/clean-nav.js?v=3" defer></script>
+    <script src="fix-nav.js" defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -133,6 +134,16 @@
             background: #4caf50;
             border-color: #2e7d32;
             color: white;
+        }
+        
+        .action-btn.garden {
+            background: #81c784;
+            border-color: #2e7d32;
+            color: white;
+        }
+        
+        .action-btn.garden:hover {
+            background: #66bb6a;
         }
         
         /* Plant Grid */
@@ -349,7 +360,7 @@
     <div class="main-content">
         <!-- Collection Header -->
         <div class="collection-header">
-            <h1 class="collection-title">🌿 PLANT COLLECTION 🌿</h1>
+            <h1 class="collection-title">PLANTS</h1>
             <div class="collection-progress">
                 <div class="progress-text">COLLECTION: <span id="plantCount">0</span> / 50</div>
                 <div class="progress-bar">
@@ -397,6 +408,7 @@
             <div class="collection-actions">
                 <button class="action-btn" onclick="filterOwned()">SHOW OWNED</button>
                 <button class="action-btn" onclick="filterMissing()">SHOW MISSING</button>
+                <button class="action-btn garden" onclick="openMyGarden()">MY GARDEN</button>
                 <button class="action-btn primary" onclick="shopMorePlants()">SHOP PLANTS</button>
             </div>
         </div>
@@ -480,7 +492,7 @@
             // Update welcome message
             const welcomeMsg = document.querySelector('.collection-title');
             if (welcomeMsg && currentUser) {
-                welcomeMsg.innerHTML = `🌿 ${currentUser.name.toUpperCase()}'S PLANTS 🌿`;
+                welcomeMsg.innerHTML = `${currentUser.name.toUpperCase()}'S PLANTS`;
             }
             
             loadUserPlants();
@@ -675,7 +687,14 @@
         
         // Shop more plants
         function shopMorePlants() {
-            window.location.href = 'vibe-shop.html';
+            window.location.href = 'plant-shop.html';
+        }
+        
+        // Open My Garden
+        function openMyGarden() {
+            // For now, alert that this feature is coming soon
+            // Later this can open a garden arrangement page
+            alert('MY GARDEN feature coming soon! Here you will be able to arrange and display your plants.');
         }
     </script>
 </body>
