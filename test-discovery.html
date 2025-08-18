@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Discovery System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+        .controls {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        button.danger {
+            background: #f44336;
+        }
+        button.danger:hover {
+            background: #da190b;
+        }
+        .plant-btn {
+            background: #2196F3;
+        }
+        .plant-btn:hover {
+            background: #0b7dda;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .link-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: #FFD700;
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h1>JAMNUTZ Discovery System Test</h1>
+        
+        <div class="section">
+            <h2>Simulate Plant Discovery</h2>
+            <p style="margin-bottom: 15px;">These buttons simulate discovering plants (seeing them in other people's collections or in the shop):</p>
+            <button class="plant-btn" onclick="discoverPlant('p2')">Discover Plant #2</button>
+            <button class="plant-btn" onclick="discoverPlant('p4')">Discover Plant #4</button>
+            <button class="plant-btn" onclick="discoverPlant('p7')">Discover Plant #7</button>
+            <button class="plant-btn" onclick="discoverPlant('p10')">Discover Plant #10</button>
+            <button class="plant-btn" onclick="discoverPlant('p14')">Discover Plant #14</button>
+            <button class="plant-btn" onclick="discoverPlant('p20')">Discover Plant #20 (Rare)</button>
+        </div>
+        
+        <div class="section">
+            <h2>Simulate Plant Ownership</h2>
+            <p style="margin-bottom: 15px;">These buttons simulate owning plants (getting them from packs):</p>
+            <button onclick="ownPlant('p1')">Own Plant #1</button>
+            <button onclick="ownPlant('p5')">Own Plant #5</button>
+            <button onclick="ownPlant('p8')">Own Plant #8</button>
+            <button onclick="ownPlant('p12')">Own Plant #12 (Rare)</button>
+        </div>
+        
+        <div class="section">
+            <h2>Clear Data</h2>
+            <button class="danger" onclick="clearAll()">Clear All Plants</button>
+            <button class="danger" onclick="clearDiscovered()">Clear Discovered Only</button>
+            <button class="danger" onclick="clearOwned()">Clear Owned Only</button>
+        </div>
+        
+        <div class="info">
+            <strong>How the Discovery System Works:</strong>
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li><strong>Mystery (?):</strong> Plants you've never seen before - completely unknown</li>
+                <li><strong>Silhouette (Black):</strong> Plants you've discovered but don't own - you know they exist</li>
+                <li><strong>Full Color:</strong> Plants you own - fully revealed in your collection</li>
+            </ul>
+        </div>
+        
+        <a href="plants.html" class="link-btn">VIEW PLANTS COLLECTION →</a>
+    </div>
+    
+    <script>
+        function discoverPlant(plantId) {
+            const discovered = JSON.parse(localStorage.getItem('discoveredPlants') || '[]');
+            if (!discovered.includes(plantId)) {
+                discovered.push(plantId);
+                localStorage.setItem('discoveredPlants', JSON.stringify(discovered));
+                alert(`Plant ${plantId} discovered! It will now show as a silhouette.`);
+            } else {
+                alert(`Plant ${plantId} was already discovered.`);
+            }
+        }
+        
+        function ownPlant(plantId) {
+            const owned = JSON.parse(localStorage.getItem('ownedPlants') || '[]');
+            const discovered = JSON.parse(localStorage.getItem('discoveredPlants') || '[]');
+            
+            if (!owned.includes(plantId)) {
+                owned.push(plantId);
+                localStorage.setItem('ownedPlants', JSON.stringify(owned));
+                
+                // Also mark as discovered
+                if (!discovered.includes(plantId)) {
+                    discovered.push(plantId);
+                    localStorage.setItem('discoveredPlants', JSON.stringify(discovered));
+                }
+                
+                alert(`Plant ${plantId} owned! It will now show in full color.`);
+            } else {
+                alert(`Plant ${plantId} is already owned.`);
+            }
+        }
+        
+        function clearAll() {
+            localStorage.removeItem('ownedPlants');
+            localStorage.removeItem('discoveredPlants');
+            alert('All plant data cleared!');
+        }
+        
+        function clearDiscovered() {
+            localStorage.removeItem('discoveredPlants');
+            alert('Discovered plants cleared! (Owned plants will still show as discovered)');
+        }
+        
+        function clearOwned() {
+            localStorage.removeItem('ownedPlants');
+            alert('Owned plants cleared!');
+        }
+    </script>
+</body>
+</html>

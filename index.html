@@ -4,7 +4,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>EURORACK.GRID - Digital Eurorack Modules</title>
+    <title>JAMNUTZ - The Ultimate Music Nerd Game</title>
     <!-- Preload font to prevent shift -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -84,20 +84,9 @@
         
         
         
-        .intro-play-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
+        .intro-play-btn:hover img {
+            transform: scale(1.2);
             transition: transform 0.3s ease;
-            position: absolute;
-            left: 819px;
-            top: 445px;
-            transform: none;
-        }
-        
-        
-        .intro-play-btn:hover {
-            transform: scale(1.1);
         }
         
         
@@ -815,17 +804,18 @@
         <div class="intro-content">
             <div class="intro-logo">
                 <div style="display: flex; align-items: center; justify-content: center;">
-                    <span style="margin-right: -23px;">EUR</span>
-                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" 
-                         style="width: 70px; height: 70px; display: inline-block; vertical-align: middle; margin: 0px 13px 0px 9px; position: relative; filter: brightness(0.7) contrast(1.1);" 
-                         alt="O">
-                    <span style="margin-left: -14px;">RACK</span>
+                    <span>JAMNUTZ</span>
                 </div>
-                <div style="margin-top: -10px;">GRID</div>
             </div>
-            <button class="intro-play-btn" onclick="startExperience()">
-                <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/playbutton.png" alt="Play">
-            </button>
+            <div style="position: relative; width: 112px; height: 112px; margin: 40px auto;">
+                <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnutwhite.png" 
+                     style="width: 112px; height: 112px; filter: brightness(0.7) contrast(1.1); animation: spin 10s linear infinite;" 
+                     alt="Jamnut">
+                <button class="intro-play-btn" onclick="startExperience()" 
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: transparent; border: none; cursor: pointer;">
+                    <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/playbutton.png" alt="Play" style="width: 40px; height: 40px;">
+                </button>
+            </div>
         </div>
     </div>
     
@@ -835,7 +825,7 @@
         <!-- Header -->
     <header class="main-header">
         <div class="header-logo" style="display: flex; align-items: center; gap: 15px;">
-            EURORACK.GRID
+            JAMNUTZ
             <button id="audioPlayBtn" onclick="toggleAudio()" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: transform 0.2s;">
                 <img id="playIcon" src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/playbutton.png" alt="Play" style="width: 30px; height: 30px;">
             </button>

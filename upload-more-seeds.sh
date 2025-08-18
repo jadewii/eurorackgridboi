@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo "Current seed setup:"
+echo "- seed-001.webp: Earth Seed (brown)"
+echo "- seed-002.webp: Space Seed (blue/rainbow)"
+echo "- seed-003.webp: Multiverse Seed (orange/brown)"
+echo ""
+echo "If you have more seed images to upload for variety in the packs,"
+echo "you can upload them as seed-004.webp through seed-008.webp"
+echo ""
+echo "To upload additional seeds from Downloads:"
+echo ""
+
+# Example commands for uploading more seeds if you have them
+echo "# If you have additional seed images, use these commands:"
+echo "wrangler r2 object put eurorackgridseeds/seed-004.webp --file ~/Downloads/seed4.png"
+echo "wrangler r2 object put eurorackgridseeds/seed-005.webp --file ~/Downloads/seed5.png"
+echo "wrangler r2 object put eurorackgridseeds/seed-006.webp --file ~/Downloads/seed6.png"
+echo "wrangler r2 object put eurorackgridseeds/seed-007.webp --file ~/Downloads/seed7.png"
+echo "wrangler r2 object put eurorackgridseeds/seed-008.webp --file ~/Downloads/seed8.png"
+echo ""
+echo "For now, the packs are using:"
+echo "- Sprout Pack: Shows all 3 seeds (earth, space, multiverse)"
+echo "- Garden Pack: Shows all 3 seeds (earth, space, multiverse)"
+echo "- Banner Pack: Shows 2 seeds larger (space, multiverse)"

@@ -3,23 +3,19 @@
  */
 (function () {
   // Single source of truth for ALL navigation links
+  // Updated: Removed HUB, added HOME
   const LINKS = [
-    { href: "index.html",          label: "Home" },
-    { href: "shop.html",           label: "Shop" },
-    { href: "plant-collection.html", label: "Plant Collection" },
-    { href: "my-studio.html",      label: "Studio" },
-    { href: "my-gear.html",        label: "Gear" },
-    { href: "my-modules.html",     label: "My Modules" },
-    { href: "collection.html",     label: "Modules" },
-    { href: "rack-shop.html",      label: "Racks" },
-    { href: "module-packs.html",   label: "Packs" },
-    { href: "panels.html",         label: "Panels" },
-    { href: "starters.html",       label: "Starter Kits" },
-    { href: "prebuilt-cases.html", label: "Systems" },
-    { href: "vibe-shop.html",      label: "Vibe Shop" },
-    { href: "patches.html",        label: "Patches" },
-    { href: "community.html",      label: "Community" },
-    { href: "hp-purchase.html",    label: "Nutz" }
+    { href: "landing.html",        label: "LANDING" },
+    { href: "index.html",          label: "HOME" },
+    { href: "my-studio.html",      label: "STUDIO" },
+    { href: "plants.html",         label: "PLANTS" },
+    { href: "shop.html",           label: "SHOP" },
+    { href: "starters.html",       label: "STARTERS" },
+    { href: "my-gear.html",        label: "GEAR" },
+    { href: "patches.html",        label: "PATCHES" },
+    { href: "my-modules.html",     label: "MY COLLECTION" },
+    { href: "community.html",      label: "COMMUNITY" },
+    { href: "nutz.html",           label: "NUTZ" }
   ];
 
   function insertCleanNav() {
@@ -68,7 +64,7 @@
     brand.appendChild(jamnutLogo);
     
     const brandText = document.createElement('span');
-    brandText.textContent = 'EURORACK.GRID';
+    brandText.textContent = 'JAMNUTZ';
     brand.appendChild(brandText);
     
     const playBtn = document.createElement('span');

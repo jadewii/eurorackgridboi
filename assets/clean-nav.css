@@ -1,121 +1,104 @@
-/* Clean site header — matches style #1 */
-:root{
-  --nav-font: 0.9rem;
-  --nav-gap: 1.75rem;
-  --nav-color: #000;
-  --nav-hover: #667eea;
-  --nav-border: #ddd;
+/* Clean Navigation Styles */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-bottom: 2px solid #000;
+    padding: 15px 20px;
+    z-index: 10000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Noto Sans Mono', monospace;
+    min-height: 70px;
 }
 
-/* Spin animation for jamnut logo */
-@keyframes spin {
-  to { transform: rotate(1turn); }
+.brand-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-decoration: none;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand:hover {
+    opacity: 0.8;
 }
 
 .jamnut-spinning {
-  animation: spin 10s linear infinite;
+    animation: spin 4s linear infinite;
 }
 
-/* Clean header matching style #1 */
-.site-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:2rem;
-  padding:16px 40px;
-  border-bottom:1px solid var(--nav-border);
-  background:#fff;
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  z-index:10000;
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-.brand{
-  font-weight:bold;
-  font-size:1.1rem;
-  letter-spacing:0.1em;
-  text-decoration:none;
-  color:var(--nav-color);
-  display:flex;
-  align-items:center;
-  gap:0.5rem;
+.site-nav {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: nowrap;
 }
 
-.site-nav{
-  display:flex;
-  align-items:center;
-  gap:30px;
+.site-nav a {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+    padding: 0;
+    border: none !important;
+    background: none !important;
 }
 
-.site-nav a{
-  font-size:var(--nav-font);
-  font-weight:bold;
-  text-transform:uppercase;
-  text-decoration:none;
-  color:var(--nav-color);
-  padding:0;
-  border:none !important;
-  background:none !important;
-  box-shadow:none !important;
-  transition:color 0.3s;
+.site-nav a:hover {
+    color: #667eea;
 }
 
-.site-nav a:hover{
-  color:var(--nav-hover);
+.site-nav a[aria-current="page"] {
+    color: #667eea;
 }
 
-.site-nav a[aria-current="page"]{
-  color:var(--nav-hover);
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-/* Right side auth */
-.header-actions{
-  display:flex;
-  gap:15px;
-  align-items:center;
+.header-actions .demo {
+    font-weight: bold;
+    color: #666;
 }
 
-.header-actions .demo{
-  color:#666;
-  font-size:0.9rem;
+.header-actions .logout {
+    background: #000;
+    color: white;
+    padding: 5px 15px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border-radius: 3px;
+    transition: background 0.2s;
 }
 
-.header-actions .logout{
-  background:#333;
-  color:#fff;
-  border:none;
-  padding:6px 15px;
-  border-radius:3px;
-  font-size:0.85rem;
-  cursor:pointer;
-  text-decoration:none;
+.header-actions .logout:hover {
+    background: #333;
 }
 
-/* KILL all legacy boxed/button navigation styles */
-nav a.btn, nav a.button, nav a.bordered,
-.nav-btn, .nav-button, .universal-nav-btn,
-.boxed-nav a, .legacy-nav a, .store-nav a {
-  border:none !important;
-  background:none !important; 
-  box-shadow:none !important;
-  padding:0 !important;
-}
-
-/* Hide old elements */
-.universal-header, .universal-nav, #universal-nav,
-.profile-avatar-wrapper, .universal-profile-wrapper,
-.credits-display, .buy-btn-green {
-  display:none !important;
-}
-
-/* Ensure body has proper padding */
-body{
-  padding-top:70px !important;
-}
-
-@media (max-width:960px){
-  .site-nav{gap:20px}
-  .site-nav a{font-size:0.85rem}
+/* Make sure main content doesn't hide under nav */
+body {
+    padding-top: 90px !important;
 }

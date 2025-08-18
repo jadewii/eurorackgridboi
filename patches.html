@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>EURORACK.GRID - Patches</title>
+    <title>JAMNUTZ - Patches</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/clean-nav.css">
+    <script src="assets/clean-nav.js" defer></script>
     <style>
         * { 
             margin: 0; 
@@ -10,115 +12,23 @@
             box-sizing: border-box; 
         }
         
-        :root { 
-            --header-pad-y: 15px; 
-            --header-pad-x: 40px; 
-        }
-        
         body { 
             font-family: 'Noto Sans Mono', monospace;
             background: #f5f5f5;
             color: #000;
-            padding-top: calc(2 * var(--header-pad-y) + 2px + 60px); /* space for fixed header */
-            padding-left: 60px;
-            padding-right: 60px;
-            margin: 0;
         }
         
-        .main-header {
-            position: fixed;
-            top: 0; 
-            left: 0; 
-            right: 0;
-            border-bottom: 2px solid #000;
-            background: #fff;
-            padding: var(--header-pad-y) var(--header-pad-x);
-            z-index: 1000;
-        }
-        
-        .header-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-        }
-        
-        .header-logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            text-decoration: none;
-            color: #000;
-        }
-        
-        .header-nav {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-        
-        .nav-link {
-            text-decoration: none;
-            color: #000;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            transition: color 0.3s;
-        }
-        
-        .nav-link:hover {
-            color: #667eea;
-        }
-        
-        .nav-link.is-active {
-            color: #667eea;
-        }
-        
-        .auth-section {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .user-info {
-            display: none;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-info.active {
-            display: flex;
-        }
-        
-        .user-name {
-            font-weight: bold;
-        }
-        
-        .logout-btn {
-            padding: 6px 15px;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-        
-        .patches-content {
-            max-width: 1200px;
+        .main-content {
+            padding: 100px 40px 40px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
-        .patches-title {
-            font-size: 18px;
+        .page-title {
+            font-size: 3rem;
+            text-align: center;
             margin-bottom: 40px;
-            font-weight: normal;
+            letter-spacing: 5px;
         }
         
         .track-list {
@@ -252,51 +162,10 @@
     </style>
 </head>
 <body>
-    <!-- BEGIN: Site Header (same as index.html) -->
-    <header class="main-header" role="banner">
-        <div class="header-inner">
-            <div class="header-logo">
-                <a href="/" class="logo">EURORACK.GRID</a>
-                <button id="audioPlayBtn" onclick="toggleAudio()" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: transform 0.2s;">
-                    <img id="playIcon" src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/playbutton.png" alt="Play" style="width: 30px; height: 30px;">
-                </button>
-            </div>
-            
-            <nav class="header-nav" role="navigation" aria-label="Primary">
-                <a href="/landing.html" class="nav-link">Home</a>
-                <a href="/my-studio.html" class="nav-link">My Studio</a>
-                <a href="/my-gear.html" class="nav-link">My Gear</a>
-                <a href="/my-modules.html" class="nav-link">My Modules</a>
-                <a href="/collection.html" class="nav-link">Modules</a>
-                <a href="/rack-shop.html" class="nav-link">Racks</a>
-                <a href="/module-packs.html" class="nav-link">Packs</a>
-                <a href="/panels.html" class="nav-link">Panels</a>
-                <a href="/starters.html" class="nav-link">Starter Kits</a>
-                <a href="/prebuilt-cases.html" class="nav-link">Systems</a>
-                <a href="/vibe-shop.html" class="nav-link">Vibe Shop</a>
-                <a href="/patches.html" class="nav-link is-active">Patches</a>
-                <div class="auth-section">
-                    <div class="user-info active" id="user-info">
-                        <a href="/my-modules.html" class="nav-link">My Modules</a>
-                        <span class="user-name" id="user-name">demo</span>
-                        <button class="logout-btn" onclick="logout()">Logout</button>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </header>
-    <!-- END: Site Header -->
+    <!-- Navigation is injected by clean-nav.js -->
     
-    <div class="patches-content">
-        <h1 class="patches-title">patches</h1>
-        
-        <div style="background: #000; color: #fff; padding: 20px; margin-bottom: 40px; border-radius: 8px;">
-            <div style="font-size: 14px; margin-bottom: 10px;">🎵 Submit Your Patches</div>
-            <div style="font-size: 12px; line-height: 1.6; opacity: 0.9;">
-                Submit your original eurorack patches for in-game use and receive an XL SYSTEM when we launch!
-                <a href="mailto:patches@eurorackgrid.com" style="color: #FFD700; text-decoration: none; margin-left: 10px;">Send patches →</a>
-            </div>
-        </div>
+    <div class="main-content">
+        <h1 class="page-title">PATCHES</h1>
         
         <div class="track-list">
         <div class="track" data-track="1">
@@ -418,7 +287,7 @@
             </div>
             <div class="waveform"></div>
         </div>
-    </div>
+        </div>
     </div>
     
     <script>

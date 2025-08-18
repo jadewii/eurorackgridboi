@@ -14,7 +14,12 @@
     "wrangler": "^4.29.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy:worker": "wrangler deploy",
+    "dev:worker": "wrangler dev",
+    "db:migrate": "wrangler d1 execute jamnutz-plants --file=./workers/schema.sql",
+    "db:create": "wrangler d1 create jamnutz-plants",
+    "r2:create": "wrangler r2 bucket create jamnutz-media"
   },
   "repository": {
     "type": "git",

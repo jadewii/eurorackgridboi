@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Plant Images</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .plant-card {
+            background: white;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        .plant-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .plant-id {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .status {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .loading { opacity: 0.5; }
+        .loaded { opacity: 1; }
+        .error { background: #ffeeee; }
+    </style>
+</head>
+<body>
+    <h1>Plant Images Test - Direct R2 Loading</h1>
+    
+    <div class="test-grid" id="testGrid"></div>
+    
+    <h2>Direct URL Test:</h2>
+    <p>Testing URL pattern: https://pub-003b43d100f94cca9fe8e5371e24ae6d.r2.dev/plant-001.webp</p>
+    <img src="https://pub-003b43d100f94cca9fe8e5371e24ae6d.r2.dev/plant-001.webp" style="width: 200px; border: 2px solid #4CAF50;">
+    
+    <script>
+        // Test direct R2 URLs
+        const R2_BASE = 'https://pub-003b43d100f94cca9fe8e5371e24ae6d.r2.dev';
+        
+        function createTestGrid() {
+            const grid = document.getElementById('testGrid');
+            
+            // Test first 10 plants
+            for (let i = 1; i <= 10; i++) {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+                
+                const plantId = `p${i}`;
+                const imageNumber = i.toString().padStart(3, '0');
+                const imageUrl = `${R2_BASE}/plant-${imageNumber}.webp`;
+                
+                card.innerHTML = `
+                    <div class="plant-id">Plant ${plantId}</div>
+                    <img class="plant-image" src="${imageUrl}" alt="Plant ${i}">
+                    <div class="status">plant-${imageNumber}.webp</div>
+                `;
+                
+                grid.appendChild(card);
+            }
+        }
+        
+        // Create test grid on load
+        createTestGrid();
+    </script>
+</body>
+</html>

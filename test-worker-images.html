@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Worker Image Loading</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .status {
+            padding: 20px;
+            background: white;
+            border: 2px solid #333;
+            margin-bottom: 20px;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .plant-card {
+            background: white;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        .plant-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background: #f0f0f0;
+        }
+        .loading {
+            opacity: 0.5;
+        }
+        .error {
+            background: #ffeeee;
+            border-color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Worker Image Test</h1>
+    
+    <div class="status">
+        <h2>Testing Private R2 Access via Worker</h2>
+        <p>Worker Endpoint: <code id="endpoint">Loading...</code></p>
+        <p>Status: <span id="status">Testing connection...</span></p>
+    </div>
+
+    <h2>Plant Images (via Worker):</h2>
+    <div class="test-grid" id="testGrid"></div>
+
+    <script>
+        // Worker endpoint - YOUR LIVE WORKER!
+        const WORKER_URL = 'https://eurorack-images.dawlessjammin.workers.dev/api/plant-image';
+        
+        document.getElementById('endpoint').textContent = WORKER_URL;
+
+        async function testWorkerImage(plantId) {
+            const url = `${WORKER_URL}?plant_id=${plantId}`;
+            
+            try {
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+                }
+                
+                const blob = await response.blob();
+                return URL.createObjectURL(blob);
+                
+            } catch (error) {
+                console.error(`Failed to load ${plantId}:`, error);
+                return null;
+            }
+        }
+
+        async function loadImages() {
+            const grid = document.getElementById('testGrid');
+            const status = document.getElementById('status');
+            
+            // Test first 10 plants
+            for (let i = 1; i <= 10; i++) {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+                
+                const plantId = `p${i}`;
+                
+                card.innerHTML = `
+                    <div>Plant ${plantId}</div>
+                    <img class="plant-image loading" id="img-${plantId}" alt="Plant ${i}">
+                    <div class="status" id="status-${plantId}">Loading...</div>
+                `;
+                
+                grid.appendChild(card);
+                
+                // Load image
+                const imageUrl = await testWorkerImage(plantId);
+                const imgElement = document.getElementById(`img-${plantId}`);
+                const statusElement = document.getElementById(`status-${plantId}`);
+                
+                if (imageUrl) {
+                    imgElement.src = imageUrl;
+                    imgElement.classList.remove('loading');
+                    statusElement.textContent = 'Loaded via Worker';
+                    statusElement.style.color = 'green';
+                } else {
+                    imgElement.classList.add('error');
+                    statusElement.textContent = 'Failed to load';
+                    statusElement.style.color = 'red';
+                }
+            }
+            
+            status.textContent = 'Test complete';
+            status.style.color = 'green';
+        }
+
+        // Start loading when page loads
+        loadImages();
+    </script>
+</body>
+</html>

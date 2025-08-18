@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JAMNUTZ - Plant Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/clean-nav.css">
+    <script src="assets/clean-nav.js?v=3" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f0f8f0;
+            color: #000;
+        }
+        
+        .main-content {
+            padding: 40px 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .shop-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .shop-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        
+        .currency-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .plant-card {
+            background: white;
+            border: 3px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .plant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(76,175,80,0.3);
+        }
+        
+        .plant-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background: #f0f0f0;
+        }
+        
+        .plant-name {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .plant-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        
+        .buy-button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .buy-button:hover {
+            background: #45a049;
+        }
+        
+        .buy-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .rarity-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .rarity-rare {
+            background: #FF8A65;
+            color: white;
+        }
+        
+        .rarity-legendary {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .loading {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation injected by clean-nav.js -->
+    
+    <div class="main-content">
+        <div class="shop-header">
+            <h1 class="shop-title">PLANT SHOP</h1>
+            <div class="currency-display">
+                JAMCOINS: <span id="userCoins">1000</span>
+            </div>
+        </div>
+        
+        <div class="shop-grid" id="shopGrid">
+            <!-- Plants will be loaded here -->
+        </div>
+    </div>
+    
+    <script>
+        // Worker URL for images
+        const WORKER_URL = 'https://eurorack-images.dawlessjammin.workers.dev/api/plant-image';
+        
+        // User's coins (start with some for testing)
+        let userCoins = 1000;
+        
+        // Plants data
+        const plants = [
+            { id: 'p1', name: 'Monstera', price: 25 },
+            { id: 'p2', name: 'Pothos', price: 15 },
+            { id: 'p3', name: 'Snake Plant', price: 30 },
+            { id: 'p4', name: 'Fern', price: 20 },
+            { id: 'p5', name: 'Bamboo', price: 35 },
+            { id: 'p6', name: 'Cactus', price: 18 },
+            { id: 'p7', name: 'Succulent', price: 22 },
+            { id: 'p8', name: 'Ivy', price: 28 },
+            { id: 'p9', name: 'Rubber Plant', price: 32 },
+            { id: 'p10', name: 'Peace Lily', price: 26 },
+            { id: 'p11', name: 'Spider Plant', price: 24 },
+            { id: 'p12', name: 'Aloe Vera', price: 45, rarity: 'rare' },
+            { id: 'p13', name: 'Philodendron', price: 38 },
+            { id: 'p14', name: 'ZZ Plant', price: 28 },
+            { id: 'p15', name: 'Fiddle Leaf', price: 85, rarity: 'rare' },
+            { id: 'p16', name: 'Bird of Paradise', price: 150, rarity: 'legendary' },
+            { id: 'p17', name: 'Variegated Monstera', price: 120, rarity: 'rare' },
+            { id: 'p18', name: 'Pink Princess', price: 200, rarity: 'legendary' },
+            { id: 'p19', name: 'Thai Constellation', price: 180, rarity: 'legendary' },
+            { id: 'p20', name: 'Golden Pothos', price: 65, rarity: 'rare' }
+        ];
+        
+        // Load purchased plants from localStorage
+        function getOwnedPlants() {
+            return JSON.parse(localStorage.getItem('ownedPlants') || '[]');
+        }
+        
+        function savePurchase(plantId) {
+            const owned = getOwnedPlants();
+            if (!owned.includes(plantId)) {
+                owned.push(plantId);
+                localStorage.setItem('ownedPlants', JSON.stringify(owned));
+            }
+        }
+        
+        function buyPlant(plant) {
+            if (userCoins >= plant.price) {
+                userCoins -= plant.price;
+                document.getElementById('userCoins').textContent = userCoins;
+                savePurchase(plant.id);
+                
+                // Update button
+                const button = document.getElementById(`buy-${plant.id}`);
+                button.textContent = 'OWNED';
+                button.disabled = true;
+                
+                alert(`You bought ${plant.name}! Check your collection.`);
+            } else {
+                alert(`Not enough JAMCOINS! You need ${plant.price} but only have ${userCoins}.`);
+            }
+        }
+        
+        async function loadPlantImage(imgElement, plantId) {
+            try {
+                const response = await fetch(`${WORKER_URL}?plant_id=${plantId}`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    imgElement.src = URL.createObjectURL(blob);
+                    imgElement.classList.remove('loading');
+                }
+            } catch (error) {
+                console.error(`Failed to load ${plantId}:`, error);
+            }
+        }
+        
+        function renderShop() {
+            const grid = document.getElementById('shopGrid');
+            const owned = getOwnedPlants();
+            
+            plants.forEach(plant => {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+                
+                const isOwned = owned.includes(plant.id);
+                
+                let rarityBadge = '';
+                if (plant.rarity) {
+                    rarityBadge = `<div class="rarity-badge rarity-${plant.rarity}">${plant.rarity.toUpperCase()}</div>`;
+                }
+                
+                card.innerHTML = `
+                    ${rarityBadge}
+                    <img class="plant-image loading" id="img-${plant.id}" alt="${plant.name}">
+                    <div class="plant-name">${plant.name}</div>
+                    <div class="plant-price">${plant.price} JAM</div>
+                    <button class="buy-button" id="buy-${plant.id}" 
+                            ${isOwned ? 'disabled' : ''} 
+                            onclick='buyPlant(${JSON.stringify(plant)})'>
+                        ${isOwned ? 'OWNED' : 'BUY'}
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+                
+                // Load image
+                const img = document.getElementById(`img-${plant.id}`);
+                loadPlantImage(img, plant.id);
+            });
+        }
+        
+        // Initialize shop
+        document.addEventListener('DOMContentLoaded', () => {
+            renderShop();
+        });
+    </script>
+</body>
+</html>

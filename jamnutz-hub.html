@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JAMNUTZ - The Ultimate Music Nerd Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/clean-nav.css">
+    <script src="assets/clean-nav.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #000;
+            min-height: 100vh;
+        }
+        
+        .main-content {
+            padding: 100px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+        }
+        
+        .main-title {
+            font-size: 5rem;
+            font-weight: bold;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Game Categories Grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .category-card {
+            background: white;
+            border: 4px solid #000;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .category-card.eurorack {
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+        }
+        
+        .category-card.synths {
+            background: linear-gradient(135deg, #fff, #e3f2fd);
+        }
+        
+        .category-card.pedals {
+            background: linear-gradient(135deg, #fff, #fff3e0);
+        }
+        
+        .category-card.drums {
+            background: linear-gradient(135deg, #fff, #fce4ec);
+        }
+        
+        .category-card.plants {
+            background: linear-gradient(135deg, #fff, #e8f5e9);
+        }
+        
+        .category-card.studio {
+            background: linear-gradient(135deg, #fff, #f3e5f5);
+        }
+        
+        .category-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .category-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .category-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #999;
+            text-transform: uppercase;
+        }
+        
+        .coming-soon-badge {
+            position: absolute;
+            top: 20px;
+            right: -40px;
+            background: #ff9800;
+            color: white;
+            padding: 5px 50px;
+            transform: rotate(45deg);
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        /* Currency Display */
+        .currency-bar {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: white;
+            border: 3px solid #000;
+            border-radius: 10px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 999;
+        }
+        
+        .currency-icon {
+            font-size: 2rem;
+        }
+        
+        .currency-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .buy-btn {
+            padding: 8px 15px;
+            background: #FFD700;
+            border: 2px solid #000;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .buy-btn:hover {
+            background: #000;
+            color: #FFD700;
+        }
+        
+        /* Features Section */
+        .features-section {
+            background: white;
+            border: 4px solid #000;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .features-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature {
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .feature-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="main-title">JAMNUTZ</h1>
+            <div class="subtitle">THE ULTIMATE MUSIC NERD GAME</div>
+            <div class="tagline">Collect • Trade • Build • Play</div>
+        </div>
+        
+        <!-- Currency Bar -->
+        <div class="currency-bar">
+            <div class="currency-icon">🥜</div>
+            <div class="currency-amount" id="jamnutzAmount">5,000</div>
+            <button class="buy-btn" onclick="window.location.href='hp-purchase.html'">BUY MORE</button>
+        </div>
+        
+        <!-- Game Categories -->
+        <div class="categories-grid">
+            <!-- Eurorack Module -->
+            <div class="category-card eurorack" onclick="window.location.href='shop.html'">
+                <div class="category-icon">🎛️</div>
+                <div class="category-title">Eurorack Modules</div>
+                <div class="category-subtitle">Build your modular synthesizer</div>
+                <div class="category-stats">
+                    <div class="stat">
+                        <div class="stat-value">500+</div>
+                        <div class="stat-label">Modules</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">50</div>
+                        <div class="stat-label">Racks</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">∞</div>
+                        <div class="stat-label">Patches</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Synthesizers -->
+            <div class="category-card synths">
+                <span class="coming-soon-badge">COMING SOON</span>
+                <div class="category-icon">🎹</div>
+                <div class="category-title">Synthesizers</div>
+                <div class="category-subtitle">Vintage & modern synths</div>
+                <div class="category-stats">
+                    <div class="stat">
+                        <div class="stat-value">200+</div>
+                        <div class="stat-label">Synths</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">50</div>
+                        <div class="stat-label">Vintage</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">100</div>
+                        <div class="stat-label">Presets</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Guitar Pedals -->
+            <div class="category-card pedals">
+                <span class="coming-soon-badge">COMING SOON</span>
+                <div class="category-icon">🎸</div>
+                <div class="category-title">Guitar Pedals</div>
+                <div class="category-subtitle">Build your pedalboard</div>
+                <div class="category-stats">
+                    <div class="stat">
+                        <div class="stat-value">300+</div>
+                        <div class="stat-label">Pedals</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">25</div>
+                        <div class="stat-label">Boards</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">100</div>
+                        <div class="stat-label">Chains</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Drum Machines -->
+            <div class="category-card drums">
+                <span class="coming-soon-badge">COMING SOON</span>
+                <div class="category-icon">🥁</div>
+                <div class="category-title">Drum Machines</div>
+                <div class="category-subtitle">Beat making arsenal</div>
+                <div class="category-stats">
+                    <div class="stat">
+                        <div class="stat-value">100+</div>
+                        <div class="stat-label">Machines</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">1000</div>
+                        <div class="stat-label">Samples</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">500</div>
+                        <div class="stat-label">Patterns</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Plants -->
+            <div class="category-card plants" onclick="window.location.href='plant-collection.html'">
+                <div class="category-icon">🌿</div>
+                <div class="category-title">Studio Plants</div>
+                <div class="category-subtitle">Green up your space</div>
+                <div class="category-stats">
+                    <div class="stat">
+                        <div class="stat-value">50+</div>
+                        <div class="stat-label">Plants</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">10</div>
+                        <div class="stat-label">Rare</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">∞</div>
+                        <div class="stat-label">Growth</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Studio Gear -->
+            <div class="category-card studio" onclick="window.location.href='my-studio.html'">
+                <div class="category-icon">🎚️</div>
+                <div class="category-title">Studio Gear</div>
+                <div class="category-subtitle">Monitors, interfaces & more</div>
+                <div class="category-stats">
+                    <div class="stat">
+                        <div class="stat-value">150+</div>
+                        <div class="stat-label">Items</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">20</div>
+                        <div class="stat-label">Brands</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">∞</div>
+                        <div class="stat-label">Setups</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="features-section">
+            <h2 class="features-title">How JAMNUTZ Works</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">📦</div>
+                    <div class="feature-name">Collect</div>
+                    <div class="feature-desc">Open packs and collect rare gear</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-name">Trade</div>
+                    <div class="feature-desc">Swap with friends worldwide</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🏗️</div>
+                    <div class="feature-name">Build</div>
+                    <div class="feature-desc">Create your dream studio</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🏆</div>
+                    <div class="feature-name">Compete</div>
+                    <div class="feature-desc">Show off your collection</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎵</div>
+                    <div class="feature-name">Create</div>
+                    <div class="feature-desc">Make and share patches</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🌟</div>
+                    <div class="feature-name">Level Up</div>
+                    <div class="feature-desc">Unlock legendary gear</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load user's jamnutz balance
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('eurogrid_user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                const jamnutz = user.jamnutz || 5000;
+                document.getElementById('jamnutzAmount').textContent = jamnutz.toLocaleString();
+            }
+        });
+    </script>
+</body>
+</html>

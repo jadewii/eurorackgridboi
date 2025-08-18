@@ -1,0 +1,12 @@
+name = "eurorack-images"
+main = "workers/media-simple.js"
+compatibility_date = "2023-10-30"
+workers_dev = true
+
+# Your Cloudflare account ID
+account_id = "48bee1bbf6e86bd043eb41f038d43f5d"
+
+# R2 Bucket binding
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "eurorackgridplants"
