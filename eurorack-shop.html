@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>JAMNUTZ - Modules</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/clean-nav.css">
+    <script src="assets/clean-nav.js?v=6" defer></script>
+    <script src="js/module-config.js?v=1"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: linear-gradient(135deg, #e8e8e8, #f5f5f5);
+            color: #000;
+        }
+        
+        .main-content {
+            padding: 20px 20px 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .shop-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .shop-title {
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #333, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .currency-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .packs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .pack-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: none !important;
+        }
+        
+        .pack-card.module {
+            border: 3px solid #808080;
+        }
+        
+        .pack-card.starter {
+            border: 3px solid #1976D2;
+            background: linear-gradient(135deg, #fff, #E3F2FD);
+        }
+        
+        .pack-card.system {
+            border: 3px solid #FFD700;
+            background: linear-gradient(135deg, #fff, #FFF9E6);
+        }
+        
+        .pack-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .pack-visual {
+            width: 100%;
+            height: 200px;
+            margin: 0 auto 20px;
+            background: transparent;
+            border: none !important;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: visible;
+        }
+        
+        .module-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0.9;
+            filter: brightness(1.2);
+        }
+        
+        .pack-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .pack-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+            min-height: 40px;
+        }
+        
+        .pack-contents {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .pack-contents h4 {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .module-slot {
+            display: inline-block;
+            width: 40px;
+            height: 80px;
+            background: #ddd;
+            border: 2px solid #999;
+            border-radius: 5px;
+            margin: 0 5px;
+            position: relative;
+        }
+        
+        .module-slot.guaranteed-rare {
+            background: linear-gradient(135deg, #1976D2, #0D47A1);
+            border-color: #0D47A1;
+        }
+        
+        .module-slot.guaranteed-legendary {
+            background: linear-gradient(135deg, #FFD700, #FFA000);
+            border-color: #FFD700;
+        }
+        
+        
+        .buy-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: 2px solid #000;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .buy-button:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .buy-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .jacknut-icon {
+            width: 25px;
+            height: 25px;
+        }
+        
+        .ev-display {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 10px;
+        }
+        
+        .banner-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FF4444;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        @keyframes moduleGlow {
+            50% { filter: brightness(1.4); }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* Kill any leaked rotation/filters */
+        .card__art, .card__art * { 
+            filter: none; 
+        }
+        
+        /* Ensure pack cards don't have unwanted hover effects on visuals */
+        .pack-visual {
+            pointer-events: none;
+        }
+        
+        /* Art container is fixed height */
+        .card__art {
+            position: relative;
+            height: 140px;
+            display: grid;
+            place-items: center;
+            overflow: visible;
+            pointer-events: none;
+        }
+        
+        /* Single module animation */
+        .art__module { 
+            width: 84px; 
+            height: 84px; 
+            object-fit: contain; 
+        }
+        
+        .anim { 
+            animation: moduleGlow 1.2s steps(2,end) infinite; 
+        }
+        
+        /* Rack wrapper for scaling */
+        .art__rackWrap { 
+            position: relative; 
+            width: 100px; 
+            height: 60px; 
+        }
+        
+        /* Spill group sits above the rack */
+        .art__spill { 
+            position: absolute; 
+            inset: 0; 
+            pointer-events: none;
+        }
+        
+        @media (prefers-reduced-motion: reduce) { 
+            .anim { animation: none; } 
+        }
+        
+        /* Module slot styles - EXACT from starters.html */
+        .module-slot {
+            background: #3a3a3a;
+            border: 1px solid #555;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-slot.powered {
+            /* Module with content */
+        }
+        
+        .module-slot[data-module] {
+            background-image: var(--module-image);
+        }
+        
+        /* Module background images - exactly from starters.html */
+        .module-slot[data-module="Altered Black"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Altered%20Black.webp');
+        }
+        .module-slot[data-module="Andersons"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Andersons.webp');
+        }
+        .module-slot[data-module="BAI"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/BAI.webp');
+        }
+        .module-slot[data-module="Cephalopod Rose"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Cephalopod%20Rose.webp');
+        }
+        .module-slot[data-module="Physical Modeler"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Physical%20Modeler.webp');
+        }
+        .module-slot[data-module="Cephalopod"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Cephalopod.webp');
+        }
+        .module-slot[data-module="Function Synthesizer"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Function%20Synthesizer.webp');
+        }
+        .module-slot[data-module="Honduh"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Honduh.webp');
+        }
+        .module-slot[data-module="00"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/00.webp');
+        }
+        .module-slot[data-module="Varigated"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Varigated.webp');
+        }
+        .module-slot[data-module="Voltaged Gray"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Voltaged%20Gray.webp');
+        }
+        .module-slot[data-module="Mangler and Tangler"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Mangler%20and%20Tangler.webp');
+        }
+        .module-slot[data-module="textural Synthesizer"] {
+            background-image: url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/textural%20Synthesizer.webp');
+        }
+        
+        /* Rack display styles */
+        .rack-display {
+            display: grid;
+            position: relative;
+        }
+        
+        .rack-display::before,
+        .rack-display::after {
+            content: '';
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            height: 2px;
+            background: #444;
+        }
+        .rack-display::before { top: 5px; }
+        .rack-display::after { bottom: 5px; }
+    </style>
+</head>
+<body>
+    <!-- Navigation injected by clean-nav.js -->
+    
+    
+    <div class="main-content">
+        <div class="shop-header">
+            <h1 class="shop-title">MODULES</h1>
+        </div>
+        
+        <!-- Module Packs Section -->
+        <div style="margin-bottom: 50px;">
+            <div class="packs-grid" id="packsGrid">
+                <!-- Packs will be rendered here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // User's NUTZ - will sync with purchase system
+        let userNutz = 0;
+        
+        // Track selected options for each pack
+        const selectedOptions = {
+            module: 'single',  // Just one module
+            starter: '60hp-3u',   // Default rack size
+            system: 'complete' // Full system
+        };
+        
+        // Module pack data
+        const MODULE_PACKS = {
+            module: {
+                id: 'module',
+                name: 'MODULE',
+                type: 'single',
+                modules: 1,
+                price: 350,
+                ev: 350,
+                description: 'Single random module',
+                slots: [
+                    { type: 'random', rarity: 'common' }
+                ]
+            },
+            starter: {
+                id: 'starter',
+                name: 'STARTER',
+                type: 'rack',
+                modules: 6,
+                price: 1800,
+                ev: 2100,
+                description: 'Complete starter rack',
+                slots: [
+                    { type: 'random', rarity: 'common' },
+                    { type: 'random', rarity: 'common' },
+                    { type: 'random', rarity: 'common' },
+                    { type: 'random', rarity: 'common' },
+                    { type: 'random', rarity: 'common' },
+                    { type: 'guaranteed', rarity: 'rare+' }
+                ]
+            },
+            system: {
+                id: 'system',
+                name: 'FULL SYSTEM',
+                type: 'system',
+                modules: 12,
+                price: 4500,
+                ev: 5000,
+                description: 'Complete modular system',
+                slots: [
+                    { type: 'specific', module: 'VCO' },
+                    { type: 'specific', module: 'VCF' },
+                    { type: 'specific', module: 'VCA' },
+                    { type: 'specific', module: 'ADSR' },
+                    { type: 'specific', module: 'LFO' },
+                    { type: 'specific', module: 'SEQ' },
+                    { type: 'random', rarity: 'rare' },
+                    { type: 'random', rarity: 'rare' },
+                    { type: 'random', rarity: 'common' },
+                    { type: 'random', rarity: 'common' },
+                    { type: 'guaranteed', rarity: 'legendary-chance' },
+                    { type: 'guaranteed', rarity: 'legendary-chance' }
+                ]
+            }
+        };
+        
+        // All rack size options - EXACT from starters.html
+        const RACK_SIZES = {
+            '30hp-3u': { name: '30HP 3U', hp: 30, modules: 1, rows: 1, cols: 1 },
+            '60hp-3u': { name: '60HP 3U', hp: 60, modules: 2, rows: 1, cols: 2 },
+            '90hp-3u': { name: '90HP 3U', hp: 90, modules: 3, rows: 1, cols: 3 },
+            '60hp-6u': { name: '60HP 6U', hp: 60, modules: 4, rows: 2, cols: 2 },
+            '90hp-6u': { name: '90HP 6U', hp: 90, modules: 6, rows: 2, cols: 3 },
+            '120hp-6u': { name: '120HP 6U', hp: 120, modules: 8, rows: 2, cols: 4 },
+            '90hp-9u': { name: '90HP 9U', hp: 90, modules: 9, rows: 3, cols: 3 },
+            '120hp-9u': { name: '120HP 9U', hp: 120, modules: 12, rows: 3, cols: 4 },
+            '90hp-12u': { name: '90HP 12U', hp: 90, modules: 12, rows: 4, cols: 3 },
+            '120hp-12u': { name: '120HP 12U', hp: 120, modules: 16, rows: 4, cols: 4 },
+            '150hp-15u': { name: '150HP 15U', hp: 150, modules: 25, rows: 5, cols: 5 },
+            '180hp-18u': { name: '180HP 18U', hp: 180, modules: 36, rows: 6, cols: 6 }
+        };
+        
+        // Function to update pack display based on selection
+        function updatePackDisplay(packId) {
+            console.log('updatePackDisplay called for:', packId);
+            const packCard = document.querySelector(`.pack-card.${packId}`);
+            if (!packCard) {
+                console.error('Pack card not found for:', packId);
+                return;
+            }
+            console.log('Pack card found:', packCard);
+            
+            const pack = MODULE_PACKS[packId];
+            const visualContainer = packCard.querySelector('.pack-visual');
+            
+            if (packId === 'starter' && selectedOptions.starter) {
+                const rack = RACK_SIZES[selectedOptions.starter];
+                // ACTUAL module names from starters.html - these exist in R2
+                const allModuleNames = [
+                    'Altered Black', 'Andersons', 'BAI', 'Cephalopod Rose',
+                    'Physical Modeler', 'Cephalopod', 'Function Synthesizer',
+                    'Honduh', '00', 'Varigated', 'Voltaged Gray',
+                    'Mangler and Tangler', 'textural Synthesizer'
+                ];
+                
+                // Shuffle array to get random modules each time
+                const shuffled = [...allModuleNames].sort(() => Math.random() - 0.5);
+                const moduleNames = shuffled;
+                
+                // Calculate price based on HP (more HP = more expensive)
+                const basePrice = 600; // Base price for smallest rack
+                const pricePerHP = 10;
+                const newPrice = basePrice + (rack.hp * pricePerHP);
+                
+                // We removed pack-price element, so skip this
+                // packCard.querySelector('.pack-price').textContent = `${newPrice} NUTZ`;
+                packCard.querySelector('.pack-name').textContent = `${rack.name} STARTER`;
+                packCard.querySelector('.pack-description').textContent = `${rack.modules} modules in ${rack.name} rack`;
+                
+                // Use grid layout from RACK_SIZES
+                const gridCols = rack.cols;
+                const gridRows = rack.rows;
+                
+                // Create slots with 50% filled with actual module images
+                let slotsHTML = '';
+                const totalSlots = gridCols * gridRows;
+                const filledSlots = Math.ceil(totalSlots * 0.5); // Fill 50%
+                
+                for (let i = 0; i < totalSlots; i++) {
+                    if (i < filledSlots) {
+                        const moduleName = moduleNames[i % moduleNames.length];
+                        // Filled slot with module image - force square, no rounded corners
+                        slotsHTML += `<div class="module-slot powered" data-module="${moduleName}" style="aspect-ratio: 1; width: 100%; height: 100%; border-radius: 0;"></div>`;
+                    } else {
+                        // Empty slot - force square, no rounded corners
+                        slotsHTML += `<div class="module-slot" style="aspect-ratio: 1; width: 100%; height: 100%; border-radius: 0;"></div>`;
+                    }
+                }
+                
+                // Calculate size based on grid - modules MUST be squares
+                const moduleSize = 50; // Size of each square module
+                const gap = 5; // Gap between modules
+                const padding = 10; // Padding around rack
+                
+                // Calculate dimensions based on grid
+                const width = (moduleSize * gridCols) + (gap * (gridCols - 1)) + (padding * 2);
+                const height = (moduleSize * gridRows) + (gap * (gridRows - 1)) + (padding * 2);
+                
+                // Update visual - with perfect square modules, centered
+                visualContainer.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <div class="rack-display" style="display: flex; 
+                                    align-items: center;
+                                    justify-content: center;
+                                    width: ${width}px; 
+                                    height: ${height}px; 
+                                    padding: ${padding}px; 
+                                    box-sizing: border-box;
+                                    background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%); 
+                                    border: 3px solid #000;">
+                            <div style="display: grid;
+                                        grid-template-rows: repeat(${gridRows}, ${moduleSize}px); 
+                                        grid-template-columns: repeat(${gridCols}, ${moduleSize}px); 
+                                        gap: ${gap}px;">
+                                ${slotsHTML}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add the rack rails (exactly like starters.html)
+                const rackDisplay = visualContainer.querySelector('.rack-display');
+                if (rackDisplay) {
+                    // Add CSS for rails
+                    const styleEl = document.createElement('style');
+                    styleEl.textContent = `
+                        .rack-display::before,
+                        .rack-display::after {
+                            content: '';
+                            position: absolute;
+                            left: 10px;
+                            right: 10px;
+                            height: 2px;
+                            background: #444;
+                        }
+                        .rack-display::before { top: 5px; }
+                        .rack-display::after { bottom: 5px; }
+                    `;
+                    if (!document.querySelector('#rack-rails-style')) {
+                        styleEl.id = 'rack-rails-style';
+                        document.head.appendChild(styleEl);
+                    }
+                }
+                
+                // Update buy button with new price
+                const buyButton = packCard.querySelector('.buy-button');
+                if (buyButton) {
+                    buyButton.setAttribute('onclick', `buyPack('${packId}', ${newPrice})`);
+                    buyButton.innerHTML = `${newPrice} <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">`;
+                }
+            }
+            
+            // Highlight selected option
+            const rackOptions = packCard.querySelectorAll('.rack-option');
+            rackOptions.forEach(option => {
+                const rackSize = option.dataset.rackSize;
+                if (rackSize === selectedOptions[packId]) {
+                    option.style.border = '2px solid #4CAF50';
+                    option.style.opacity = '1';
+                    option.style.background = 'rgba(76, 175, 80, 0.1)';
+                } else {
+                    option.style.border = '2px solid #333';
+                    option.style.opacity = '0.7';
+                    option.style.background = 'white';
+                }
+            });
+        }
+        
+        // Function to select rack size - FIXED VERSION
+        window.selectRack = function(packId, rackSize) {
+            // Update selection
+            selectedOptions[packId] = rackSize;
+            
+            // Update the pack display to show new rack
+            updatePackDisplay(packId);
+            
+            // Update the highlighting
+            const packCard = document.querySelector(`.pack-card.${packId}`);
+            if (packCard) {
+                const allOptions = packCard.querySelectorAll('[onclick*="selectRack"]');
+                allOptions.forEach(option => {
+                    const selector = option.querySelector('.rack-selector');
+                    if (selector && selector.dataset.rackSize === rackSize) {
+                        option.style.border = '2px solid #4CAF50';
+                        option.style.opacity = '1';
+                        option.style.background = 'rgba(76, 175, 80, 0.1)';
+                    } else {
+                        option.style.border = '2px solid #333';
+                        option.style.opacity = '0.7';
+                        option.style.background = 'white';
+                    }
+                });
+            }
+        }
+        
+        // Create rack visual (simplified version for card display)
+        function createRackVisual(sizeKey, totalSlots) {
+            const rack = RACK_SIZES[sizeKey];
+            if (!rack) return '';
+            
+            // Calculate proper grid dimensions
+            const slotsPerRow = Math.ceil(totalSlots / rack.rows);
+            const width = Math.min(120, slotsPerRow * 20); // Smaller for cards
+            const height = rack.rows * 30; // Smaller height per row
+            
+            // Create grid of empty slots (modules will overflow separately)
+            let slotsHTML = '';
+            for (let i = 0; i < totalSlots; i++) {
+                slotsHTML += `<div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1;"></div>`;
+            }
+            
+            return `
+                <div style="
+                    background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+                    padding: 5px;
+                    display: grid;
+                    grid-template-columns: repeat(${slotsPerRow}, 1fr);
+                    grid-template-rows: repeat(${rack.rows}, 1fr);
+                    gap: 2px;
+                    width: ${width}px;
+                    height: ${height}px;
+                    border: 2px solid #000;
+                    position: relative;
+                    margin: 0 auto;
+                ">
+                    <div style="position: absolute; top: 2px; left: 5px; right: 5px; 
+                               height: 1px; background: #444;"></div>
+                    <div style="position: absolute; bottom: 2px; left: 5px; right: 5px; 
+                               height: 1px; background: #444;"></div>
+                    ${slotsHTML}
+                </div>
+            `;
+        }
+        
+        // Create overfilled rack visual (modules sticking out)
+        function createOverfilledRackVisual(sizeKey, totalSlots) {
+            const rack = RACK_SIZES[sizeKey];
+            if (!rack) return '';
+            
+            const width = 120;
+            const height = rack.rows * 40;
+            
+            // Fill ALL slots and make some stick out
+            let modulesHTML = '';
+            for (let i = 0; i < totalSlots + 2; i++) {
+                const moduleId = String(Math.floor(Math.random() * 20) + 1).padStart(3, '0');
+                const offsetX = Math.random() * 10 - 5;
+                const offsetY = Math.random() * 8 - 4;
+                const rotation = Math.random() * 6 - 3;
+                const zIndex = Math.floor(Math.random() * 10);
+                
+                modulesHTML += `
+                    <div style="position: absolute; 
+                               left: ${15 + (i % 4) * 28 + offsetX}px; 
+                               top: ${10 + Math.floor(i / 4) * 35 + offsetY}px;
+                               width: 25px; height: 35px;
+                               background: #4a4a4a;
+                               border: 1px solid #666;
+                               transform: rotate(${rotation}deg);
+                               z-index: ${zIndex};">
+                        <img class="module-img" data-module-id="${moduleId}" 
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>`;
+            }
+            
+            return `
+                <div style="position: relative; width: ${width}px; height: ${height}px; 
+                           margin: 0 auto; overflow: visible;">
+                    <div style="background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+                               width: 100%; height: 100%;
+                               border: 3px solid #000;
+                               position: relative;">
+                        <div style="position: absolute; top: 3px; left: 5px; right: 5px; 
+                                   height: 2px; background: #444;"></div>
+                        <div style="position: absolute; bottom: 3px; left: 5px; right: 5px; 
+                                   height: 2px; background: #444;"></div>
+                    </div>
+                    ${modulesHTML}
+                </div>
+            `;
+        }
+        
+        // Create overflowing system visual (modules spilling out everywhere)
+        function createOverflowingSystemVisual(sizeKey, totalSlots) {
+            const rack = RACK_SIZES[sizeKey];
+            if (!rack) return '';
+            
+            const width = 150;
+            const height = 160;
+            
+            // Create chaotic overflow effect
+            let modulesHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const moduleId = String(Math.floor(Math.random() * 20) + 1).padStart(3, '0');
+                const x = Math.random() * (width - 20);
+                const y = Math.random() * (height - 30);
+                const rotation = Math.random() * 30 - 15;
+                const scale = 0.8 + Math.random() * 0.4;
+                const zIndex = Math.floor(Math.random() * 20);
+                
+                modulesHTML += `
+                    <div style="position: absolute; 
+                               left: ${x}px; 
+                               top: ${y}px;
+                               width: 30px; height: 45px;
+                               background: #4a4a4a;
+                               border: 1px solid #666;
+                               transform: rotate(${rotation}deg) scale(${scale});
+                               z-index: ${zIndex};
+                               box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        <img class="module-img" data-module-id="${moduleId}" 
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>`;
+            }
+            
+            return `
+                <div style="position: relative; width: ${width}px; height: ${height}px; 
+                           margin: 0 auto; overflow: visible;">
+                    <div style="background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+                               width: 120px; height: 120px;
+                               border: 3px solid #000;
+                               position: absolute;
+                               left: 15px; top: 20px;
+                               transform: rotate(-2deg);">
+                        <div style="position: absolute; top: 3px; left: 5px; right: 5px; 
+                                   height: 2px; background: #444;"></div>
+                        <div style="position: absolute; bottom: 3px; left: 5px; right: 5px; 
+                                   height: 2px; background: #444;"></div>
+                    </div>
+                    ${modulesHTML}
+                    <div style="position: absolute; bottom: -10px; right: -10px;
+                               color: #FFD700; font-size: 10px; font-weight: bold;
+                               transform: rotate(15deg);">OVERFLOW!</div>
+                </div>
+            `;
+        }
+        
+        function renderPacks() {
+            const packsGrid = document.getElementById('packsGrid');
+            packsGrid.innerHTML = '';
+            
+            Object.values(MODULE_PACKS).forEach(pack => {
+                const card = document.createElement('div');
+                card.className = `pack-card ${pack.id}`;
+                
+                let badgeHTML = '';
+                if (pack.id === 'system') {
+                    badgeHTML = '<div class="banner-badge">BEST VALUE</div>';
+                }
+                
+                // Visual display for modules - using actual R2 images
+                let visualDisplay = '';
+                if (pack.id === 'module') {
+                    // Show an animated module image from R2 - SQUARE and 3x larger
+                    visualDisplay = `
+                        <div class="pack-visual" style="height: 180px; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 140px; height: 140px; position: relative;">
+                                <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/Altered%20Black.webp"
+                                     alt="Module"
+                                     style="width: 140px; height: 140px; object-fit: cover; 
+                                            aspect-ratio: 1; border: 2px solid #000;
+                                            animation: moduleGlow 2s infinite; border-radius: 4px;
+                                            box-shadow: 0 4px 8px rgba(0,0,0,0.3);"
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'width: 140px; height: 140px; aspect-ratio: 1; background: linear-gradient(135deg, #4a4a4a, #2a2a2a); border: 2px solid #000; border-radius: 4px;\\'></div>';" />
+                            </div>
+                        </div>
+                    `;
+                } else if (pack.id === 'starter') {
+                    // Show default 60hp rack with random ACTUAL module
+                    const randomModules = [
+                        'Altered Black', 'Andersons', 'BAI', 'Cephalopod Rose',
+                        'Physical Modeler', 'Function Synthesizer', 'Honduh', 'Varigated'
+                    ];
+                    const randomModule = randomModules[Math.floor(Math.random() * randomModules.length)];
+                    
+                    visualDisplay = `
+                        <div class="pack-visual" style="height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div style="width: 180px; height: 100px; 
+                                        background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+                                        border: 3px solid #000; position: relative;
+                                        display: grid; grid-template-columns: repeat(2, 1fr);
+                                        grid-template-rows: 1fr;
+                                        gap: 6px; padding: 10px; box-sizing: border-box;
+                                        box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                                <!-- Rails -->
+                                <div style="position: absolute; top: 5px; left: 12px; right: 12px; 
+                                           height: 2px; background: #444;"></div>
+                                <div style="position: absolute; bottom: 5px; left: 12px; right: 12px; 
+                                           height: 2px; background: #444;"></div>
+                                <!-- Module slots with random module -->
+                                <div style="background: #3a3a3a url('https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${randomModule.replace(' ', '%20')}.webp') center/cover; 
+                                           border: 1px solid #555; aspect-ratio: 1; border-radius: 2px;"></div>
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1; border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Show FULL SYSTEM with modules coming FROM INSIDE the rack slots
+                    const fullModules = ['Altered%20Black.webp', 'Arcade%20Black.webp', 'BPM%20Black.webp',
+                                        'Grain%20Station%20Black.webp', 'HiHat.webp', 'Kick.webp'];
+                    visualDisplay = `
+                        <div class="pack-visual" style="height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <!-- Main rack with modules INSIDE popping out -->
+                            <div style="width: 150px; height: 150px; background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+                                       border: 3px solid #000; position: relative; display: grid;
+                                       grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+                                       gap: 3px; padding: 6px; overflow: visible; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                                <!-- Row 1 -->
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1; position: relative;">
+                                    <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${fullModules[0]}"
+                                         style="position: absolute; width: 140%; height: 140%; aspect-ratio: 1; 
+                                                object-fit: cover; top: -8px; left: -6px;
+                                                transform: rotate(-8deg); border: 1px solid #000; 
+                                                z-index: 12; background: white;" />
+                                </div>
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1;"></div>
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1; position: relative;">
+                                    <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${fullModules[1]}"
+                                         style="position: absolute; width: 130%; height: 130%; aspect-ratio: 1; 
+                                                object-fit: cover; top: -5px; right: -5px;
+                                                transform: rotate(6deg); border: 1px solid #000; 
+                                                z-index: 11; background: white;" />
+                                </div>
+                                <!-- Row 2 -->
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1; position: relative;">
+                                    <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${fullModules[2]}"
+                                         style="position: absolute; width: 125%; height: 125%; aspect-ratio: 1; 
+                                                object-fit: cover; left: -4px; top: -3px;
+                                                transform: rotate(-5deg); border: 1px solid #000; 
+                                                z-index: 10; background: white;" />
+                                </div>
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1; position: relative;">
+                                    <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${fullModules[3]}"
+                                         style="position: absolute; width: 150%; height: 150%; aspect-ratio: 1; 
+                                                object-fit: cover; top: -10px; left: -8px;
+                                                transform: rotate(10deg); border: 1px solid #000; 
+                                                z-index: 13; background: white;" />
+                                </div>
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1;"></div>
+                                <!-- Row 3 -->
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1;"></div>
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1; position: relative;">
+                                    <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${fullModules[4]}"
+                                         style="position: absolute; width: 135%; height: 135%; aspect-ratio: 1; 
+                                                object-fit: cover; bottom: -6px; left: -5px;
+                                                transform: rotate(-3deg); border: 1px solid #000; 
+                                                z-index: 11; background: white;" />
+                                </div>
+                                <div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1; position: relative;">
+                                    <img src="https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${fullModules[5]}"
+                                         style="position: absolute; width: 145%; height: 145%; aspect-ratio: 1; 
+                                                object-fit: cover; bottom: -8px; right: -7px;
+                                                transform: rotate(7deg); border: 1px solid #000; 
+                                                z-index: 12; background: white;" />
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Create selection area based on pack type
+                let selectionHTML = '';
+                if (pack.id === 'starter') {
+                    // Rack size selection with EXACT starters.html rack visuals
+                    let rackOptions = '';
+                    Object.entries(RACK_SIZES).forEach(([key, rack]) => {
+                        const isSelected = selectedOptions.starter === key;
+                        const borderColor = isSelected ? '#4CAF50' : '#333';
+                        const opacity = isSelected ? '1' : '0.7';
+                        
+                        // Use grid layout from RACK_SIZES
+                        const gridCols = rack.cols;
+                        const gridRows = rack.rows;
+                        
+                        // Make rack size based on square modules
+                        const moduleSize = 12; // Smaller square size for selector
+                        let width = (moduleSize * gridCols) + (gridCols - 1) * 1 + 4; // modules + gaps + padding
+                        let height = (moduleSize * gridRows) + (gridRows - 1) * 1 + 4;
+                        
+                        // Create the module slots grid - squares
+                        let slots = '';
+                        for (let i = 0; i < gridCols * gridRows; i++) {
+                            slots += `<div style="background: #3a3a3a; border: 1px solid #555; aspect-ratio: 1;"></div>`;
+                        }
+                        
+                        rackOptions += `
+                            <div class="rack-option" data-rack-size="${key}" 
+                                 style="cursor: pointer; border: 2px solid ${borderColor}; 
+                                        border-radius: 5px; padding: 4px; opacity: ${opacity};
+                                        display: flex; flex-direction: column; align-items: center;
+                                        justify-content: center;
+                                        background: ${isSelected ? 'rgba(76, 175, 80, 0.1)' : 'white'};"
+                                 onclick="window.selectRack('starter', '${key}')">
+                                <div class="rack-selector" data-rack-size="${key}" 
+                                     style="width: ${width}px; height: ${height}px; 
+                                            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+                                            border: 1px solid #000; position: relative;
+                                            display: flex; align-items: center; justify-content: center;
+                                            pointer-events: none;">
+                                    <div style="display: grid; grid-template-columns: repeat(${gridCols}, 1fr);
+                                               grid-template-rows: repeat(${gridRows}, 1fr);
+                                               gap: 1px; width: calc(100% - 4px); height: calc(100% - 4px);
+                                               pointer-events: none;">
+                                        ${slots}
+                                    </div>
+                                </div>
+                                <div style="text-align: center; margin-top: 2px;
+                                            color: #666; font-size: 8px; font-weight: bold; pointer-events: none;">${rack.name}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    selectionHTML = `
+                        <div style="display: flex; justify-content: center; padding: 8px;">
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; width: 100%; max-width: 340px;">
+                                ${rackOptions}
+                            </div>
+                        </div>
+                    `;
+                } else if (pack.id === 'module') {
+                    // No selection needed for single module
+                    selectionHTML = '';
+                } else {
+                    // System - show what's included
+                    selectionHTML = `
+                        <div style="font-size: 0.8rem; color: #666; text-align: center;">
+                            VCO • VCF • VCA • ADSR • LFO • SEQ + 6 more
+                        </div>
+                    `;
+                }
+                
+                const displayName = pack.id === 'starter' && selectedOptions.starter ? 
+                    `${RACK_SIZES[selectedOptions.starter].name} STARTER` : 
+                    pack.name;
+                
+                const displayDescription = pack.id === 'starter' && selectedOptions.starter ? 
+                    `${RACK_SIZES[selectedOptions.starter].modules} modules in ${RACK_SIZES[selectedOptions.starter].name} rack` : 
+                    pack.description;
+                    
+                const displayPrice = pack.id === 'starter' && selectedOptions.starter ? 
+                    600 + (RACK_SIZES[selectedOptions.starter].hp * 10) :
+                    pack.price;
+                
+                card.innerHTML = `
+                    ${badgeHTML}
+                    <div class="pack-visual" style="border: none;">
+                        ${visualDisplay}
+                    </div>
+                    <div class="pack-name">${displayName}</div>
+                    <div class="pack-description">${displayDescription}</div>
+                    
+                    ${selectionHTML ? `
+                    <div class="pack-contents">
+                        <h4>SELECT:</h4>
+                        ${selectionHTML}
+                    </div>
+                    ` : ''}
+                    
+                    <button class="buy-button" onclick="buyPack('${pack.id}')">
+                        ${displayPrice} <img src="https://pub-9e47f1fafbc34a9989e0d4f556344395.r2.dev/jamnut.png" class="jacknut-icon">
+                    </button>
+                    
+                    <div class="ev-display">Expected Value: ~${Math.floor(pack.ev)} NUTZ</div>
+                `;
+                
+                packsGrid.appendChild(card);
+            });
+        }
+        
+        window.buyPack = function(packId, customPrice) {
+            const pack = MODULE_PACKS[packId];
+            const price = customPrice || pack.price;
+            const packName = packId === 'starter' && selectedOptions.starter ? 
+                          `${RACK_SIZES[selectedOptions.starter].name} STARTER` : pack.name;
+            
+            if (userNutz >= price) {
+                userNutz -= price;
+                localStorage.setItem('jamnutz', userNutz.toString());
+                document.getElementById('userNutz').textContent = userNutz;
+                
+                // Trigger navigation bar animation
+                if (window.updateNavNutz) {
+                    window.updateNavNutz(userNutz, true);
+                }
+                // Also dispatch custom event for same-page updates
+                window.dispatchEvent(new CustomEvent('nutzUpdated', { 
+                    detail: { amount: userNutz }
+                }));
+                
+                alert(`Success! You bought ${packName} for ${price} NUTZ!\nYour new balance: ${userNutz} NUTZ`);
+                
+                // Re-render packs to update button states
+                renderPacks();
+            } else {
+                alert(`Not enough NUTZ! You need ${price} NUTZ but only have ${userNutz} NUTZ.`);
+            }
+        }
+        
+        // Function to update NUTZ display
+        function updateNutzDisplay() {
+            const savedNutz = localStorage.getItem('jamnutz');
+            if (savedNutz) {
+                userNutz = parseInt(savedNutz);
+            } else {
+                userNutz = 0;
+                localStorage.setItem('jamnutz', '0');
+            }
+            // No longer updating display since we removed the NUTZ counter
+        }
+        
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNutzDisplay();
+            renderPacks();
+            // Set initial selection for starter pack
+            setTimeout(() => {
+                window.selectRack('starter', '60hp-3u');
+            }, 100);
+        });
+        
+        // Listen for storage changes (when NUTZ are purchased in another tab)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'jamnutz') {
+                updateNutzDisplay();
+                renderPacks(); // Re-render to update button states
+            }
+        });
+    </script>
+</body>
+</html>
