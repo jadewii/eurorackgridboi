@@ -7,7 +7,7 @@
     { href: "/index.html",          label: "Home" },
     { href: "/shop.html",           label: "Shop" },
     { href: "/plant-shop.html",     label: "Plants" },
-    { href: "/my-studio.html",      label: "Studio" },
+    { href: "/my-studio-fixed.html", label: "Studio" },
     { href: "/my-gear.html",        label: "Gear" },
     { href: "/my-modules.html",     label: "My Modules" },
     { href: "/collection.html",     label: "Modules" },
