@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JAMNUTZ - My Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/clean-nav.css">
+    <script src="assets/clean-nav.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #e8e8e8;
+            color: #000;
+            padding-top: 60px;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Profile Header */
+        .profile-header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .profile-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .avatar-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #8B7FD6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .username {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        
+        .user-bio {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .badges {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .badge.level { background: #667eea; }
+        .badge.trader { background: #00c896; }
+        .badge.vip { background: #ffd700; color: #000; }
+        
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 10px 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+        
+        /* Collection Section */
+        .collection-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .trade-button {
+            background: #ff1493;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        
+        .trade-button:hover {
+            background: #ff69b4;
+            transform: translateY(-2px);
+        }
+        
+        /* Collection Grid */
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            min-height: 400px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border: 2px dashed #ddd;
+        }
+        
+        .collection-item {
+            aspect-ratio: 1;
+            background: #ff6b6b;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .collection-item:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .collection-item.empty {
+            background: #e0e0e0;
+            border: 2px dashed #ccc;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sidebar-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-title {
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .modules-section {
+            border: 3px solid #667eea;
+        }
+        
+        .panels-section {
+            border: 3px solid #ff6b6b;
+        }
+        
+        .plants-section {
+            border: 3px solid #00c896;
+        }
+        
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+        
+        .item-tile {
+            aspect-ratio: 1;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .item-tile:hover {
+            transform: scale(1.1);
+            border-color: currentColor;
+        }
+        
+        .module-tile {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .panel-tile {
+            background: #ff6b6b;
+        }
+        
+        .plant-tile {
+            background: #00c896;
+        }
+        
+        .item-tile.empty {
+            background: #f0f0f0;
+            border: 1px dashed #ddd;
+        }
+        
+        /* Quick Add Button */
+        .quick-add-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            border: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quick-add-button:hover {
+            background: #5a67d8;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .quick-add-button::before {
+            content: '⚡';
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation will be injected by clean-nav.js -->
+    
+    <div class="main-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-left">
+                <div class="avatar-circle">J</div>
+                <div class="profile-info">
+                    <div class="username">jadewii</div>
+                    <div class="user-bio">"Modular synthesis enthusiast & plant collector"</div>
+                    <div class="badges">
+                        <span class="badge level">LV 12</span>
+                        <span class="badge trader">TRADER</span>
+                        <span class="badge vip">VIP</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-stats">
+                <div class="stat-box">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Modules</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Plants</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">89</div>
+                    <div class="stat-label">Trades</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">46</div>
+                    <div class="stat-label">Friends</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">4.8⭐</div>
+                    <div class="stat-label">Rating</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content-grid">
+            <!-- Collection Section -->
+            <div class="collection-section">
+                <div class="section-header">
+                    <h1 class="section-title">MY COLLECTION</h1>
+                    <button class="trade-button">SELECT FOR TRADE</button>
+                </div>
+                
+                <div class="collection-grid">
+                    <!-- Sample items - in real app these would be dynamic -->
+                    <div class="collection-item"></div>
+                    <div class="collection-item"></div>
+                    <div class="collection-item"></div>
+                    <div class="collection-item empty"></div>
+                    <div class="collection-item empty"></div>
+                    <div class="collection-item empty"></div>
+                    <div class="collection-item empty"></div>
+                    <div class="collection-item empty"></div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Modules Card -->
+                <div class="sidebar-card modules-section">
+                    <div class="sidebar-title">MODULES</div>
+                    <div class="item-grid">
+                        <!-- Sample modules -->
+                        <div class="item-tile module-tile"></div>
+                        <div class="item-tile module-tile"></div>
+                        <div class="item-tile module-tile"></div>
+                        <div class="item-tile module-tile"></div>
+                        <div class="item-tile module-tile"></div>
+                        <div class="item-tile module-tile"></div>
+                        <div class="item-tile module-tile"></div>
+                        <div class="item-tile module-tile"></div>
+                        <div class="item-tile empty"></div>
+                        <div class="item-tile empty"></div>
+                    </div>
+                </div>
+                
+                <!-- Panels Card -->
+                <div class="sidebar-card panels-section">
+                    <div class="sidebar-title">PANELS</div>
+                    <div class="item-grid">
+                        <!-- Sample panels -->
+                        <div class="item-tile panel-tile"></div>
+                        <div class="item-tile panel-tile"></div>
+                        <div class="item-tile panel-tile"></div>
+                        <div class="item-tile empty"></div>
+                        <div class="item-tile empty"></div>
+                        <div class="item-tile empty"></div>
+                        <div class="item-tile empty"></div>
+                        <div class="item-tile empty"></div>
+                        <div class="item-tile empty"></div>
+                        <div class="item-tile empty"></div>
+                    </div>
+                </div>
+                
+                <!-- Plants Card -->
+                <div class="sidebar-card plants-section">
+                    <div class="sidebar-title">PLANTS</div>
+                    <div class="item-grid">
+                        <!-- Sample plants -->
+                        <div class="item-tile plant-tile"></div>
+                        <div class="item-tile plant-tile"></div>
+                        <div class="item-tile plant-tile"></div>
+                        <div class="item-tile plant-tile"></div>
+                        <div class="item-tile plant-tile"></div>
+                        <div class="item-tile plant-tile"></div>
+                        <div class="item-tile plant-tile"></div>
+                        <div class="item-tile empty"></div>
+                        <div class="item-tile empty"></div>
+                        <div class="item-tile empty"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Add Button -->
+    <button class="quick-add-button">QUICK ADD</button>
+
+    <script>
+        // Load real module and plant images from Supabase
+        const SUPABASE_BASE_URL = 'https://jqxshcyqxhbmvqrrthxy.supabase.co/storage/v1/object/public/eurorackart/';
+        const PLANT_BASE_URL = 'https://pub-003b43d100f94cca9fe8e5371e24ae6d.r2.dev/';
+        
+        // Module numbers that are available (based on what I found in other pages)
+        const ownedModuleNumbers = [41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 65, 67, 69, 71];
+        
+        // Load module images
+        const modulesGrid = document.querySelector('.modules-section .item-grid');
+        if (modulesGrid) {
+            modulesGrid.innerHTML = '';
+            
+            // Add owned modules (first 8)
+            for (let i = 0; i < 8; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'item-tile module-tile';
+                
+                if (i < ownedModuleNumbers.length) {
+                    const imageUrl = SUPABASE_BASE_URL + ownedModuleNumbers[i] + '.png';
+                    tile.style.backgroundImage = `url("${imageUrl}")`;
+                    tile.title = `Module ${ownedModuleNumbers[i]}`;
+                } else {
+                    tile.classList.add('empty');
+                }
+                
+                modulesGrid.appendChild(tile);
+            }
+            
+            // Add 2 empty slots
+            for (let i = 0; i < 2; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'item-tile empty';
+                modulesGrid.appendChild(tile);
+            }
+        }
+        
+        // Load panel images (using some module images as placeholders)
+        const panelsGrid = document.querySelector('.panels-section .item-grid');
+        if (panelsGrid) {
+            panelsGrid.innerHTML = '';
+            
+            const panelModuleNumbers = ownedModuleNumbers.slice(0, 3); // Use first 3 modules as panels
+            
+            for (let i = 0; i < 10; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'item-tile panel-tile';
+                
+                if (i < panelModuleNumbers.length) {
+                    const imageUrl = SUPABASE_BASE_URL + panelModuleNumbers[i] + '.png';
+                    tile.style.backgroundImage = `url("${imageUrl}")`;
+                    tile.title = `Panel ${panelModuleNumbers[i]}`;
+                } else {
+                    tile.classList.add('empty');
+                }
+                
+                panelsGrid.appendChild(tile);
+            }
+        }
+        
+        // Load plant images
+        const plantsGrid = document.querySelector('.plants-section .item-grid');
+        if (plantsGrid) {
+            plantsGrid.innerHTML = '';
+            
+            // Generate plant image URLs (plant-001.webp to plant-007.webp)
+            for (let i = 0; i < 10; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'item-tile plant-tile';
+                
+                if (i < 7) { // 7 plants owned
+                    const paddedNumber = String(i + 1).padStart(3, '0');
+                    const imageUrl = `${PLANT_BASE_URL}plant-${paddedNumber}.webp`;
+                    tile.style.backgroundImage = `url("${imageUrl}")`;
+                    tile.title = `Plant ${paddedNumber}`;
+                } else {
+                    tile.classList.add('empty');
+                }
+                
+                plantsGrid.appendChild(tile);
+            }
+        }
+        
+        // Update collection grid with some sample items
+        const collectionGrid = document.querySelector('.collection-grid');
+        if (collectionGrid) {
+            const existingItems = collectionGrid.querySelectorAll('.collection-item:not(.empty)');
+            
+            // Add module images to the first few collection items
+            existingItems.forEach((item, index) => {
+                if (index < ownedModuleNumbers.length) {
+                    const imageUrl = SUPABASE_BASE_URL + ownedModuleNumbers[index] + '.png';
+                    item.style.backgroundImage = `url("${imageUrl}")`;
+                    item.title = `Module ${ownedModuleNumbers[index]}`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
