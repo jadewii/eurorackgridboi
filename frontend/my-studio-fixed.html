@@ -232,6 +232,9 @@
             cursor: pointer;
             transition: all 0.2s;
             border: 2px solid transparent;
+            background-size: cover;
+            background-position: center;
+            position: relative;
         }
         
         .item-tile:hover {
@@ -414,5 +417,113 @@
     
     <!-- Quick Add Button -->
     <button class="quick-add-button">QUICK ADD</button>
+
+    <script>
+        // Load real module and plant images from Cloudflare R2
+        const MODULE_BASE_URL = 'https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/';
+        const PLANT_BASE_URL = 'https://pub-003b43d100f94cca9fe8e5371e24ae6d.r2.dev/';
+        
+        // Sample module names (you can expand this list)
+        const ownedModules = [
+            'Altered Black.webp',
+            'Andersons.webp', 
+            'BAI.webp',
+            'Cephalopod Rose.webp',
+            'Function Synthesizer.webp',
+            'Honduh.webp',
+            '00.webp',
+            '01.webp'
+        ];
+        
+        // Load module images
+        const modulesGrid = document.querySelector('.modules-section .item-grid');
+        if (modulesGrid) {
+            modulesGrid.innerHTML = '';
+            
+            // Add owned modules (first 8)
+            for (let i = 0; i < 8; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'item-tile module-tile';
+                
+                if (i < ownedModules.length) {
+                    const imageUrl = MODULE_BASE_URL + ownedModules[i];
+                    tile.style.backgroundImage = `url("${imageUrl}")`;
+                    tile.title = ownedModules[i].replace('.webp', '');
+                } else {
+                    tile.classList.add('empty');
+                }
+                
+                modulesGrid.appendChild(tile);
+            }
+            
+            // Add 2 empty slots
+            for (let i = 0; i < 2; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'item-tile empty';
+                modulesGrid.appendChild(tile);
+            }
+        }
+        
+        // Load panel images (using some module images as placeholders)
+        const panelsGrid = document.querySelector('.panels-section .item-grid');
+        if (panelsGrid) {
+            panelsGrid.innerHTML = '';
+            
+            const panelModules = ownedModules.slice(0, 3); // Use first 3 modules as panels
+            
+            for (let i = 0; i < 10; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'item-tile panel-tile';
+                
+                if (i < panelModules.length) {
+                    const imageUrl = MODULE_BASE_URL + panelModules[i];
+                    tile.style.backgroundImage = `url("${imageUrl}")`;
+                    tile.title = 'Panel: ' + panelModules[i].replace('.webp', '');
+                } else {
+                    tile.classList.add('empty');
+                }
+                
+                panelsGrid.appendChild(tile);
+            }
+        }
+        
+        // Load plant images
+        const plantsGrid = document.querySelector('.plants-section .item-grid');
+        if (plantsGrid) {
+            plantsGrid.innerHTML = '';
+            
+            // Generate plant image URLs (plant-001.webp to plant-007.webp)
+            for (let i = 0; i < 10; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'item-tile plant-tile';
+                
+                if (i < 7) { // 7 plants owned
+                    const paddedNumber = String(i + 1).padStart(3, '0');
+                    const imageUrl = `${PLANT_BASE_URL}plant-${paddedNumber}.webp`;
+                    tile.style.backgroundImage = `url("${imageUrl}")`;
+                    tile.title = `Plant ${paddedNumber}`;
+                } else {
+                    tile.classList.add('empty');
+                }
+                
+                plantsGrid.appendChild(tile);
+            }
+        }
+        
+        // Update collection grid with some sample items
+        const collectionGrid = document.querySelector('.collection-grid');
+        if (collectionGrid) {
+            const existingItems = collectionGrid.querySelectorAll('.collection-item:not(.empty)');
+            
+            // Add module images to the first few collection items
+            existingItems.forEach((item, index) => {
+                if (index < ownedModules.length) {
+                    const imageUrl = MODULE_BASE_URL + ownedModules[index];
+                    item.style.backgroundImage = `url("${imageUrl}")`;
+                    item.title = ownedModules[index].replace('.webp', '');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
