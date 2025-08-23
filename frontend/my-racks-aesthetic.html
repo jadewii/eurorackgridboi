@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="version" content="4">
+    <title>JAMNUTZ - RACK BUILDER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="module-system.css">
+    <link rel="stylesheet" href="assets/clean-nav.css">
+    <script src="assets/clean-nav.js?v=6" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Noto Sans Mono', monospace;
+            background: #f5f5f5;
+            color: #000;
+        }
+        
+        .main-content {
+            padding: 80px 0 0 0;
+            max-width: 100%;
+            margin: 0;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            align-items: start;
+        }
+        
+        /* Module Collection Sidebar */
+        .module-collection {
+            position: sticky;
+            top: 80px;
+            width: 280px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        
+        .module-collection h3 {
+            margin: 0 0 15px 0;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+        }
+        
+        .draggable-module {
+            aspect-ratio: 1;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .draggable-module.has-multiple {
+            border-color: #667eea;
+            border-width: 2px;
+        }
+        
+        .module-count-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            border: 2px solid white;
+            z-index: 10;
+        }
+        
+        .draggable-module:active {
+            cursor: grabbing;
+        }
+        
+        .draggable-module:hover {
+            transform: scale(1.1);
+            border-color: #667eea;
+            z-index: 10;
+        }
+        
+        .draggable-module img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            /* Disable animation for sidebar modules to prevent lag */
+            animation-play-state: paused !important;
+            -webkit-animation-play-state: paused !important;
+        }
+        
+        /* Rack Grid - 3 columns */
+        .rack-grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        /* Individual Rack Card */
+        .rack-card {
+            background: white;
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 15px 10px;
+            min-height: 420px;
+            width: 400px;
+            max-width: 100%;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .rack-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .rack-card.selected {
+            border-color: #ff69b4;
+            border-width: 3px;
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
+        }
+        
+        /* Compact Header */
+        .rack-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .rack-title-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rack-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .rack-badge {
+            background: #4ade80;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        .rack-badge.starter { background: #4ade80; }
+        .rack-badge.pod { background: #667eea; }
+        .rack-badge.modern { background: #f59e0b; }
+        .rack-badge.double { background: #06b6d4; }
+        .rack-badge.slim { background: #ec4899; }
+        .rack-badge.pro { background: #8b5cf6; }
+        .rack-badge.tower { background: #ef4444; }
+        .rack-badge.ultimate { background: #10b981; }
+        
+        /* Color Palette Row */
+        .color-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .color-swatch {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 2px;
+        }
+        
+        .color-swatch:hover {
+            transform: scale(1.2);
+        }
+        
+        .color-swatch.selected {
+            border: 2px solid #000;
+            box-shadow: 0 0 0 1px white, 0 0 0 2px #000;
+        }
+        
+        /* Color definitions - exact palette from image */
+        .color-swatch.magenta { background: #ff1493; }
+        .color-swatch.green { background: #00ff00; }
+        .color-swatch.cyan { background: #00ffff; }
+        .color-swatch.orange { background: #ff8c00; }
+        .color-swatch.purple { background: #9370db; }
+        .color-swatch.pink { background: #ff69b4; }
+        .color-swatch.yellow { background: #ffff00; }
+        .color-swatch.lime { background: #32cd32; }
+        .color-swatch.black { background: #000000; }
+        .color-swatch.white { background: #ffffff; border: 1px solid #ddd; }
+        .color-swatch.silver { background: #c0c0c0; }
+        .color-swatch.gray { background: #808080; }
+        
+        /* Type Selector Tabs */
+        .type-selector {
+            display: flex;
+            gap: 12px;
+            margin: 12px 0;
+        }
+        
+        .type-tab {
+            padding: 6px 18px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: white;
+            color: black;
+            transition: all 0.2s;
+        }
+        
+        .type-tab:hover {
+            background: #f5f5f5;
+        }
+        
+        .type-tab.active {
+            background: black;
+            color: white;
+            border-color: black;
+        }
+        
+        /* Mini grid from marketplace.html */
+        .mini-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 2px;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+        
+        .mini-tile {
+            width: 16px;
+            height: 16px;
+            aspect-ratio: 1;
+            background: #ddd;
+            border-radius: 2px;
+        }
+        
+        .mini-tile.owned {
+            background: currentColor;
+        }
+        
+        .mini-tile.selected {
+            border: 2px solid #333;
+            box-shadow: 0 0 0 1px white, 0 0 0 3px #333;
+        }
+        
+        /* Meta Info Strip */
+        .meta-strip {
+            display: flex;
+            gap: 8px;
+            font-size: 0.65rem;
+            color: #666;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        
+        .meta-strip span {
+            padding-right: 8px;
+            border-right: 1px solid #e5e5e5;
+        }
+        
+        .meta-strip span:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+        
+        /* Rack area - no background */
+        .rack-area {
+            padding: 20px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+        }
+        
+        /* Rack Preview Container */
+        .rack-preview {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2);
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0,0,0,0.2);
+            width: auto;
+            height: auto;
+        }
+        
+        /* Rack color variations - exact palette */
+        .rack-preview.magenta { background: #ff1493; }
+        .rack-preview.green { background: #00ff00; }
+        .rack-preview.cyan { background: #00ffff; }
+        .rack-preview.orange { background: #ff8c00; }
+        .rack-preview.purple { background: #9370db; }
+        .rack-preview.pink { background: #ff69b4; }
+        .rack-preview.yellow { background: #ffff00; }
+        .rack-preview.lime { background: #32cd32; }
+        .rack-preview.black { background: #000000; }
+        .rack-preview.white { background: #ffffff; }
+        .rack-preview.silver { background: #c0c0c0; }
+        .rack-preview.gray { background: #808080; }
+        
+        /* Type variations */
+        .rack-preview.modern {
+            border-radius: 4px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .rack-preview.plastic {
+            border: 8px solid #333;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .rack-preview.wood {
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.4);
+        }
+        
+        /* Slot Grid */
+        .slot-grid {
+            display: grid;
+            gap: 2px;
+            width: auto;
+            height: auto;
+        }
+        
+        .module-slot {
+            width: 88px;
+            height: 88px;
+            aspect-ratio: 1;
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.1);
+        }
+        
+        .module-slot:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .module-slot.drag-over {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.6);
+        }
+        
+        .module-slot.occupied {
+            background: none;
+        }
+        
+        .module-slot.occupied img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+        
+        /* Bottom Rack Selector */
+        .rack-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+        }
+        
+        .rack-selector-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .rack-thumbnails {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .rack-thumb {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            cursor: pointer;
+            background: #f0f0f0;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .rack-thumb:hover {
+            transform: scale(1.2);
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .rack-thumb.selected {
+            border: 2px solid #667eea;
+            box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.3);
+        }
+        
+        .rack-thumb-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            width: 100%;
+            height: 100%;
+            padding: 2px;
+        }
+        
+        .rack-thumb-cell {
+            background: #667eea;
+            border-radius: 1px;
+        }
+        
+        .rack-thumb.owned .rack-thumb-cell {
+            background: #667eea;
+        }
+        
+        .rack-thumb.locked .rack-thumb-cell {
+            background: #e5e5e5;
+        }
+        
+        @media (max-width: 1500px) {
+            .rack-grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                margin-right: 310px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .module-collection {
+                position: static;
+                width: 100%;
+                margin-bottom: 30px;
+            }
+            
+            .rack-grid-container {
+                margin-right: 0;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .rack-grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation injected by clean-nav.js -->
+    
+    <div class="main-content">
+        <!-- Rack Grid Container -->
+        <div class="rack-grid-container" id="rack-grid">
+            <!-- Rack cards will be dynamically generated -->
+        </div>
+        
+        <!-- Module Collection Sidebar -->
+        <div class="module-collection">
+            <h3>MODULES</h3>
+            <div class="modules-grid" id="modules-collection">
+                <!-- Modules will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Rack configurations with proper grid layouts
+        const racks = [
+            { hp: 30, u: 3, slots: 1, cols: 1, rows: 1, name: 'POD', owned: true },
+            { hp: 60, u: 3, slots: 2, cols: 2, rows: 1, name: 'STARTER', owned: true },
+            { hp: 90, u: 3, slots: 3, cols: 3, rows: 1, name: 'MODERN', owned: true },
+            { hp: 120, u: 3, slots: 4, cols: 4, rows: 1, name: 'EXTENDED', owned: false },
+            { hp: 60, u: 6, slots: 4, cols: 2, rows: 2, name: 'DOUBLE', owned: false },
+            { hp: 90, u: 6, slots: 6, cols: 3, rows: 2, name: 'SLIM', owned: false },
+            { hp: 120, u: 6, slots: 8, cols: 4, rows: 2, name: 'PRO', owned: false },
+            { hp: 90, u: 9, slots: 9, cols: 3, rows: 3, name: 'TOWER', owned: false },
+            { hp: 120, u: 9, slots: 12, cols: 4, rows: 3, name: 'ULTIMATE', owned: false },
+            { hp: 150, u: 9, slots: 15, cols: 5, rows: 3, name: 'MASSIVE', owned: false }
+        ];
+        
+        let draggedModule = null;
+        let rackStates = {}; // Store state for each rack
+        let selectedRackId = null; // Track currently selected rack
+        
+        // Module inventory with counts
+        const moduleInventory = {
+            'altered-black': 2,
+            'andersons': 1,
+            'bai': 1,
+            'cephalopod': 1,
+            'function-synthesizer': 1,
+            'honduh': 3
+        };
+        
+        // Module collection
+        const moduleCollection = [
+            'Complex Oscillator', 'Honduh', 'Cephalopod', 'BAI', 'Varigated',
+            'Arcade Black', 'Sequence Black', 'Physical Modeler', 'Function Synthesizer',
+            'Mangler and Tangler', '00', 'Altered Black', 'Andersons', 'Mirage Black',
+            'Cephalopod Rose', 'Physical modeler II'
+        ];
+        
+        // Initialize module collection
+        function initModuleCollection() {
+            const container = document.getElementById('modules-collection');
+            container.innerHTML = '';
+            
+            moduleCollection.forEach((moduleName, index) => {
+                const moduleId = moduleName.toLowerCase().replace(/ /g, '-');
+                const count = moduleInventory[moduleId] || 1;
+                
+                // Skip if no modules left
+                if (count <= 0) return;
+                
+                const moduleDiv = document.createElement('div');
+                moduleDiv.className = 'draggable-module';
+                if (count > 1) moduleDiv.classList.add('has-multiple');
+                moduleDiv.draggable = true; // Enable drag and drop
+                moduleDiv.dataset.moduleName = moduleName;
+                moduleDiv.dataset.moduleId = moduleId;
+                
+                const img = document.createElement('img');
+                // Try PNG first (static), fallback to WebP (may be animated)
+                img.src = `https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${moduleName.replace(/ /g, '%20')}.png`;
+                img.alt = moduleName;
+                img.draggable = false;
+                img.loading = 'lazy'; // Lazy load to improve performance
+                
+                img.onerror = function() {
+                    // Fallback to WebP if PNG doesn't exist
+                    this.src = `https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${moduleName.replace(/ /g, '%20')}.webp`;
+                    this.onerror = function() {
+                        this.style.display = 'none';
+                        moduleDiv.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                    };
+                };
+                
+                moduleDiv.appendChild(img);
+                
+                // Add count badge if multiple
+                if (count > 1) {
+                    const badge = document.createElement('div');
+                    badge.className = 'module-count-badge';
+                    badge.textContent = count;
+                    badge.id = `badge-${moduleId}`;
+                    moduleDiv.appendChild(badge);
+                }
+                
+                // Click to add to selected rack
+                moduleDiv.addEventListener('click', () => {
+                    if (selectedRackId) {
+                        addModuleToRack(moduleId, moduleName, selectedRackId);
+                    } else {
+                        alert('Please select a rack first by clicking on it');
+                    }
+                });
+                
+                // Drag events
+                moduleDiv.addEventListener('dragstart', (e) => {
+                    draggedModule = moduleName;
+                    e.dataTransfer.effectAllowed = 'copy';
+                    moduleDiv.style.opacity = '0.5';
+                });
+                
+                moduleDiv.addEventListener('dragend', (e) => {
+                    moduleDiv.style.opacity = '1';
+                });
+                
+                container.appendChild(moduleDiv);
+            });
+        }
+        
+        // Create rack card
+        function createRackCard(rack, index) {
+            const rackId = `rack-${index}`;
+            
+            // Initialize rack state if not exists
+            if (!rackStates[rackId]) {
+                rackStates[rackId] = {
+                    color: 'black',
+                    type: 'classic',
+                    modules: {}
+                };
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'rack-card';
+            card.dataset.rackId = rackId;
+            
+            // Add click handler for selection
+            card.addEventListener('click', () => {
+                // Remove previous selection
+                document.querySelectorAll('.rack-card').forEach(c => c.classList.remove('selected'));
+                // Select this card
+                card.classList.add('selected');
+                selectedRackId = rackId;
+            });
+            
+            // Header with title, badge and colors on same row
+            const header = document.createElement('div');
+            header.className = 'rack-header';
+            header.style.display = 'flex';
+            header.style.justifyContent = 'space-between';
+            header.style.alignItems = 'center';
+            header.style.width = '100%';
+            header.style.marginBottom = '10px';
+            
+            const titleGroup = document.createElement('div');
+            titleGroup.className = 'rack-title-group';
+            titleGroup.style.display = 'flex';
+            titleGroup.style.alignItems = 'center';
+            titleGroup.style.gap = '8px';
+            
+            const title = document.createElement('div');
+            title.className = 'rack-title';
+            title.textContent = `${rack.hp}HP`;
+            title.style.fontSize = '1.1rem';
+            title.style.fontWeight = 'bold';
+            
+            const titleU = document.createElement('div');
+            titleU.textContent = `${rack.u}U`;
+            titleU.style.fontSize = '1.1rem';
+            
+            titleGroup.appendChild(title);
+            titleGroup.appendChild(titleU);
+            
+            // Color palette on the right side of header
+            const colorRow = document.createElement('div');
+            colorRow.className = 'color-row';
+            colorRow.style.display = 'flex';
+            colorRow.style.gap = '4px';
+            colorRow.style.flexWrap = 'wrap';
+            colorRow.style.maxWidth = '200px';
+            const colors = ['magenta', 'green', 'cyan', 'orange', 'purple', 'pink', 'yellow', 'lime', 'red', 'black', 'white', 'gray'];
+            
+            colors.forEach(color => {
+                const swatch = document.createElement('div');
+                swatch.className = `color-swatch ${color}`;
+                if (rackStates[rackId].color === color) {
+                    swatch.classList.add('selected');
+                }
+                swatch.addEventListener('click', () => {
+                    colorRow.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+                    swatch.classList.add('selected');
+                    rackStates[rackId].color = color;
+                    updateRackPreview(rackId);
+                });
+                colorRow.appendChild(swatch);
+            });
+            
+            // Type selector
+            const typeSelector = document.createElement('div');
+            typeSelector.className = 'type-selector';
+            const types = ['classic', 'plastic', 'modern', 'wood'];
+            
+            types.forEach(type => {
+                const tab = document.createElement('div');
+                tab.className = 'type-tab';
+                if (rackStates[rackId].type === type) {
+                    tab.classList.add('active');
+                }
+                tab.textContent = type.toUpperCase();
+                tab.addEventListener('click', () => {
+                    typeSelector.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    rackStates[rackId].type = type;
+                    updateRackPreview(rackId);
+                });
+                typeSelector.appendChild(tab);
+            });
+            
+            // Meta strip (empty/hidden)
+            const metaStrip = document.createElement('div');
+            metaStrip.className = 'meta-strip';
+            metaStrip.style.display = 'none';
+            
+            // Rack preview
+            const preview = document.createElement('div');
+            preview.className = `rack-preview ${rackStates[rackId].color} ${rackStates[rackId].type}`;
+            preview.id = `${rackId}-preview`;
+            
+            // Don't set explicit width/height on preview - let padding create the space
+            
+            // Slot grid
+            const slotGrid = document.createElement('div');
+            slotGrid.className = 'slot-grid';
+            
+            // Use proper column count from rack configuration
+            // Rotate ULTIMATE and MASSIVE racks to be vertical
+            let cols = rack.cols;
+            let rows = rack.rows;
+            
+            if (rack.name === 'ULTIMATE' || rack.name === 'MASSIVE') {
+                // Swap columns and rows for vertical orientation
+                cols = rack.rows;
+                rows = rack.cols;
+            }
+            
+            slotGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            slotGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+            
+            for (let i = 0; i < rack.slots; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'module-slot';
+                slot.dataset.slot = i;
+                slot.dataset.rackId = rackId;
+                
+                // Restore module if exists
+                if (rackStates[rackId].modules[i]) {
+                    const moduleData = rackStates[rackId].modules[i];
+                    const img = document.createElement('img');
+                    img.src = `https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${moduleData.replace(/ /g, '%20')}.webp`;
+                    img.alt = moduleData;
+                    slot.appendChild(img);
+                    slot.classList.add('occupied');
+                    slot.dataset.moduleName = moduleData;
+                }
+                
+                setupSlotHandlers(slot, rackId, rack.slots);
+                slotGrid.appendChild(slot);
+            }
+            
+            preview.appendChild(slotGrid);
+            
+            // Add interactive mini-grid for rack variations
+            const miniGrid = document.createElement('div');
+            miniGrid.className = 'mini-grid';
+            miniGrid.style.color = '#00cc00'; // Green color like in marketplace
+            
+            // Create 10 tiles representing different rack variations of the same size
+            for (let i = 0; i < 10; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'mini-tile';
+                tile.style.cursor = 'pointer';
+                tile.title = `${rack.name} Variant ${i + 1}`;
+                
+                // Show first tile as owned (filled with color) by default
+                if (i === 0) {
+                    tile.classList.add('owned');
+                }
+                
+                // Add click handler to change rack appearance
+                tile.addEventListener('click', () => {
+                    // Remove selection from all tiles
+                    miniGrid.querySelectorAll('.mini-tile').forEach(t => t.classList.remove('selected'));
+                    tile.classList.add('selected');
+                    
+                    // Change rack appearance based on tile clicked
+                    const variations = ['classic', 'plastic', 'modern', 'wood'];
+                    const colors = ['silver', 'black', 'wood', 'white', 'blue', 'green', 'purple', 'red', 'orange', 'pink'];
+                    
+                    // Apply variation (cycle through combinations)
+                    rackStates[rackId].type = variations[i % variations.length];
+                    rackStates[rackId].color = colors[i % colors.length];
+                    
+                    updateRackPreview(rackId);
+                    
+                    // Update color and type controls to reflect change
+                    controlsContainer.querySelector('.color-swatch.selected')?.classList.remove('selected');
+                    controlsContainer.querySelector(`.color-swatch.${rackStates[rackId].color}`)?.classList.add('selected');
+                    
+                    controlsContainer.querySelector('.type-tab.active')?.classList.remove('active');
+                    controlsContainer.querySelector('.type-tab')?.parentNode.querySelectorAll('.type-tab').forEach(tab => {
+                        if (tab.textContent.toLowerCase() === rackStates[rackId].type) {
+                            tab.classList.add('active');
+                        }
+                    });
+                });
+                
+                miniGrid.appendChild(tile);
+            }
+            
+            // Set first tile as selected by default
+            miniGrid.querySelector('.mini-tile').classList.add('selected');
+            
+            // Add header to card
+            header.appendChild(titleGroup);
+            header.appendChild(colorRow);
+            
+            // Add OWNED text above mini-grid
+            const ownedText = document.createElement('div');
+            ownedText.style.fontSize = '0.7rem';
+            ownedText.style.color = '#666';
+            ownedText.style.marginBottom = '5px';
+            ownedText.textContent = 'OWNED: 1/10';
+            
+            // Create rack area with gray background
+            const rackArea = document.createElement('div');
+            rackArea.className = 'rack-area';
+            rackArea.appendChild(preview);
+
+            // Assemble card in correct order
+            card.appendChild(header);        // Title and colors on same row
+            card.appendChild(typeSelector);  // Type tabs below
+            card.appendChild(metaStrip);     // Meta info (hidden)
+            card.appendChild(rackArea);      // Rack in gray area
+            card.appendChild(ownedText);     // OWNED text
+            card.appendChild(miniGrid);      // Mini grid at bottom
+            
+            return card;
+        }
+        
+        // Setup slot handlers
+        function setupSlotHandlers(slot, rackId, totalSlots) {
+            // Drag over
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+                slot.classList.add('drag-over');
+            });
+            
+            // Drag leave
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('drag-over');
+            });
+            
+            // Drop
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.classList.remove('drag-over');
+                
+                if (draggedModule && !slot.classList.contains('occupied')) {
+                    const img = document.createElement('img');
+                    img.src = `https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${draggedModule.replace(/ /g, '%20')}.webp`;
+                    img.alt = draggedModule;
+                    img.onerror = function() {
+                        this.style.display = 'none';
+                        slot.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                    };
+                    
+                    slot.innerHTML = '';
+                    slot.appendChild(img);
+                    slot.classList.add('occupied');
+                    slot.dataset.moduleName = draggedModule;
+                    
+                    // Store in rack state
+                    rackStates[rackId].modules[slot.dataset.slot] = draggedModule;
+                    
+                    updateModuleCount(slot.closest('.rack-card'), totalSlots);
+                }
+                
+                draggedModule = null;
+            });
+            
+            // Click to remove
+            slot.addEventListener('click', () => {
+                if (slot.classList.contains('occupied')) {
+                    slot.innerHTML = '';
+                    slot.classList.remove('occupied');
+                    delete rackStates[rackId].modules[slot.dataset.slot];
+                    delete slot.dataset.moduleName;
+                    slot.style.background = '';
+                    
+                    updateModuleCount(slot.closest('.rack-card'), totalSlots);
+                }
+            });
+        }
+        
+        // Update module count
+        function updateModuleCount(card, totalSlots) {
+            const occupied = card.querySelectorAll('.module-slot.occupied').length;
+            const counter = card.querySelector('.module-count');
+            if (counter) {
+                counter.textContent = `Modules ${occupied}/${totalSlots}`;
+            }
+        }
+        
+        // Add module to rack
+        function addModuleToRack(moduleId, moduleName, rackId) {
+            const card = document.querySelector(`[data-rack-id="${rackId}"]`);
+            const emptySlots = card.querySelectorAll('.module-slot:not(.occupied)');
+            
+            if (emptySlots.length === 0) {
+                alert('This rack is full!');
+                return;
+            }
+            
+            // Add module to first empty slot
+            const slot = emptySlots[0];
+            slot.classList.add('occupied');
+            
+            const img = document.createElement('img');
+            img.src = `https://pub-52e1e6cdc34a48efaf40dffb5e812617.r2.dev/${moduleName.replace(/ /g, '%20')}.webp`;
+            img.alt = moduleName;
+            slot.appendChild(img);
+            
+            // Update inventory
+            if (moduleInventory[moduleId]) {
+                moduleInventory[moduleId]--;
+                
+                // Update or remove module from sidebar
+                const moduleDiv = document.querySelector(`[data-module-id="${moduleId}"]`);
+                if (moduleDiv) {
+                    if (moduleInventory[moduleId] <= 0) {
+                        // Remove module completely
+                        moduleDiv.remove();
+                    } else {
+                        // Update count badge
+                        const badge = moduleDiv.querySelector('.module-count-badge');
+                        if (badge) {
+                            if (moduleInventory[moduleId] === 1) {
+                                // Remove badge if only 1 left
+                                badge.remove();
+                                moduleDiv.classList.remove('has-multiple');
+                            } else {
+                                badge.textContent = moduleInventory[moduleId];
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Update rack state
+            const slotIndex = Array.from(card.querySelectorAll('.module-slot')).indexOf(slot);
+            rackStates[rackId].modules[slotIndex] = moduleName;
+            
+            // Update mini-grid
+            const miniGrid = card.querySelector('.mini-grid');
+            if (miniGrid) {
+                const tiles = miniGrid.querySelectorAll('.mini-tile');
+                const occupiedCount = Object.keys(rackStates[rackId].modules).length;
+                tiles.forEach((tile, i) => {
+                    if (i < occupiedCount) {
+                        tile.classList.add('owned');
+                    }
+                });
+            }
+            
+            // Update module count display
+            const totalSlots = card.querySelectorAll('.module-slot').length;
+            updateModuleCount(card, totalSlots);
+        }
+        
+        // Update rack preview appearance
+        function updateRackPreview(rackId) {
+            const preview = document.getElementById(`${rackId}-preview`);
+            const state = rackStates[rackId];
+            preview.className = `rack-preview ${state.color} ${state.type}`;
+        }
+        
+        // Initialize rack grid
+        function initRackGrid() {
+            const container = document.getElementById('rack-grid');
+            container.innerHTML = '';
+            
+            racks.forEach((rack, index) => {
+                const card = createRackCard(rack, index);
+                container.appendChild(card);
+            });
+        }
+        
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initModuleCollection();
+            initRackGrid();
+        });
+    </script>
+</body>
+</html>
